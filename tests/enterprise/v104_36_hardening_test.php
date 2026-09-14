@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/_helpers.php';
+$checks=[];
+$guard=hub_read('app/Services/EnterpriseIdempotencyGuardService.php');
+$queue=hub_read('app/Services/QueueService.php');
+$sw=hub_read('public/sw.js');
+$manifest=json_decode(hub_read('public/manifest.webmanifest'),true);
+$config=hub_read('config/config.php');
+hub_check($checks,'Reserva atômica',str_contains($guard,'INSERT IGNORE INTO integration_idempotency'));
+hub_check($checks,'Fail closed/DLQ',str_contains($config,"'idempotency_failure_policy' => 'dlq'"));
+hub_check($checks,'Canonicalização de payload',str_contains($guard,'canonicalPayload'));
+hub_check($checks,'Lease e posse da fila',str_contains($queue,'lease_expires_at')&&str_contains($queue,'heartbeat_at')&&str_contains($queue,'locked_by'));
+hub_check($checks,'Migration histórica presente',is_file(hub_root().'/database/migrations/20260710_001_idempotency_queue_lease.sql'));
+hub_check($checks,'Migration atual presente',is_file(hub_root().'/database/migrations/20260712_001_queue_oauth_concurrency.sql'));
+hub_check($checks,'Baseline presente',is_file(hub_root().'/database/baseline/schema-v104.36.sql'));
+hub_check($checks,'PWA compatível 104.36+',hub_sw_version()!==''&&version_compare(hub_sw_version(),'104.36.0','>='),hub_sw_version());
+hub_check($checks,'Rotas sensíveis usam rede sem cache',str_contains($sw,"url.pathname.endsWith('.php')")&&str_contains($sw,"url.pathname.includes('/api/')")&&str_contains($sw,"cache:'no-store'"));
+hub_check($checks,'Manifest standalone',is_array($manifest)&&($manifest['display']??'')==='standalone');
+hub_check($checks,'Ícones maskable',is_array($manifest)&&str_contains((string)json_encode($manifest),'maskable'));
+hub_finish($checks);

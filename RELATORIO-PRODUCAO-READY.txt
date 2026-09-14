@@ -1,0 +1,18 @@
+AUDITORIA DE PRODUÇÃO - Hub de Integração TINY
+
+Aplicado:
+- Headers de segurança no front controller.
+- Checklist Produção Segura limpo no painel.
+- Validação de bancos modulares e tabelas críticas.
+- Ocultação de alternador de perfil visual em produção.
+- Remoção/ocultação de botões técnicos de atualização em telas operacionais quando app_env=production.
+- Mantido VSM como estoque real.
+- Mantidos workers fiscal, estoque e consulta VSM.
+
+Recomendação para servidor real:
+1. app_env=production.
+2. HTTPS obrigatório.
+3. usuário MySQL exclusivo com senha forte.
+4. agendar workers no cron/Agendador de Tarefas.
+5. configurar backup diário e retenção.
+6. validar Tiny e VSM pelo painel antes de ativar fluxos.

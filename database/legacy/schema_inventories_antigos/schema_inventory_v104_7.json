@@ -1,0 +1,651 @@
+{
+  "version": "v104.7",
+  "source": "install_final_v104_7.sql",
+  "generated_at": "2026-06-29T00:00:00-03:00",
+  "tables_total": 107,
+  "tables": [
+    {
+      "table": "audit_daily_signatures",
+      "module": "observabilidade",
+      "columns": 10,
+      "indexes": 1
+    },
+    {
+      "table": "audit_exports",
+      "module": "observabilidade",
+      "columns": 7,
+      "indexes": 2
+    },
+    {
+      "table": "auditoria_assinaturas",
+      "module": "observabilidade",
+      "columns": 9,
+      "indexes": 3
+    },
+    {
+      "table": "auditoria_detalhes",
+      "module": "observabilidade",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "auditoria_eventos",
+      "module": "observabilidade",
+      "columns": 17,
+      "indexes": 5
+    },
+    {
+      "table": "auditoria_hash_chain",
+      "module": "observabilidade",
+      "columns": 7,
+      "indexes": 3
+    },
+    {
+      "table": "auditoria_timeline",
+      "module": "observabilidade",
+      "columns": 8,
+      "indexes": 3
+    },
+    {
+      "table": "backups",
+      "module": "backups",
+      "columns": 5,
+      "indexes": 0
+    },
+    {
+      "table": "backups_banco",
+      "module": "backups",
+      "columns": 8,
+      "indexes": 1
+    },
+    {
+      "table": "categorias_mapeamento",
+      "module": "produtos",
+      "columns": 12,
+      "indexes": 4
+    },
+    {
+      "table": "circuit_breakers",
+      "module": "fila",
+      "columns": 9,
+      "indexes": 1
+    },
+    {
+      "table": "configuracoes_historico",
+      "module": "core",
+      "columns": 7,
+      "indexes": 2
+    },
+    {
+      "table": "configuracoes_integracao",
+      "module": "core",
+      "columns": 116,
+      "indexes": 0
+    },
+    {
+      "table": "dashboard_testes_execucoes",
+      "module": "observabilidade",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "diagnostico_api",
+      "module": "observabilidade",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "empresas",
+      "module": "core",
+      "columns": 5,
+      "indexes": 0
+    },
+    {
+      "table": "estoque_alertas",
+      "module": "estoque",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_auditoria_sku",
+      "module": "estoque",
+      "columns": 13,
+      "indexes": 3
+    },
+    {
+      "table": "estoque_configuracoes",
+      "module": "estoque",
+      "columns": 3,
+      "indexes": 0
+    },
+    {
+      "table": "estoque_consulta_tiny_execucoes",
+      "module": "estoque",
+      "columns": 13,
+      "indexes": 3
+    },
+    {
+      "table": "estoque_consulta_tiny_resultados",
+      "module": "estoque",
+      "columns": 11,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_consulta_vsm_execucoes",
+      "module": "estoque",
+      "columns": 15,
+      "indexes": 3
+    },
+    {
+      "table": "estoque_consulta_vsm_resultados",
+      "module": "estoque",
+      "columns": 11,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_divergencias",
+      "module": "estoque",
+      "columns": 12,
+      "indexes": 3
+    },
+    {
+      "table": "estoque_eventos_sincronizacao",
+      "module": "estoque",
+      "columns": 8,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_movimentos",
+      "module": "estoque",
+      "columns": 12,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_reconciliacao",
+      "module": "estoque",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "estoque_reconciliacao_agendada",
+      "module": "estoque",
+      "columns": 9,
+      "indexes": 2
+    },
+    {
+      "table": "estoque_saldos_cache",
+      "module": "estoque",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "evento_correlacao",
+      "module": "pedidos",
+      "columns": 11,
+      "indexes": 3
+    },
+    {
+      "table": "eventos_processados",
+      "module": "pedidos",
+      "columns": 8,
+      "indexes": 4
+    },
+    {
+      "table": "fila_analytics_snapshots",
+      "module": "fila",
+      "columns": 4,
+      "indexes": 2
+    },
+    {
+      "table": "fila_estoque",
+      "module": "estoque",
+      "columns": 14,
+      "indexes": 4
+    },
+    {
+      "table": "fila_fiscal",
+      "module": "fila",
+      "columns": 14,
+      "indexes": 5
+    },
+    {
+      "table": "fila_integracao",
+      "module": "fila",
+      "columns": 15,
+      "indexes": 4
+    },
+    {
+      "table": "fila_morta",
+      "module": "fila",
+      "columns": 13,
+      "indexes": 5
+    },
+    {
+      "table": "filiais",
+      "module": "core",
+      "columns": 7,
+      "indexes": 1
+    },
+    {
+      "table": "fiscal_configuracoes_cache",
+      "module": "fiscal",
+      "columns": 4,
+      "indexes": 1
+    },
+    {
+      "table": "fiscal_reconciliacao_snapshots",
+      "module": "fiscal",
+      "columns": 5,
+      "indexes": 2
+    },
+    {
+      "table": "homologacao_automatica_relatorios",
+      "module": "core",
+      "columns": 9,
+      "indexes": 2
+    },
+    {
+      "table": "homologacao_checklist",
+      "module": "core",
+      "columns": 9,
+      "indexes": 2
+    },
+    {
+      "table": "hosting_checks",
+      "module": "observabilidade",
+      "columns": 5,
+      "indexes": 1
+    },
+    {
+      "table": "instalacao_prechecks",
+      "module": "core",
+      "columns": 6,
+      "indexes": 2
+    },
+    {
+      "table": "integracao_execucoes",
+      "module": "pedidos",
+      "columns": 13,
+      "indexes": 3
+    },
+    {
+      "table": "integration_replay_guard",
+      "module": "fila",
+      "columns": 9,
+      "indexes": 3
+    },
+    {
+      "table": "ips_bloqueados",
+      "module": "core",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "login_tentativas",
+      "module": "core",
+      "columns": 6,
+      "indexes": 3
+    },
+    {
+      "table": "logs_integracao",
+      "module": "observabilidade",
+      "columns": 9,
+      "indexes": 5
+    },
+    {
+      "table": "mapper_versions",
+      "module": "core",
+      "columns": 7,
+      "indexes": 2
+    },
+    {
+      "table": "metricas_api",
+      "module": "observabilidade",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "module_health_snapshots",
+      "module": "observabilidade",
+      "columns": 6,
+      "indexes": 2
+    },
+    {
+      "table": "nfe_integracao",
+      "module": "fiscal",
+      "columns": 16,
+      "indexes": 3
+    },
+    {
+      "table": "nfe_status_historico",
+      "module": "fiscal",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "nfe_xml",
+      "module": "fiscal",
+      "columns": 7,
+      "indexes": 2
+    },
+    {
+      "table": "notas_fiscais",
+      "module": "fiscal",
+      "columns": 24,
+      "indexes": 5
+    },
+    {
+      "table": "notas_fiscais_eventos",
+      "module": "fiscal",
+      "columns": 9,
+      "indexes": 3
+    },
+    {
+      "table": "notificacoes",
+      "module": "observabilidade",
+      "columns": 13,
+      "indexes": 5
+    },
+    {
+      "table": "notificacoes_config",
+      "module": "observabilidade",
+      "columns": 12,
+      "indexes": 0
+    },
+    {
+      "table": "orquestracao_fluxos_historico",
+      "module": "core",
+      "columns": 8,
+      "indexes": 3
+    },
+    {
+      "table": "payload_snapshots",
+      "module": "fila",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "pedidos_hub",
+      "module": "pedidos",
+      "columns": 18,
+      "indexes": 4
+    },
+    {
+      "table": "pedidos_integracao",
+      "module": "pedidos",
+      "columns": 18,
+      "indexes": 3
+    },
+    {
+      "table": "pedidos_nfe_xml",
+      "module": "pedidos",
+      "columns": 14,
+      "indexes": 4
+    },
+    {
+      "table": "pedidos_payloads",
+      "module": "pedidos",
+      "columns": 9,
+      "indexes": 3
+    },
+    {
+      "table": "pedidos_status_historico",
+      "module": "pedidos",
+      "columns": 11,
+      "indexes": 3
+    },
+    {
+      "table": "pedidos_validacao",
+      "module": "pedidos",
+      "columns": 28,
+      "indexes": 4
+    },
+    {
+      "table": "pedidos_validacao_historico",
+      "module": "pedidos",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "permissoes_perfil",
+      "module": "core",
+      "columns": 6,
+      "indexes": 1
+    },
+    {
+      "table": "post_install_tests",
+      "module": "core",
+      "columns": 5,
+      "indexes": 2
+    },
+    {
+      "table": "production_go_live_checks",
+      "module": "core",
+      "columns": 8,
+      "indexes": 3
+    },
+    {
+      "table": "production_readiness_v50",
+      "module": "core",
+      "columns": 6,
+      "indexes": 2
+    },
+    {
+      "table": "produto_pendencias",
+      "module": "produtos",
+      "columns": 15,
+      "indexes": 3
+    },
+    {
+      "table": "produtos_aprovacao_historico",
+      "module": "produtos",
+      "columns": 9,
+      "indexes": 3
+    },
+    {
+      "table": "produtos_mapeamento",
+      "module": "produtos",
+      "columns": 11,
+      "indexes": 1
+    },
+    {
+      "table": "produtos_pendentes_integracao",
+      "module": "produtos",
+      "columns": 23,
+      "indexes": 5
+    },
+    {
+      "table": "produtos_tiny",
+      "module": "produtos",
+      "columns": 16,
+      "indexes": 6
+    },
+    {
+      "table": "produtos_vsm",
+      "module": "produtos",
+      "columns": 8,
+      "indexes": 2
+    },
+    {
+      "table": "produtos_vsm_eventos",
+      "module": "produtos",
+      "columns": 18,
+      "indexes": 5
+    },
+    {
+      "table": "rate_limit_hits",
+      "module": "core",
+      "columns": 8,
+      "indexes": 3
+    },
+    {
+      "table": "reconciliacao_execucoes",
+      "module": "estoque",
+      "columns": 10,
+      "indexes": 3
+    },
+    {
+      "table": "reconciliacao_itens",
+      "module": "estoque",
+      "columns": 10,
+      "indexes": 3
+    },
+    {
+      "table": "schema_migrations",
+      "module": "core",
+      "columns": 6,
+      "indexes": 2
+    },
+    {
+      "table": "security_audit",
+      "module": "observabilidade",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "security_events",
+      "module": "core",
+      "columns": 12,
+      "indexes": 4
+    },
+    {
+      "table": "security_hardening_checks",
+      "module": "core",
+      "columns": 7,
+      "indexes": 2
+    },
+    {
+      "table": "selftest_relatorios",
+      "module": "core",
+      "columns": 6,
+      "indexes": 3
+    },
+    {
+      "table": "system_build_info",
+      "module": "core",
+      "columns": 4,
+      "indexes": 0
+    },
+    {
+      "table": "tiny_error_catalogo",
+      "module": "core",
+      "columns": 8,
+      "indexes": 1
+    },
+    {
+      "table": "tiny_testes_reais",
+      "module": "core",
+      "columns": 11,
+      "indexes": 4
+    },
+    {
+      "table": "tiny_v2_endpoint_logs",
+      "module": "observabilidade",
+      "columns": 11,
+      "indexes": 3
+    },
+    {
+      "table": "tiny_v2_homologacao_testes",
+      "module": "core",
+      "columns": 7,
+      "indexes": 4
+    },
+    {
+      "table": "tiny_v2_retry_policies",
+      "module": "core",
+      "columns": 6,
+      "indexes": 0
+    },
+    {
+      "table": "tiny_v3_endpoint_logs",
+      "module": "observabilidade",
+      "columns": 11,
+      "indexes": 2
+    },
+    {
+      "table": "tiny_v3_homologacao_testes",
+      "module": "core",
+      "columns": 7,
+      "indexes": 4
+    },
+    {
+      "table": "tiny_v3_tokens",
+      "module": "core",
+      "columns": 9,
+      "indexes": 2
+    },
+    {
+      "table": "tiny_validacoes_execucoes",
+      "module": "core",
+      "columns": 10,
+      "indexes": 3
+    },
+    {
+      "table": "tiny_webhooks",
+      "module": "pedidos",
+      "columns": 16,
+      "indexes": 6
+    },
+    {
+      "table": "token_vault",
+      "module": "core",
+      "columns": 12,
+      "indexes": 2
+    },
+    {
+      "table": "upgrade_snapshots",
+      "module": "core",
+      "columns": 6,
+      "indexes": 3
+    },
+    {
+      "table": "usuarios",
+      "module": "core",
+      "columns": 16,
+      "indexes": 0
+    },
+    {
+      "table": "vsm_campos_mapeamento",
+      "module": "core",
+      "columns": 10,
+      "indexes": 3
+    },
+    {
+      "table": "vsm_endpoint_catalogo",
+      "module": "produtos",
+      "columns": 16,
+      "indexes": 3
+    },
+    {
+      "table": "vsm_endpoint_logs",
+      "module": "observabilidade",
+      "columns": 12,
+      "indexes": 4
+    },
+    {
+      "table": "vsm_endpoint_metricas",
+      "module": "produtos",
+      "columns": 10,
+      "indexes": 4
+    },
+    {
+      "table": "vsm_endpoints",
+      "module": "core",
+      "columns": 18,
+      "indexes": 3
+    },
+    {
+      "table": "vsm_payload_catalogo",
+      "module": "produtos",
+      "columns": 10,
+      "indexes": 3
+    },
+    {
+      "table": "webhook_requisicoes",
+      "module": "pedidos",
+      "columns": 11,
+      "indexes": 3
+    }
+  ],
+  "sha256": "4bd8419203f43af7a0a7fba11f24e3d1d1ec0a08e272516cb6490a75299defb4"
+}

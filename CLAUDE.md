@@ -1,7 +1,12 @@
 # Hub de Integração Tiny ERP ↔ VSM — regras de trabalho
 
 > Memória do projeto. Origem: `PROMPT_-_HUB.md`, fornecido pelo responsável do produto.
-> Vale para **toda** sessão que mexer no Hub, inclusive quando o pacote chega como zip.
+> Vale para **toda** sessão que mexer no Hub.
+>
+> **O código do Hub vive neste repositório, na raiz** (desde 2026-09-14). Antes disso ele chegava
+> como zip a cada sessão. Consequência prática: `.github/workflows/hub-ci.yml` passou a rodar de
+> verdade em push e pull request para `main`/`develop` — inclusive a matriz de runtime
+> **MySQL 8 + MariaDB 11.4** e a suíte E2E, que até aqui nunca tinham sido executadas.
 
 ## Papel
 
@@ -241,5 +246,11 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 `013` (logs + sessões) → agendar `worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
 
 **Nunca validado contra banco real nesta linha de trabalho.** Todas as auditorias da R6/R7 foram
-**estáticas**: não havia MySQL nem Docker no ambiente. Os portões de runtime MySQL 8 / MariaDB 11.4
-rodam só na CI. Antes de produção, exercite o `gate` completo.
+**estáticas**: não havia MySQL nem Docker no ambiente da sessão. Os portões de runtime
+MySQL 8 / MariaDB 11.4 e o E2E rodam só na CI — e, com o Hub agora no repositório, **passam a rodar
+de fato**. Espere que a primeira execução possa ficar vermelha: esses jobs nunca foram exercitados.
+Vermelho ali é informação nova e legítima, não regressão do que foi auditado estaticamente.
+
+**O `config/config.php` não é versionado** (está no `.gitignore`): ele carrega host, usuário, senha
+e segredos, e é criado pelo instalador a partir do `config.example.php`. Ausência num checkout limpo
+é o estado normal — os scripts de CLI caem no exemplo, por desenho do `App::config()`.

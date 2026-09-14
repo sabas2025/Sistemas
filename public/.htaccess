@@ -1,0 +1,61 @@
+ServerSignature Off
+DirectoryIndex index.php index.html
+
+# Reauditoria 2026-09-14 (achado A-04): o redirecionamento HTTPS que existia aqui era decidido
+# por cabeçalhos que o próprio cliente envia. Ele deixava de redirecionar quando a requisição
+# trazia "X-Forwarded-Proto: https" e montava o destino a partir de "Host", ambos não
+# autenticados nesta camada - o Apache avalia isso antes de o PHP aplicar TrustedProxyService.
+#
+# A regra foi removida em vez de endurecida: manter a condição do cabeçalho é a única forma de
+# não criar loop de redirecionamento atrás de um proxy que termina TLS, e endurecê-la aqui não
+# é possível sem conhecer os proxies confiáveis. O redirecionamento passa a ser feito por
+# App::enforceProductionSafety(), que só aceita X-Forwarded-Proto de proxies declarados em
+# security.trusted_proxies e fixa o domínio em security.canonical_host (agora gravado pelo
+# instalador). O HSTS abaixo continua protegendo visitas subsequentes.
+#
+# Em produção, prefira redirecionar no virtual host / reverse proxy com domínio canônico fixo,
+# descartando os cabeçalhos X-Forwarded-* recebidos da internet. Veja nginx.conf.example.
+
+<IfModule mod_headers.c>
+Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "no-referrer"
+Header always set X-Permitted-Cross-Domain-Policies "none"
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()"
+Header always set Cross-Origin-Opener-Policy "same-origin"
+Header always set Cross-Origin-Resource-Policy "same-origin"
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+</IfModule>
+
+<FilesMatch "\.(env|ini|log|sql|bak|backup|zip|tar|gz|7z|key|pem|json)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# O instalador precisa ficar acessível ANTES da instalação.
+<Files "install.php">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+  </IfModule>
+</Files>
+
+# Workers não podem ser executados pelo navegador. Use /workers via CLI/Cron.
+<FilesMatch "^worker.*\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
+</FilesMatch>

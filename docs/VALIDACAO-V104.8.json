@@ -1,0 +1,15 @@
+{
+  "php_files": 297,
+  "database/install.sql": {
+    "create_table": 107,
+    "unique": 107,
+    "dups": []
+  },
+  "database/install_final_v104_8.sql": {
+    "create_table": 107,
+    "unique": 107,
+    "dups": []
+  },
+  "unsafe_root_sql_patterns": [],
+  "inline_js_count": 0
+}

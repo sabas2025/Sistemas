@@ -1,0 +1,21 @@
+HUB Tiny/VSM V104.49.2 — Central visual Tiny/VSM e PWA unificado
+
+ATUALIZAÇÃO SEGURA
+1. Faça backup completo dos arquivos e do banco.
+2. Extraia o pacote na raiz do HUB.
+3. O pacote não contém config/config.php; preserve sua configuração atual.
+4. Limpe o cache do navegador e atualize o PWA/app Windows.
+5. Valide:
+   - public/index.php?page=configuracoes
+   - public/index.php?page=tiny-v3-ficha
+   - public/index.php?page=pwa-status
+
+PRINCIPAIS MELHORIAS
+- Tipografia profissional e hierarquia visual nas configurações.
+- Tiny e VSM destacados em cartões próprios.
+- Navegação interna por seções.
+- Responsividade para desktop, tablet e celular.
+- PWA e aplicativo Windows com as mesmas cores e componentes da web.
+- Cache e versão sincronizados em V104.49.2.
+
+Nenhum campo, rota ou regra de integração Tiny/VSM foi removido.

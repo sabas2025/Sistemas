@@ -1,0 +1,999 @@
+file,line,class,visibility,static,function,params,explanation
+app/Controllers/ApiController.php,3,ApiController,private,não,configIntegracao,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,11,ApiController,private,não,validarSegurancaTiny,"string $raw, array $payload",Valida dados/regras antes de concluir operação de controle de telas/rotas.
+app/Controllers/ApiController.php,16,ApiController,private,não,registrarEventoIdempotente,"string $origem, string $referencia, string $tipoEvento, string $raw, array $payload",Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,39,ApiController,public,não,webhookVsmPedido,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,102,ApiController,public,não,webhookVsmProduto,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,200,ApiController,public,não,webhookTinyEvento,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,254,ApiController,public,não,webhookTinyPedidoVsm,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,286,ApiController,public,não,webhookVsmRetornoPedido,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,328,ApiController,public,não,webhookVsmEstoque,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,359,ApiController,private,não,responderTiny,"bool $success, array $data=[], int $httpCode=200",Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,364,ApiController,public,não,webhookTinyEstoque,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,416,ApiController,public,não,webhookTinyProduto,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,436,ApiController,public,não,webhookTinyNotaFiscal,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,457,ApiController,public,não,webhookTinySituacaoPedido,,"Recebe, valida e registra webhook relacionado a controle de telas/rotas."
+app/Controllers/ApiController.php,480,ApiController,public,não,processarFila,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,719,ApiController,public,não,notificacoesRecentes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,726,ApiController,public,não,marcarNotificacaoLidaApi,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiController.php,736,ApiController,public,não,statusJson,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ApiController.
+app/Controllers/ApiTinyController.php,8,ApiTinyController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/ApiVsmWebhookController.php,7,ApiVsmWebhookController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/AuditoriaController.php,8,AuditoriaController,public,sim,routes,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditoriaController.
+app/Controllers/BackupController.php,3,BackupController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/BackupController.php,14,BackupController,public,sim,routes,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupController.
+app/Controllers/BackupController.php,15,BackupController,public,não,index,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupController.
+app/Controllers/BackupController.php,22,BackupController,private,não,gerar,,"Gera arquivo, relatório, token, código ou saída operacional."
+app/Controllers/BackupController.php,29,BackupController,private,não,download,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupController.
+app/Controllers/BackupController.php,39,BackupController,private,não,excluir,,Remove ou inativa um registro.
+app/Controllers/BackupController.php,46,BackupController,private,não,importar,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupController.
+app/Controllers/BackupController.php,52,BackupController,private,não,restaurar,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupController.
+app/Controllers/BaseModuleController.php,7,BaseModuleController,protected,não,view,"string $view, array $vars = []",Renderiza conteúdo visual do módulo de controle de telas/rotas.
+app/Controllers/BaseModuleController.php,22,BaseModuleController,protected,não,defaultViewData,array $extra = [],Renderiza conteúdo visual do módulo de controle de telas/rotas.
+app/Controllers/CentralHomologacaoController.php,3,CentralHomologacaoController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/CentralHomologacaoController.php,10,CentralHomologacaoController,public,sim,routes,,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe CentralHomologacaoController.
+app/Controllers/CentralHomologacaoController.php,11,CentralHomologacaoController,public,não,index,,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe CentralHomologacaoController.
+app/Controllers/CentralTecnicaController.php,8,CentralTecnicaController,public,sim,routes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe CentralTecnicaController.
+app/Controllers/ConfiguracaoController.php,8,ConfiguracaoController,public,sim,routes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ConfiguracaoController.
+app/Controllers/DashboardController.php,4,DashboardController,public,não,__construct,,Inicializa dependências internas de DashboardController.
+app/Controllers/DashboardController.php,6,DashboardController,private,não,appBaseUrl,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,15,DashboardController,private,não,absolutePublicBaseUrl,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,25,DashboardController,private,não,normalizeTinyV3RedirectUri,string $uri = '',Padroniza formato de dados usado por dashboard.
+app/Controllers/DashboardController.php,42,DashboardController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/DashboardController.php,228,DashboardController,public,não,index,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,249,DashboardController,private,não,safeIdentifier,string $identifier,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,256,DashboardController,private,não,safeColumn,"string $table, string $column",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,268,DashboardController,private,não,safeSqlFragment,"string $table, string $fragment",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,289,DashboardController,private,não,safeOrderBy,"string $table, string $orderBy",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,302,DashboardController,private,não,count,"string $table, string $where='1=1'",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,310,DashboardController,private,não,safeCount,"string $table, string $where='1=1'",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,314,DashboardController,private,não,statusDot,string $status,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,318,DashboardController,private,não,workerCards,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,339,DashboardController,private,não,operationalSummary,array $cfgInt=[],Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,369,DashboardController,private,não,tableRows,"string $table, string $orderBy='id DESC', int $limit=10, string $where='1=1'",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,378,DashboardController,private,não,tableOne,"string $table, string $orderBy='id DESC', string $where='1=1'",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,383,DashboardController,private,não,dashboard,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,520,DashboardController,private,não,alertasOperacionais,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,528,DashboardController,private,não,centroOperacoes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,558,DashboardController,private,não,dashboardIntegridade,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,566,DashboardController,private,não,pedidos,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,580,DashboardController,private,não,pedidoDetalhe,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,597,DashboardController,private,não,fila,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,608,DashboardController,private,não,filaReprocessar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,616,DashboardController,private,não,filaCriarTeste,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,647,DashboardController,private,não,produtos,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,656,DashboardController,private,não,auditoriaCodigo,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,663,DashboardController,private,não,testeRealTiny,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,672,DashboardController,private,não,testeRealTinyExecutar,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,704,DashboardController,private,não,logs,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,716,DashboardController,private,não,auditoria,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,731,DashboardController,private,não,auditoriaDetalhe,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,742,DashboardController,private,não,tinyWebhooks,,"Recebe, valida e registra webhook relacionado a dashboard."
+app/Controllers/DashboardController.php,757,DashboardController,private,não,notificacoes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,771,DashboardController,private,não,marcarNotificacaoLida,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,783,DashboardController,private,não,diagnostico,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,791,DashboardController,private,não,configuracoes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,810,DashboardController,private,não,salvarConfiguracoes,,Salva/atualiza dados do módulo de dashboard.
+app/Controllers/DashboardController.php,903,DashboardController,private,não,testarTiny,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,920,DashboardController,private,não,testarVsm,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,947,DashboardController,private,não,tinyV3Callback,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1003,DashboardController,private,não,tinyV3Ficha,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1028,DashboardController,private,não,tinyV3TokenSalvar,,Gere/valida/consulta token seguro no módulo de dashboard.
+app/Controllers/DashboardController.php,1038,DashboardController,private,não,tinyV3TokenRenovar,,Gere/valida/consulta token seguro no módulo de dashboard.
+app/Controllers/DashboardController.php,1046,DashboardController,private,não,tinyV3TokenRevogar,,Gere/valida/consulta token seguro no módulo de dashboard.
+app/Controllers/DashboardController.php,1067,DashboardController,private,não,tinyV3Testar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1078,DashboardController,private,não,tinyV3TestarModulo,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1099,DashboardController,private,não,tinyV3EndpointsSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1124,DashboardController,private,não,atualizarV17TinyV3,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1146,DashboardController,private,não,atualizarV18TinyV3Final,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1169,DashboardController,private,não,atualizarV19TinyV3Operacional,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1193,DashboardController,private,não,atualizarV20TinyV3Seguranca,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1217,DashboardController,private,não,tinyV3OperationalReady,array $dados = [],Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1246,DashboardController,private,não,atualizarV21TinyV3Final,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1280,DashboardController,private,não,usuarios,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1288,DashboardController,private,não,usuarioSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1338,DashboardController,private,não,usuarioExcluir,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1364,DashboardController,private,não,permissoesSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1391,DashboardController,private,não,trocarSenha,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1404,DashboardController,private,não,backup,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1413,DashboardController,private,não,backups,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1421,DashboardController,private,não,backupDownload,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1437,DashboardController,private,não,backupExcluir,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1454,DashboardController,private,não,backupImportar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1467,DashboardController,private,não,backupRestaurar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1482,DashboardController,private,não,logsExportar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1495,DashboardController,private,não,baixasEstoque,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1509,DashboardController,private,não,produtosVsm,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1525,DashboardController,private,não,produtosPendencias,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1538,DashboardController,private,não,produtoPendenciaAcao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1573,DashboardController,private,não,divergenciaEstoque,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1586,DashboardController,private,não,divergenciaAcao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1606,DashboardController,private,não,simularBaixaTiny,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1632,DashboardController,private,não,simularProdutoVsm,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1665,DashboardController,private,não,simularEstoqueVsm,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1689,DashboardController,private,não,simularStatusVsm,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1714,DashboardController,private,não,salvarFluxos,,Salva/atualiza dados do módulo de dashboard.
+app/Controllers/DashboardController.php,1724,DashboardController,private,não,atualizarV12ProdutosVsm,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1756,DashboardController,private,não,atualizarV14HomologacaoReal,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1782,DashboardController,private,não,filaMorta,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1793,DashboardController,private,não,filaMortaReprocessar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1799,DashboardController,private,não,laboratorio,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1805,DashboardController,private,não,laboratorioExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1816,DashboardController,private,não,reconciliacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1823,DashboardController,private,não,reconciliacaoExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1831,DashboardController,private,não,metricas,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1839,DashboardController,private,não,selftest,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1846,DashboardController,private,não,selftestExecutar,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,1856,DashboardController,private,não,centralHomologacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1869,DashboardController,private,não,tinyV2Homologacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1881,DashboardController,private,não,tinyV2HomologacaoExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1894,DashboardController,private,não,tinyV3Homologacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1906,DashboardController,private,não,tinyV3HomologacaoExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1918,DashboardController,private,não,tinyAmbientes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1929,DashboardController,private,não,homologacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1938,DashboardController,private,não,homologacaoAcao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,1951,DashboardController,private,não,atualizarV16CorrecoesFinais,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,1977,DashboardController,private,não,atualizarV15HomologacaoFinal,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2002,DashboardController,private,não,validarBanco,,Valida dados/regras antes de concluir operação de dashboard.
+app/Controllers/DashboardController.php,2009,DashboardController,private,não,homologacaoRelatorio,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2021,DashboardController,private,não,columnExistsForUpdate,"string $table, string $column",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2028,DashboardController,private,não,safeAddColumn,"array &$mensagens, string $table, string $column, string $definition",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2034,DashboardController,private,não,atualizarV16Final,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2060,DashboardController,private,não,fichaTecnica100,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2071,DashboardController,private,não,segurancaAuditoria,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2080,DashboardController,private,não,segurancaExtrema,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2087,DashboardController,private,não,atualizarV22AuditoriaSeguranca,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2112,DashboardController,private,não,auditoriaExportarEnterprise,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2132,DashboardController,private,não,productionReadyV25,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2144,DashboardController,private,não,atualizarV25Final,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2167,DashboardController,private,não,productionReadyV24,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2176,DashboardController,private,não,vsmFichaTecnica,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2186,DashboardController,private,não,tinyV2FichaTecnica,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2195,DashboardController,private,não,filaAnalyticsV24,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2202,DashboardController,private,não,atualizarV24ProductionReady,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2225,DashboardController,private,não,auditoriaAssinarTrace,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2237,DashboardController,private,não,auditoriaExportarPdf,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2253,DashboardController,private,não,productionReadyV26,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2260,DashboardController,private,não,hostingInfinityFree,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2268,DashboardController,private,não,atualizarV26Ultimate,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2291,DashboardController,private,não,auditoriaHashChain,,Gera ou valida hash para integridade/idempotência em dashboard.
+app/Controllers/DashboardController.php,2309,DashboardController,private,não,integracoes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2320,DashboardController,private,não,regrasSincronizacao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2328,DashboardController,private,não,salvarRegrasSincronizacao,,Salva/atualiza dados do módulo de dashboard.
+app/Controllers/DashboardController.php,2361,DashboardController,private,não,atualizarV31RegrasSincronizacao,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2387,DashboardController,private,não,orquestracaoIntegracoes,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2398,DashboardController,private,não,salvarOrquestracaoIntegracoes,,Salva/atualiza dados do módulo de dashboard.
+app/Controllers/DashboardController.php,2479,DashboardController,private,não,testarOrquestracaoFluxo,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,2493,DashboardController,private,não,garantirEstruturaOrquestracao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2516,DashboardController,private,não,registrarHistoricoOrquestracao,"string $acao, string $status, string $mensagem, array $contexto = [], ?string $trace = null",Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2525,DashboardController,private,não,historicoOrquestracao,int $limit = 10,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DashboardController.php,2534,DashboardController,private,não,diffOrquestracao,"array $antes, array $depois",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2544,DashboardController,private,não,atualizarV38Orquestracao,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2563,DashboardController,private,não,homologacaoAutomatica,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2573,DashboardController,private,não,homologacaoAutomaticaExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2589,DashboardController,private,não,atualizadorSeguro,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2597,DashboardController,private,não,atualizadorSeguroExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2605,DashboardController,private,não,oauthV3Checklist,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2614,DashboardController,private,não,atualizarV23Seguranca2FA,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2629,DashboardController,private,não,relatorioProntidaoProducao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2637,DashboardController,private,não,fiscal,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2647,DashboardController,private,não,dashboardIntegridadeExecutar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2657,DashboardController,private,não,healthModulos,,Executa verificação de saúde/disponibilidade em dashboard.
+app/Controllers/DashboardController.php,2664,DashboardController,private,não,menuTestes,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,2671,DashboardController,private,não,fiscalReenviar,,Envia dados para integração/destino externo no módulo de dashboard.
+app/Controllers/DashboardController.php,2680,DashboardController,private,não,atualizarV43FiscalDashboardInstall,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2697,DashboardController,private,não,centralTecnica,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2703,DashboardController,private,não,bancosModulos,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2711,DashboardController,private,não,bancosModulosInstalar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2722,DashboardController,private,não,produtosPendentesIntegracao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2741,DashboardController,private,não,produtoPendenteIntegracaoComparar,,Converte/mapeia dados entre formatos do módulo de dashboard.
+app/Controllers/DashboardController.php,2754,DashboardController,private,não,produtoPendenteIntegracaoAcao,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2805,DashboardController,private,não,categoriasMapeamento,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2820,DashboardController,private,não,categoriaMapeamentoSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2846,DashboardController,private,não,atualizarV45GovernancaProdutoVsm,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2873,DashboardController,private,não,vsmEndpoints,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2883,DashboardController,private,não,vsmEndpointSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2890,DashboardController,private,não,vsmEndpointTestar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2900,DashboardController,private,não,vsmCampos,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2908,DashboardController,private,não,vsmCampoSalvar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2915,DashboardController,private,não,vsmSaude,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2922,DashboardController,private,não,vsmLogs,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2929,DashboardController,private,não,vsmTestes,,Executa teste/diagnóstico controlado do módulo de dashboard.
+app/Controllers/DashboardController.php,2936,DashboardController,private,não,atualizarV48VsmConfiguravel,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2945,DashboardController,private,não,sobre,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2953,DashboardController,private,não,atualizarV53EnterpriseStabilization,,"Atualiza cadastro, status ou estrutura no módulo de dashboard."
+app/Controllers/DashboardController.php,2969,DashboardController,private,não,producaoReady,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,2977,DashboardController,private,não,securityCenter,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,3023,DashboardController,private,não,securityFim,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,3029,DashboardController,private,não,securityFimGerar,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,3037,DashboardController,private,não,securityScore,,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardController.
+app/Controllers/DashboardController.php,3044,DashboardController,private,não,securityAuditSign,,Registra ou consulta auditoria/histórico de dashboard.
+app/Controllers/DatabaseMaintenanceController.php,3,DatabaseMaintenanceController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/DatabaseMaintenanceController.php,10,DatabaseMaintenanceController,public,sim,routes,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseMaintenanceController.
+app/Controllers/DatabaseMaintenanceController.php,11,DatabaseMaintenanceController,private,não,validarBanco,,Valida dados/regras antes de concluir operação de banco de dados.
+app/Controllers/DatabaseMaintenanceController.php,17,DatabaseMaintenanceController,private,não,healthModulos,,Executa verificação de saúde/disponibilidade em banco de dados.
+app/Controllers/DatabaseMaintenanceController.php,23,DatabaseMaintenanceController,private,não,updateLegadoBloqueado,string $page,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseMaintenanceController.
+app/Controllers/DivergenceMonitorController.php,3,DivergenceMonitorController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/DivergenceMonitorController.php,12,DivergenceMonitorController,public,sim,routes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe DivergenceMonitorController.
+app/Controllers/DivergenceMonitorController.php,13,DivergenceMonitorController,public,não,index,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe DivergenceMonitorController.
+app/Controllers/DivergenceMonitorController.php,32,DivergenceMonitorController,private,não,acao,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe DivergenceMonitorController.
+app/Controllers/EstoqueController.php,3,EstoqueController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/EstoqueController.php,21,EstoqueController,private,não,dashboard,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,38,EstoqueController,private,não,config,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,45,EstoqueController,private,não,salvarConfig,,Salva/atualiza dados do módulo de estoque.
+app/Controllers/EstoqueController.php,79,EstoqueController,private,não,alertas,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,91,EstoqueController,private,não,skuHistorico,,Registra ou consulta auditoria/histórico de estoque.
+app/Controllers/EstoqueController.php,103,EstoqueController,private,não,executarConsultaVsm,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,118,EstoqueController,private,não,consultasVsm,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,127,EstoqueController,private,não,consultaVsmResultados,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EstoqueController.php,147,EstoqueController,private,não,testarConsultaVsmSku,,Executa teste/diagnóstico controlado do módulo de estoque.
+app/Controllers/EstoqueController.php,164,EstoqueController,private,não,reconciliarAgora,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueController.
+app/Controllers/EvidenceController.php,3,EvidenceController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/EvidenceController.php,11,EvidenceController,public,sim,routes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe EvidenceController.
+app/Controllers/EvidenceController.php,12,EvidenceController,public,não,index,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe EvidenceController.
+app/Controllers/EvidenceController.php,22,EvidenceController,public,não,trace,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe EvidenceController.
+app/Controllers/FilaController.php,3,FilaController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/FilaController.php,4,FilaController,public,sim,routes,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe FilaController.
+app/Controllers/FilaController.php,5,FilaController,public,não,index,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe FilaController.
+app/Controllers/FilaController.php,6,FilaController,public,não,reprocessar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe FilaController.
+app/Controllers/FilaController.php,7,FilaController,public,não,criarTeste,,Executa teste/diagnóstico controlado do módulo de controle de telas/rotas.
+app/Controllers/FiscalController.php,3,FiscalController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/FiscalController.php,14,FiscalController,public,sim,routes,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,15,FiscalController,public,não,index,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,29,FiscalController,public,não,dashboardFiscal,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,30,FiscalController,public,não,xml,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,31,FiscalController,public,não,timeline,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,32,FiscalController,public,não,reconciliacao,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalController.
+app/Controllers/FiscalController.php,33,FiscalController,public,não,health,,Executa verificação de saúde/disponibilidade em fiscal/NF-e.
+app/Controllers/FiscalController.php,34,FiscalController,public,não,reenviar,,Envia dados para integração/destino externo no módulo de fiscal/NF-e.
+app/Controllers/HomologacaoController.php,8,HomologacaoController,public,sim,routes,,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe HomologacaoController.
+app/Controllers/LoginController.php,3,LoginController,public,não,form,,Renderiza o formulário/tela correspondente.
+app/Controllers/LoginController.php,4,LoginController,public,não,login,,"Processa autenticação do usuário com senha, sessão, rate limit e 2FA quando aplicável."
+app/Controllers/LoginController.php,20,LoginController,public,não,logout,,Encerra a sessão atual do usuário.
+app/Controllers/MigrationController.php,3,MigrationController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/MigrationController.php,11,MigrationController,private,não,index,,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MigrationController.
+app/Controllers/MigrationController.php,20,MigrationController,private,não,apply,,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MigrationController.
+app/Controllers/MigrationController.php,44,MigrationController,private,não,legacyBlocked,string $page,Bloqueia operação insegura ou não autorizada em migrações.
+app/Controllers/OperationCenterController.php,3,OperationCenterController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/OperationCenterController.php,12,OperationCenterController,public,sim,routes,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterController.
+app/Controllers/OperationCenterController.php,13,OperationCenterController,public,não,centro,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterController.
+app/Controllers/OperationCenterController.php,24,OperationCenterController,public,não,alertas,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterController.
+app/Controllers/OperationCenterController.php,30,OperationCenterController,public,não,dashboardExecutivo,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterController.
+app/Controllers/PedidoController.php,3,PedidoController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/PedidoController.php,4,PedidoController,public,sim,routes,,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoController.
+app/Controllers/PedidoController.php,5,PedidoController,public,não,index,,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoController.
+app/Controllers/PedidoController.php,15,PedidoController,public,não,detalhe,,Carrega os detalhes completos de um registro.
+app/Controllers/ProductionGoLiveController.php,3,ProductionGoLiveController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/ProductionGoLiveController.php,12,ProductionGoLiveController,private,não,index,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ProductionGoLiveController.
+app/Controllers/ProductionGoLiveController.php,21,ProductionGoLiveController,private,não,validar,,"Valida payload, banco, regra, arquivo ou configuração."
+app/Controllers/ProductionGoLiveController.php,28,ProductionGoLiveController,private,não,lockInstall,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe ProductionGoLiveController.
+app/Controllers/ProdutoController.php,3,ProdutoController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/ProdutoController.php,4,ProdutoController,public,sim,routes,,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoController.
+app/Controllers/ProdutoController.php,5,ProdutoController,public,não,index,,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoController.
+app/Controllers/ProdutoController.php,6,ProdutoController,public,não,pendencias,,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoController.
+app/Controllers/PwaController.php,3,PwaController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/SistemaController.php,7,SistemaController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/SistemaController.php,16,SistemaController,private,não,sobre,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe SistemaController.
+app/Controllers/SistemaController.php,24,SistemaController,private,não,tutorialSistema,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe SistemaController.
+app/Controllers/TinyController.php,8,TinyController,public,sim,routes,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyController.
+app/Controllers/TinyHomologacaoController.php,3,TinyHomologacaoController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/TinyHomologacaoController.php,13,TinyHomologacaoController,public,sim,routes,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologacaoController.
+app/Controllers/TinyHomologacaoController.php,14,TinyHomologacaoController,private,não,v2,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologacaoController.
+app/Controllers/TinyHomologacaoController.php,26,TinyHomologacaoController,private,não,v2Executar,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologacaoController.
+app/Controllers/TinyHomologacaoController.php,36,TinyHomologacaoController,private,não,v3,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologacaoController.
+app/Controllers/TinyHomologacaoController.php,48,TinyHomologacaoController,private,não,v3Executar,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologacaoController.
+app/Controllers/VsmController.php,8,VsmController,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Controllers/VsmController.php,25,VsmController,private,não,endpoints,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,35,VsmController,private,não,endpointSalvar,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,45,VsmController,private,não,endpointTestar,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,56,VsmController,private,não,campos,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,66,VsmController,private,não,campoSalvar,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,73,VsmController,private,não,saude,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,79,VsmController,private,não,logs,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmController.
+app/Controllers/VsmController.php,85,VsmController,private,não,testes,,Executa teste/diagnóstico controlado do módulo de VSM.
+app/Controllers/VsmController.php,91,VsmController,private,não,atualizarV48,,"Atualiza cadastro, status ou estrutura no módulo de VSM."
+app/Controllers/VsmController.php,93,VsmController,private,não,atualizarV49,,"Atualiza cadastro, status ou estrutura no módulo de VSM."
+app/Core/App.php,3,App,public,sim,cspNonce,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,7,App,public,sim,config,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,14,App,public,sim,env,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,15,App,public,sim,isLocal,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,16,App,public,sim,isProduction,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,17,App,public,sim,isPublicHost,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,22,App,public,sim,enforceProductionSafety,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,30,App,public,sim,sendSecurityHeaders,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/App.php,51,App,public,sim,setupErrors,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe App.
+app/Core/Auth.php,5,Auth,public,sim,check,,"Verifica se uma condição de autenticação, permissão ou saúde está válida."
+app/Core/Auth.php,6,Auth,public,sim,user,,Retorna dados do usuário logado ou relacionado à sessão.
+app/Core/Auth.php,8,Auth,public,sim,requireLogin,,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,40,Auth,private,sim,fingerprintHash,,Gera ou valida hash para integridade/idempotência em autenticação/sessão.
+app/Core/Auth.php,47,Auth,private,sim,tooManyAttempts,"string $email, ?string $ip",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,67,Auth,public,sim,requirePerfil,array $perfis,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,75,Auth,public,sim,pendingTwoFactorInfo,,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,92,Auth,private,sim,startPending2fa,"array $u, string $secret, bool $setupRequired=false",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,102,Auth,public,sim,completeTwoFactor,string $codigo2fa,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,119,Auth,public,sim,login,"string $email, string $senha, ?string $codigo2fa=null","Processa autenticação do usuário com senha, sessão, rate limit e 2FA quando aplicável."
+app/Core/Auth.php,179,Auth,private,sim,finalizeLogin,array $u,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe Auth.
+app/Core/Auth.php,193,Auth,public,sim,logout,,Encerra a sessão atual do usuário.
+app/Core/Csrf.php,3,Csrf,public,sim,token,,Gere/valida/consulta token seguro no módulo de CSRF.
+app/Core/Csrf.php,9,Csrf,public,sim,input,,Função auxiliar do domínio de CSRF; usada para apoiar regras internas da classe Csrf.
+app/Core/Csrf.php,12,Csrf,public,sim,field,,Função auxiliar do domínio de CSRF; usada para apoiar regras internas da classe Csrf.
+app/Core/Csrf.php,15,Csrf,public,sim,validate,,Valida dados recebidos antes de executar a regra de negócio.
+app/Core/Database.php,6,Database,public,sim,getConnection,?string $module = null,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,10,Database,public,sim,connection,string $module = 'core',Abre/retorna conexão com banco de dados.
+app/Core/Database.php,30,Database,public,sim,serverConnection,?string $module = null,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,40,Database,public,sim,moduleConfig,"array $cfg, string $module = 'core'",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,54,Database,public,sim,modules,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,61,Database,public,sim,tableModule,string $table,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,75,Database,public,sim,forTable,string $table,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,80,Database,public,sim,tableExists,string $table,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,85,Database,public,sim,columnExists,"string $table, string $column",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,90,Database,public,sim,tableConnectionForSql,string $sql,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Database.php,97,Database,private,sim,normalizeModule,string $module,Padroniza formato de dados usado por banco de dados.
+app/Core/Database.php,102,Database,private,sim,handleConnectionError,"PDOException $e, array $db, string $module",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe Database.
+app/Core/Helpers.php,2,global,public/global,não,e,$v,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+app/Core/Helpers.php,3,global,public/global,não,redirect,$url,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+app/Core/Helpers.php,4,global,public/global,não,cfg,$key=null,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+app/Core/RequestContext.php,5,RequestContext,public,sim,id,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,13,RequestContext,public,sim,clientTraceId,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,20,RequestContext,public,sim,userId,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,27,RequestContext,public,sim,ip,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,33,RequestContext,public,sim,ipForAudit,,Registra ou consulta auditoria/histórico de utilitário/core.
+app/Core/RequestContext.php,35,RequestContext,public,sim,ipPrefix,?string $ip=null,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,46,RequestContext,public,sim,userAgent,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,47,RequestContext,public,sim,route,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Core/RequestContext.php,48,RequestContext,public,sim,method,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe RequestContext.
+app/Legacy/Controllers/V50Controller.php,3,V50Controller,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Legacy/Controllers/V50Controller.php,18,V50Controller,private,não,tinyValidacao,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,25,V50Controller,private,não,tinyValidacaoExecutar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,31,V50Controller,private,não,vsmSimulador,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,37,V50Controller,private,não,vsmSimuladorExecutar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,43,V50Controller,private,não,producaoSegura,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,48,V50Controller,private,não,producaoSeguraExecutar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,54,V50Controller,private,não,limpezaRetencao,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,59,V50Controller,private,não,limpezaRetencaoExecutar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V50Controller.
+app/Legacy/Controllers/V50Controller.php,66,V50Controller,private,não,atualizarV50,,"Atualiza cadastro, status ou estrutura no módulo de controle de telas/rotas."
+app/Legacy/Controllers/V51Controller.php,3,V51Controller,public,não,dispatch,string $page,Recebe a rota solicitada e direciona para a ação correta do controller.
+app/Legacy/Controllers/V51Controller.php,19,V51Controller,private,não,produtoNovoPolitica,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,20,V51Controller,private,não,produtoNovoPoliticaSalvar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,21,V51Controller,private,não,pedidosValidacao,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,22,V51Controller,private,não,pedidoValidacaoDetalhe,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,23,V51Controller,private,não,pedidoValidacaoEnfileirar,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,24,V51Controller,private,não,pedidoCicloVida,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,25,V51Controller,private,não,pedidoCicloDetalhe,,Função auxiliar do domínio de controle de telas/rotas; usada para apoiar regras internas da classe V51Controller.
+app/Legacy/Controllers/V51Controller.php,26,V51Controller,private,não,pedidoCicloEnviarTiny,,Envia dados para integração/destino externo no módulo de controle de telas/rotas.
+app/Legacy/Controllers/V51Controller.php,27,V51Controller,private,não,atualizarV52,,"Atualiza cadastro, status ou estrutura no módulo de controle de telas/rotas."
+app/Legacy/Controllers/V51Controller.php,28,V51Controller,private,não,atualizarV51,,"Atualiza cadastro, status ou estrutura no módulo de controle de telas/rotas."
+app/Services/Audit.php,3,Audit,public,sim,event,"string $acao, string $status='sucesso', array $data=[]",Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe Audit.
+app/Services/Audit.php,30,Audit,public,sim,exception,"Throwable $e, string $acao='exception', array $extra=[]",Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe Audit.
+app/Services/Audit.php,37,Audit,public,sim,json,$v,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe Audit.
+app/Services/AuditDailySignatureService.php,3,AuditDailySignatureService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/AuditDailySignatureService.php,20,AuditDailySignatureService,public,sim,sign,?string $date=null,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditDailySignatureService.
+app/Services/AuditDailySignatureService.php,45,AuditDailySignatureService,public,sim,latest,int $limit=10,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditDailySignatureService.
+app/Services/AuditDailySignatureService.php,50,AuditDailySignatureService,private,sim,key,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditDailySignatureService.
+app/Services/AuditIntegrityService.php,8,AuditIntegrityService,public,sim,assinarEvento,int $auditoriaId,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditIntegrityService.php,26,AuditIntegrityService,public,sim,assinarTrace,string $traceId,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditIntegrityService.php,35,AuditIntegrityService,public,sim,verificarTrace,string $traceId,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditIntegrityService.php,50,AuditIntegrityService,private,sim,ultimoHashAntes,"int $eventoId, string $traceId",Gera ou valida hash para integridade/idempotência em auditoria.
+app/Services/AuditIntegrityService.php,60,AuditIntegrityService,private,sim,canonicalize,array $ev,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditIntegrityService.php,66,AuditIntegrityService,private,sim,ensureChainColumns,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditIntegrityService.php,80,AuditIntegrityService,private,sim,tableExists,string $table,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditIntegrityService.
+app/Services/AuditTimelineService.php,3,AuditTimelineService,public,sim,registrar,"string $fase, string $status='info', array $dados=[]","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/AuditTimelineService.php,6,AuditTimelineService,public,sim,porTrace,string $trace,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe AuditTimelineService.
+app/Services/AuthRepository.php,3,AuthRepository,public,sim,pdo,,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,5,AuthRepository,public,sim,userByEmail,string $email,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,12,AuthRepository,public,sim,userById,int $id,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,19,AuthRepository,public,sim,sessionVersion,int $id,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,26,AuthRepository,public,sim,countFailedByIp,"string $ip, string $intervalSql",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,32,AuthRepository,public,sim,countFailedByEmail,"string $email, string $intervalSql",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,38,AuthRepository,public,sim,insertAttempt,"string $email, ?string $ip, int $success, string $message",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,42,AuthRepository,public,sim,save2faSecret,"int $id, string $encryptedSecret, bool $enable=true",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,50,AuthRepository,public,sim,mark2faVerified,int $id,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,54,AuthRepository,public,sim,markSuccess,int $id,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AuthRepository.php,58,AuthRepository,public,sim,markFailure,"array $u, int $maxTentativas, int $lockSeconds",Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe AuthRepository.
+app/Services/AutoHomologationService.php,7,AutoHomologationService,public,não,__construct,?PDO $pdo = null,Inicializa dependências internas de AutoHomologationService.
+app/Services/AutoHomologationService.php,13,AutoHomologationService,public,não,executar,bool $liberarSeAprovado = false,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/AutoHomologationService.php,68,AutoHomologationService,private,não,garantirEstrutura,,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/AutoHomologationService.php,90,AutoHomologationService,private,não,salvarRelatorio,array $relatorio,Salva/atualiza dados do módulo de homologação.
+app/Services/AutoHomologationService.php,101,AutoHomologationService,private,não,htmlRelatorio,array $r,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/AutoHomologationService.php,109,AutoHomologationService,private,não,item,"string $nome, string $status, string $mensagem, string $acao = '', array $contexto = []",Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/AutoHomologationService.php,113,AutoHomologationService,private,não,testeBanco,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,124,AutoHomologationService,private,não,testeConfiguracoesTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,133,AutoHomologationService,private,não,testeOAuthTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,142,AutoHomologationService,private,não,testeProdutoTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,153,AutoHomologationService,private,não,testeEstoqueTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,164,AutoHomologationService,private,não,testePedidoTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,175,AutoHomologationService,private,não,testeLogsTinyV3,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,183,AutoHomologationService,private,não,testeConfiguracoesVsm,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,192,AutoHomologationService,private,não,testeFila,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,199,AutoHomologationService,private,não,testeAuditoria,,Executa teste/diagnóstico controlado do módulo de homologação.
+app/Services/AutoHomologationService.php,208,AutoHomologationService,private,não,tabelaExiste,string $t,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/AutoHomologationService.php,213,AutoHomologationService,private,não,marcarChecklistBase,,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/AutoHomologationService.php,219,AutoHomologationService,public,sim,diagnosticarErroOAuth,array $query,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe AutoHomologationService.
+app/Services/BackupService.php,16,BackupService,private,sim,buildSql,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupService.
+app/Services/BackupService.php,38,BackupService,public,sim,gerarSql,,"Gera artefato, relatório, chave ou arquivo no módulo de backups."
+app/Services/BackupService.php,49,BackupService,public,sim,gerarZip,,"Gera artefato, relatório, chave ou arquivo no módulo de backups."
+app/Services/BackupService.php,74,BackupService,private,sim,registrar,"string $file, string $msg","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/BackupService.php,81,BackupService,public,sim,importarUpload,array $file,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupService.
+app/Services/BackupService.php,108,BackupService,public,sim,restaurarPorId,"int $id, string $confirmacao",Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupService.
+app/Services/BackupService.php,132,BackupService,private,sim,extrairSqlDoBackup,string $file,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupService.
+app/Services/BackupService.php,154,BackupService,private,sim,validarManifestoRestore,"string $file, string $sql",Valida dados/regras antes de concluir operação de backups.
+app/Services/BackupService.php,168,BackupService,private,sim,executarSqlSeguro,"PDO $pdo, string $sql",Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupService.
+app/Services/BackupService.php,200,BackupService,private,sim,validarStatementRestore,string $stmt,Valida dados/regras antes de concluir operação de backups.
+app/Services/BackupService.php,207,BackupService,public,sim,limparAntigos,int $dias=30,Converte/mapeia dados entre formatos do módulo de backups.
+app/Services/BackupSignatureService.php,3,BackupSignatureService,private,sim,key,,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupSignatureService.
+app/Services/BackupSignatureService.php,13,BackupSignatureService,public,sim,signaturePath,string $file,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupSignatureService.
+app/Services/BackupSignatureService.php,14,BackupSignatureService,public,sim,sign,string $file,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupSignatureService.
+app/Services/BackupSignatureService.php,28,BackupSignatureService,public,sim,verify,string $file,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupSignatureService.
+app/Services/BackupTrustService.php,3,BackupTrustService,public,sim,score,?string $file=null,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe BackupTrustService.
+app/Services/CircuitBreakerService.php,3,CircuitBreakerService,private,sim,policy,string $sistema,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CircuitBreakerService.
+app/Services/CircuitBreakerService.php,12,CircuitBreakerService,public,sim,permitir,string $sistema,Autoriza operação conforme configuração/regra de regra de negócio/serviço.
+app/Services/CircuitBreakerService.php,27,CircuitBreakerService,public,sim,sucesso,string $sistema,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CircuitBreakerService.
+app/Services/CircuitBreakerService.php,31,CircuitBreakerService,public,sim,falha,"string $sistema, string $mensagem",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CircuitBreakerService.
+app/Services/CircuitBreakerService.php,53,CircuitBreakerService,private,sim,isTransientFailure,string $mensagem,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CircuitBreakerService.
+app/Services/CodeAuditService.php,3,CodeAuditService,public,sim,analisar,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeAuditService.
+app/Services/CodeExecutionAuditService.php,9,CodeExecutionAuditService,public,sim,scan,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CodeExecutionAuditService.php,62,CodeExecutionAuditService,public,sim,enforceNoOsExecution,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CodeExecutionAuditService.php,70,CodeExecutionAuditService,private,sim,phpFiles,string $root,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CodeExecutionAuditService.php,82,CodeExecutionAuditService,private,sim,shellDisabledOk,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CodeExecutionAuditService.php,88,CodeExecutionAuditService,private,sim,shouldKeepDetail,string $rel,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CodeExecutionAuditService.php,89,CodeExecutionAuditService,private,sim,hit,"string $tipo, string $classe, string $arquivo, int $linha, string $codigo, string $analise",Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe CodeExecutionAuditService.
+app/Services/CryptoService.php,5,CryptoService,private,sim,key,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CryptoService.
+app/Services/CryptoService.php,15,CryptoService,public,sim,isEncrypted,?string $value,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CryptoService.
+app/Services/CryptoService.php,19,CryptoService,private,sim,aad,?string $context=null,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CryptoService.
+app/Services/CryptoService.php,21,CryptoService,public,sim,encrypt,"?string $plain, ?string $context=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CryptoService.
+app/Services/CryptoService.php,38,CryptoService,public,sim,decrypt,"?string $value, ?string $context=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CryptoService.
+app/Services/CspReportService.php,3,CspReportService,public,sim,handle,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe CspReportService.
+app/Services/CspReportService.php,12,CspReportService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/DashboardIntegrityService.php,3,DashboardIntegrityService,public,sim,checks,bool $deep = false,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardIntegrityService.
+app/Services/DashboardIntegrityService.php,47,DashboardIntegrityService,private,sim,deepQuery,"string $item, string $table, string $sql",Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardIntegrityService.
+app/Services/DashboardIntegrityService.php,51,DashboardIntegrityService,public,sim,summary,array $checks,Função auxiliar do domínio de dashboard; usada para apoiar regras internas da classe DashboardIntegrityService.
+app/Services/DatabaseInventoryService.php,7,DatabaseInventoryService,public,sim,classify,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseInventoryService.
+app/Services/DatabaseInventoryService.php,23,DatabaseInventoryService,private,sim,tables,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseInventoryService.
+app/Services/DatabaseInventoryService.php,36,DatabaseInventoryService,private,sim,moduleOf,string $table,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseInventoryService.
+app/Services/DatabaseInventoryService.php,37,DatabaseInventoryService,private,sim,resumo,array $items,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseInventoryService.
+app/Services/DatabaseValidationService.php,6,DatabaseValidationService,public,não,__construct,?PDO $pdo=null,Inicializa dependências internas de DatabaseValidationService.
+app/Services/DatabaseValidationService.php,11,DatabaseValidationService,public,não,executar,,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/DatabaseValidationService.php,39,DatabaseValidationService,private,não,checkConexao,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,48,DatabaseValidationService,private,não,checkTabelas,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,57,DatabaseValidationService,private,não,checkColunasCriticas,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,85,DatabaseValidationService,private,não,checkIndicesCriticos,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,101,DatabaseValidationService,private,não,checkPermissoesCriticas,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,113,DatabaseValidationService,private,não,checkTinyV3,array &$checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,124,DatabaseValidationService,private,não,tableExists,string $table,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,132,DatabaseValidationService,private,não,columnExists,"string $table,string $column",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,140,DatabaseValidationService,private,não,indexExists,"string $table,string $index",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,148,DatabaseValidationService,private,não,item,"string $status,string $titulo,string $mensagem,string $acao",Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DatabaseValidationService.php,149,DatabaseValidationService,private,não,statusFinal,array $checks,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe DatabaseValidationService.
+app/Services/DeadLetterQueueService.php,3,DeadLetterQueueService,public,sim,enviar,"array $item, array $retorno=[], ?string $codigoErro=null, ?string $motivo=null",Envia dados para integração/destino externo no módulo de regra de negócio/serviço.
+app/Services/DeadLetterQueueService.php,23,DeadLetterQueueService,public,sim,reprocessar,int $dlqId,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe DeadLetterQueueService.
+app/Services/DiagnosticoApiService.php,3,DiagnosticoApiService,public,sim,registrar,"string $sistema, ?string $endpoint, string $status, ?int $httpCode, ?int $tempoMs, string $mensagem, $detalhes=null","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/DiagnosticoApiService.php,23,DiagnosticoApiService,public,sim,ultimos,int $limite=30,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe DiagnosticoApiService.
+app/Services/DiagnosticoApiService.php,33,DiagnosticoApiService,public,sim,ultimoPorSistema,string $sistema,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe DiagnosticoApiService.
+app/Services/EnterpriseAuditHashChainService.php,3,EnterpriseAuditHashChainService,public,sim,assinarProximos,int $limite=500,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe EnterpriseAuditHashChainService.
+app/Services/EnterpriseAuditHashChainService.php,20,EnterpriseAuditHashChainService,public,sim,validar,,"Valida payload, banco, regra, arquivo ou configuração."
+app/Services/EnterpriseAuditHashChainService.php,32,EnterpriseAuditHashChainService,private,sim,garantirTabela,PDO $pdo,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe EnterpriseAuditHashChainService.
+app/Services/EnterpriseV26ReadinessService.php,3,EnterpriseV26ReadinessService,public,sim,resumo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe EnterpriseV26ReadinessService.
+app/Services/ErrorCatalog.php,3,ErrorCatalog,public,sim,explain,"string $code, string $message=''",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ErrorCatalog.
+app/Services/EstoqueEnterpriseService.php,3,EstoqueEnterpriseService,public,sim,config,,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueEnterpriseService.php,24,EstoqueEnterpriseService,public,sim,salvarConfig,array $dados,Salva/atualiza dados do módulo de estoque.
+app/Services/EstoqueEnterpriseService.php,30,EstoqueEnterpriseService,public,sim,registrarAlerta,"string $sku, string $tipo, string $mensagem, string $severidade='alerta', array $ctx=[]",Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueEnterpriseService.php,36,EstoqueEnterpriseService,public,sim,enfileirarEstoque,"string $origem, string $destino, string $sku, float $quantidade, array $payload=[]",Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueEnterpriseService.php,52,EstoqueEnterpriseService,public,sim,extrairEstoque,"array $payload, string $origem",Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueEnterpriseService.php,62,EstoqueEnterpriseService,public,sim,eventoJaProcessado,"string $origem, string $referencia, string $sku, string $tipo",Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueEnterpriseService.php,74,EstoqueEnterpriseService,public,sim,receberAtualizacao,"string $origem, array $payload, string $raw=''",Recebe e normaliza dados externos no módulo de estoque.
+app/Services/EstoqueEnterpriseService.php,95,EstoqueEnterpriseService,public,sim,auditarSku,"string $sku, string $evento, ?string $statusAnterior, ?string $statusNovo, ?float $saldoAnterior, ?float $saldoNovo, string $origem, string $mensagem, array $ctx=[]",Registra ou consulta auditoria/histórico de estoque.
+app/Services/EstoqueEnterpriseService.php,102,EstoqueEnterpriseService,public,sim,criarReconciliacaoManual,,"Cria registro, payload ou recurso do módulo de estoque."
+app/Services/EstoqueEnterpriseService.php,113,EstoqueEnterpriseService,public,sim,proximaTentativa,int $tentativa,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueEnterpriseService.
+app/Services/EstoqueMapper.php,3,EstoqueMapper,private,sim,pick,"array $arr, array $keys, $default=''",Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueMapper.
+app/Services/EstoqueMapper.php,5,EstoqueMapper,public,sim,extrairItensBaixa,array $payload,Função auxiliar do domínio de estoque; usada para apoiar regras internas da classe EstoqueMapper.
+app/Services/EstoqueMapper.php,33,EstoqueMapper,public,sim,tinyEventoParaVsmBaixa,array $payload,Converte/mapeia dados entre formatos do módulo de estoque.
+app/Services/EstoqueVsmSchedulerService.php,8,EstoqueVsmSchedulerService,public,sim,config,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,28,EstoqueVsmSchedulerService,public,sim,deveExecutar,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,52,EstoqueVsmSchedulerService,public,sim,criarExecucao,string $modo='automatico',"Cria registro, payload ou recurso do módulo de VSM."
+app/Services/EstoqueVsmSchedulerService.php,60,EstoqueVsmSchedulerService,public,sim,produtosParaConsulta,int $limite,Converte/mapeia dados entre formatos do módulo de VSM.
+app/Services/EstoqueVsmSchedulerService.php,86,EstoqueVsmSchedulerService,public,sim,executarConsultaProgramada,"bool $forcar=false, ?int $limiteOverride=null, string $modo='automatico'",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,154,EstoqueVsmSchedulerService,private,sim,adquirirLock,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,162,EstoqueVsmSchedulerService,private,sim,liberarLock,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,167,EstoqueVsmSchedulerService,private,sim,consultarEstoqueVSM,"$client, string $sku",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,172,EstoqueVsmSchedulerService,public,sim,extrairSaldo,array $ret,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,188,EstoqueVsmSchedulerService,private,sim,getPath,"$arr, array $path",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,194,EstoqueVsmSchedulerService,private,sim,findNumericByKeys,"$data, array $keys",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,203,EstoqueVsmSchedulerService,private,sim,saldoCache,string $sku,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/EstoqueVsmSchedulerService.php,208,EstoqueVsmSchedulerService,private,sim,atualizarCacheVSM,"string $sku, float $saldo, array $ret","Atualiza cadastro, status ou estrutura no módulo de VSM."
+app/Services/EstoqueVsmSchedulerService.php,218,EstoqueVsmSchedulerService,private,sim,registrarResultado,"int $execId, string $sku, string $status, ?float $saldo, $saldoAnterior, bool $alterou, array $ret, ?string $erro",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe EstoqueVsmSchedulerService.
+app/Services/FileIntegrityService.php,3,FileIntegrityService,public,sim,manifestPath,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,4,FileIntegrityService,public,sim,criticalFiles,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,12,FileIntegrityService,public,sim,buildManifest,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,20,FileIntegrityService,private,sim,hmacKey,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,27,FileIntegrityService,private,sim,signFiles,array $files,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,32,FileIntegrityService,public,sim,saveManifest,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe FileIntegrityService.
+app/Services/FileIntegrityService.php,36,FileIntegrityService,public,sim,check,,"Verifica se uma condição de autenticação, permissão ou saúde está válida."
+app/Services/FiscalEnterpriseService.php,3,FiscalEnterpriseService,public,sim,dashboard,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,18,FiscalEnterpriseService,public,sim,timeline,int $notaId,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,32,FiscalEnterpriseService,public,sim,xmls,string $status='',Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,40,FiscalEnterpriseService,public,sim,reconciliacao,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,51,FiscalEnterpriseService,public,sim,health,,Executa verificação de saúde/disponibilidade em fiscal/NF-e.
+app/Services/FiscalEnterpriseService.php,62,FiscalEnterpriseService,public,sim,proximaTentativa,int $tentativa,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,74,FiscalEnterpriseService,public,sim,registrarStatus,"int $notaId, string $novo, ?string $anterior=null, string $motivo=''",Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalEnterpriseService.php,82,FiscalEnterpriseService,public,sim,reprocessar,int $integracaoId,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalEnterpriseService.
+app/Services/FiscalIntegrationService.php,3,FiscalIntegrationService,public,sim,resumo,,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalIntegrationService.
+app/Services/FiscalIntegrationService.php,20,FiscalIntegrationService,public,sim,registrarEvento,"int $notaId, string $tipo, string $mensagem = '', array $payload = []",Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalIntegrationService.
+app/Services/FiscalIntegrationService.php,26,FiscalIntegrationService,public,sim,listar,"string $status = '', int $limit = 100","Lista registros para tela, relatório ou API."
+app/Services/FiscalIntegrationService.php,33,FiscalIntegrationService,public,sim,pendenciarEnvioVsm,"int $notaId, string $chave = ''",Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalIntegrationService.
+app/Services/FiscalIntegrationService.php,41,FiscalIntegrationService,public,sim,marcarReenvio,int $integracaoId,Função auxiliar do domínio de fiscal/NF-e; usada para apoiar regras internas da classe FiscalIntegrationService.
+app/Services/HealthCheckService.php,3,HealthCheckService,public,sim,run,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe HealthCheckService.
+app/Services/HealthCheckService.php,25,HealthCheckService,public,sim,testarVsm,array $cfg,Executa teste/diagnóstico controlado do módulo de health check.
+app/Services/HealthCheckService.php,90,HealthCheckService,private,sim,check,"string $nome, bool $ok, string $detalhe, string $acao","Verifica se uma condição de autenticação, permissão ou saúde está válida."
+app/Services/HomologationReportService.php,3,HomologationReportService,public,sim,gerarHtml,PDO $pdo,"Gera artefato, relatório, chave ou arquivo no módulo de homologação."
+app/Services/HostingCompatibilityService.php,3,HostingCompatibilityService,public,sim,ambiente,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe HostingCompatibilityService.
+app/Services/InstallationPrecheckService.php,3,InstallationPrecheckService,public,sim,run,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe InstallationPrecheckService.
+app/Services/InstallationPrecheckService.php,21,InstallationPrecheckService,private,sim,dirWritable,string $path,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe InstallationPrecheckService.
+app/Services/InstallationPrecheckService.php,22,InstallationPrecheckService,public,sim,score,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe InstallationPrecheckService.
+app/Services/InstallationRecoveryService.php,3,InstallationRecoveryService,public,sim,status,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe InstallationRecoveryService.
+app/Services/IntegrationConfig.php,3,IntegrationConfig,public,sim,get,,"Lê configuração, registro ou valor persistido."
+app/Services/IntegrationOrchestratorService.php,35,IntegrationOrchestratorService,public,sim,catalogoFluxos,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationOrchestratorService.php,95,IntegrationOrchestratorService,public,sim,keys,,Retorna a lista de chaves oficiais aceitas pelo serviço.
+app/Services/IntegrationOrchestratorService.php,101,IntegrationOrchestratorService,public,sim,all,,"Retorna coleção completa de configurações, regras ou registros."
+app/Services/IntegrationOrchestratorService.php,110,IntegrationOrchestratorService,public,sim,normalizarOrdem,string $ordem,Padroniza formato de dados usado por regra de negócio/serviço.
+app/Services/IntegrationOrchestratorService.php,119,IntegrationOrchestratorService,public,sim,ordemLista,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationOrchestratorService.php,121,IntegrationOrchestratorService,public,sim,catalogoOrdem,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationOrchestratorService.php,127,IntegrationOrchestratorService,public,sim,label,string $key,Converte chave técnica em rótulo legível para a interface.
+app/Services/IntegrationOrchestratorService.php,158,IntegrationOrchestratorService,public,sim,gruposFluxos,array $cfg=[],Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationOrchestratorService.php,170,IntegrationOrchestratorService,public,sim,fluxos,array $rules = [],Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationOrchestratorService.php,179,IntegrationOrchestratorService,public,sim,podeExecutar,"string $regra, array $payload=[]",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationOrchestratorService.
+app/Services/IntegrationReplayGuardService.php,3,IntegrationReplayGuardService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/IntegrationReplayGuardService.php,31,IntegrationReplayGuardService,private,sim,safeAlter,"PDO $pdo, string $sql",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationReplayGuardService.
+app/Services/IntegrationReplayGuardService.php,35,IntegrationReplayGuardService,public,sim,guard,"string $origem, string $raw, int $windowSeconds = 600, array $context = []",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationReplayGuardService.
+app/Services/IntegrationReplayGuardService.php,73,IntegrationReplayGuardService,private,sim,cleanup,"PDO $pdo, int $windowSeconds",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IntegrationReplayGuardService.
+app/Services/IntegrationReplayGuardService.php,80,IntegrationReplayGuardService,private,sim,hashKey,,Gera ou valida hash para integridade/idempotência em regra de negócio/serviço.
+app/Services/IntegrationSecurityService.php,3,IntegrationSecurityService,public,sim,traceHeaders,,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe IntegrationSecurityService.
+app/Services/IntegrationSecurityService.php,7,IntegrationSecurityService,public,sim,vsmHmacHeaders,string $rawBody,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe IntegrationSecurityService.
+app/Services/IntegrationSecurityService.php,23,IntegrationSecurityService,public,sim,maskHeaders,array $headers,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe IntegrationSecurityService.
+app/Services/IpBlockService.php,3,IpBlockService,public,sim,enforce,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe IpBlockService.
+app/Services/IpBlockService.php,18,IpBlockService,public,sim,block,"string $ip, string $motivo, int $minutes=60, string $severity='alto'",Bloqueia operação insegura ou não autorizada em regra de negócio/serviço.
+app/Services/JsonLogger.php,3,JsonLogger,public,sim,write,"string $canal, string $nivel, string $mensagem, array $contexto=[]",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe JsonLogger.
+app/Services/LegacyInventoryService.php,3,LegacyInventoryService,public,sim,controllersServices,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe LegacyInventoryService.
+app/Services/LegacyInventoryService.php,18,LegacyInventoryService,private,sim,classificar,"string $name, string $rel, string $tipo",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe LegacyInventoryService.
+app/Services/LegacyInventoryService.php,26,LegacyInventoryService,private,sim,resumo,array $items,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe LegacyInventoryService.
+app/Services/Logger.php,3,Logger,public,sim,log,"string $tipo, string $mensagem, $payload=null, string $nivel='info', ?string $codigoErro=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,37,Logger,public,sim,info,"string $tipo, string $mensagem, $payload=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,38,Logger,public,sim,alerta,"string $tipo, string $mensagem, $payload=null, ?string $codigoErro=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,39,Logger,public,sim,erro,"string $tipo, string $mensagem, $payload=null, ?string $codigoErro=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,40,Logger,public,sim,critico,"string $tipo, string $mensagem, $payload=null, ?string $codigoErro=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,42,Logger,private,sim,writeFile,"string $name, ?string $trace, string $nivel, string $tipo, string $mensagem, $payload=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/Logger.php,53,Logger,private,sim,hasTraceColumn,PDO $pdo,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Logger.
+app/Services/MenuActionTestService.php,3,MenuActionTestService,public,sim,run,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe MenuActionTestService.
+app/Services/MetricsService.php,3,MetricsService,public,sim,registrar,"string $sistema, ?string $endpoint, ?int $httpCode, ?int $tempoMs, bool $sucesso, ?string $codigoErro=null","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/ModularDatabaseAuditService.php,3,ModularDatabaseAuditService,public,sim,resumo,,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe ModularDatabaseAuditService.
+app/Services/ModuleDatabaseService.php,3,ModuleDatabaseService,public,sim,modulos,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe ModuleDatabaseService.
+app/Services/ModuleDatabaseService.php,34,ModuleDatabaseService,public,sim,status,string $module,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe ModuleDatabaseService.
+app/Services/ModuleDatabaseService.php,45,ModuleDatabaseService,public,sim,tabelasDoModulo,string $module,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe ModuleDatabaseService.
+app/Services/ModuleDatabaseService.php,59,ModuleDatabaseService,public,sim,relatorio,,Função auxiliar do domínio de banco de dados; usada para apoiar regras internas da classe ModuleDatabaseService.
+app/Services/ModuleHealthService.php,3,ModuleHealthService,public,sim,checks,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe ModuleHealthService.
+app/Services/MultiDbMigrationService.php,3,MultiDbMigrationService,public,sim,moduleSqlFiles,,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MultiDbMigrationService.
+app/Services/MultiDbMigrationService.php,10,MultiDbMigrationService,public,sim,instalarModulo,string $module,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MultiDbMigrationService.
+app/Services/MultiDbMigrationService.php,16,MultiDbMigrationService,public,sim,instalarTodos,,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MultiDbMigrationService.
+app/Services/MultiDbMigrationService.php,17,MultiDbMigrationService,public,sim,runSqlFile,"PDO $pdo, string $file",Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MultiDbMigrationService.
+app/Services/MultiDbMigrationService.php,23,MultiDbMigrationService,private,sim,splitSql,string $sql,Função auxiliar do domínio de migrações; usada para apoiar regras internas da classe MultiDbMigrationService.
+app/Services/NotificationService.php,3,NotificationService,public,sim,criar,"string $tipo, string $titulo, string $mensagem, string $severidade='info', array $opts=[]","Cria registro, payload ou recurso do módulo de notificações."
+app/Services/NotificationService.php,28,NotificationService,public,sim,novoPedido,"string $pedido, array $payload=[]",Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,38,NotificationService,public,sim,erroIntegracao,"string $titulo, string $mensagem, array $opts=[]",Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,43,NotificationService,public,sim,fila,"string $titulo, string $mensagem, string $severidade='alerta', array $opts=[]",Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,47,NotificationService,public,sim,listar,"int $limit=100, bool $somenteNaoLidas=false","Lista registros para tela, relatório ou API."
+app/Services/NotificationService.php,53,NotificationService,public,sim,recentes,"int $ultimoId=0, int $limit=15",Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,60,NotificationService,public,sim,totalNaoLidas,,Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,65,NotificationService,public,sim,marcarLida,int $id,Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/NotificationService.php,71,NotificationService,public,sim,marcarTodasLidas,,Função auxiliar do domínio de notificações; usada para apoiar regras internas da classe NotificationService.
+app/Services/OAuthV3ChecklistService.php,3,OAuthV3ChecklistService,public,sim,passos,,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe OAuthV3ChecklistService.
+app/Services/OAuthV3ChecklistService.php,23,OAuthV3ChecklistService,public,sim,score,,Função auxiliar do domínio de autenticação/sessão; usada para apoiar regras internas da classe OAuthV3ChecklistService.
+app/Services/OperationCenterService.php,8,OperationCenterService,public,sim,tableExists,string $table,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,17,OperationCenterService,public,sim,columnExists,"string $table, string $column",Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,26,OperationCenterService,public,sim,safeCount,"string $table, string $where='1=1'",Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,34,OperationCenterService,public,sim,safeCountInfo,"string $table, string $where='1=1', string $label=''",Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,47,OperationCenterService,public,sim,workerCards,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,65,OperationCenterService,public,sim,ultimoHomologacao,string $table,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,88,OperationCenterService,public,sim,summary,?array $cfgInt=null,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,131,OperationCenterService,public,sim,estoqueResumo,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,141,OperationCenterService,public,sim,xmlResumo,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,150,OperationCenterService,public,sim,pedidosResumo,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,161,OperationCenterService,public,sim,fontesDashboard,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,174,OperationCenterService,public,sim,scoreDetalhado,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationCenterService.php,194,OperationCenterService,public,sim,score,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationCenterService.
+app/Services/OperationalRouteService.php,3,OperationalRouteService,public,sim,menuRoutes,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationalRouteService.
+app/Services/OperationalRouteService.php,17,OperationalRouteService,public,sim,technicalRoutes,,Função auxiliar do domínio de operação; usada para apoiar regras internas da classe OperationalRouteService.
+app/Services/PayloadSnapshotService.php,3,PayloadSnapshotService,public,sim,registrar,"?int $filaId, string $etapa, $conteudo, array $extra=[]","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/PedidoCicloVidaService.php,3,PedidoCicloVidaService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/PedidoCicloVidaService.php,12,PedidoCicloVidaService,private,sim,pdo,,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,13,PedidoCicloVidaService,private,sim,json,$v,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,14,PedidoCicloVidaService,private,sim,hashPayload,$payload,Gera ou valida hash para integridade/idempotência em pedidos.
+app/Services/PedidoCicloVidaService.php,16,PedidoCicloVidaService,public,sim,fromTinyPedido,"array $payload, array $validacao, ?int $pedidoValidacaoId=null",Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,37,PedidoCicloVidaService,public,sim,snapshot,"int $pedidoHubId, string $origem, ?string $destino, string $tipo, $payload",Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,44,PedidoCicloVidaService,public,sim,status,"int $pedidoHubId, ?string $statusAnterior, string $statusNovo, string $origem, string $mensagem, ?string $erro=null, array $ctx=[]",Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,59,PedidoCicloVidaService,public,sim,marcarEnviadoVsmPorTinyId,"string $tinyId, array $retorno, bool $erro=false",Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,68,PedidoCicloVidaService,private,sim,parseXmlInfo,?string $xml,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,82,PedidoCicloVidaService,private,sim,findPedidoByRetorno,array $payload,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoCicloVidaService.
+app/Services/PedidoCicloVidaService.php,95,PedidoCicloVidaService,public,sim,receberRetornoVsm,"array $payload, ?string $xmlRaw=null",Recebe e normaliza dados externos no módulo de pedidos.
+app/Services/PedidoCicloVidaService.php,130,PedidoCicloVidaService,public,sim,enviarXmlParaTiny,int $pedidoHubId,Envia dados para integração/destino externo no módulo de pedidos.
+app/Services/PedidoCicloVidaService.php,157,PedidoCicloVidaService,public,sim,listar,"string $status='', string $busca=''","Lista registros para tela, relatório ou API."
+app/Services/PedidoCicloVidaService.php,164,PedidoCicloVidaService,public,sim,detalhe,int $id,Carrega os detalhes completos de um registro.
+app/Services/PedidoMapper.php,3,PedidoMapper,private,sim,onlyDigits,$v,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoMapper.php,4,PedidoMapper,private,sim,money,$v,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoMapper.php,5,PedidoMapper,private,sim,pick,"array $arr, array $keys, $default=''",Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoMapper.php,7,PedidoMapper,private,sim,cliente,array $vsm,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoMapper.php,27,PedidoMapper,public,sim,vsmParaTiny,array $vsm,Converte/mapeia dados entre formatos do módulo de pedidos.
+app/Services/PedidoMapper.php,71,PedidoMapper,public,sim,valorTotal,array $vsm,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoMapper.php,82,PedidoMapper,public,sim,extrairPedidoTinyId,array $ret,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoMapper.
+app/Services/PedidoTinyVsmValidationService.php,3,PedidoTinyVsmValidationService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/PedidoTinyVsmValidationService.php,10,PedidoTinyVsmValidationService,private,sim,digits,$v,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe PedidoTinyVsmValidationService.
+app/Services/PedidoTinyVsmValidationService.php,11,PedidoTinyVsmValidationService,private,sim,data,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe PedidoTinyVsmValidationService.
+app/Services/PedidoTinyVsmValidationService.php,12,PedidoTinyVsmValidationService,public,sim,pedidoId,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe PedidoTinyVsmValidationService.
+app/Services/PedidoTinyVsmValidationService.php,13,PedidoTinyVsmValidationService,public,sim,toVsmPayload,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe PedidoTinyVsmValidationService.
+app/Services/PedidoTinyVsmValidationService.php,38,PedidoTinyVsmValidationService,public,sim,validar,"array $payload, ?array $cfg=null","Valida payload, banco, regra, arquivo ou configuração."
+app/Services/PedidoTinyVsmValidationService.php,52,PedidoTinyVsmValidationService,public,sim,registrar,"array $payload, array $validacao, string $origem='tiny'","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/PedidoTinyVsmValidationService.php,64,PedidoTinyVsmValidationService,public,sim,historico,"int $id,string $acao,string $resultado,string $mensagem,array $ctx=[]",Registra ou consulta auditoria/histórico de Tiny/Olist.
+app/Services/PedidoTinyVsmValidationService.php,65,PedidoTinyVsmValidationService,public,sim,enfileirar,int $id,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe PedidoTinyVsmValidationService.
+app/Services/PedidoValidator.php,3,PedidoValidator,private,sim,digits,$v,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoValidator.
+app/Services/PedidoValidator.php,4,PedidoValidator,private,sim,cpfValido,string $cpf,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoValidator.
+app/Services/PedidoValidator.php,9,PedidoValidator,private,sim,cnpjValido,string $cnpj,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoValidator.
+app/Services/PedidoValidator.php,14,PedidoValidator,private,sim,documentoValido,string $doc,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoValidator.
+app/Services/PedidoValidator.php,15,PedidoValidator,private,sim,emailValido,?string $email,Função auxiliar do domínio de pedidos; usada para apoiar regras internas da classe PedidoValidator.
+app/Services/PedidoValidator.php,17,PedidoValidator,public,sim,validarVsm,array $vsm,Valida dados/regras antes de concluir operação de pedidos.
+app/Services/PermissionService.php,3,PermissionService,public,sim,can,"string $modulo, string $acao",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe PermissionService.
+app/Services/PermissionService.php,11,PermissionService,public,sim,require,"string $modulo, string $acao",Exige permissão/autenticação antes de permitir a ação.
+app/Services/PostInstallTestService.php,3,PostInstallTestService,public,sim,run,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe PostInstallTestService.
+app/Services/PostInstallTestService.php,12,PostInstallTestService,public,sim,score,array $tests,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe PostInstallTestService.
+app/Services/ProductApprovalPolicyService.php,3,ProductApprovalPolicyService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/ProductApprovalPolicyService.php,24,ProductApprovalPolicyService,public,sim,config,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductApprovalPolicyService.
+app/Services/ProductApprovalPolicyService.php,37,ProductApprovalPolicyService,public,sim,salvar,array $post,Persiste dados enviados pelo formulário.
+app/Services/ProductApprovalPolicyService.php,69,ProductApprovalPolicyService,public,sim,autoProductAllowed,"array $payload, string $sku, string $tipoFila, array $baseConfig",Autoriza operação conforme configuração/regra de regra de negócio/serviço.
+app/Services/ProductionGoLiveService.php,3,ProductionGoLiveService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/ProductionGoLiveService.php,19,ProductionGoLiveService,public,sim,executar,,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/ProductionGoLiveService.php,105,ProductionGoLiveService,public,sim,historico,int $limit=5,Registra ou consulta auditoria/histórico de regra de negócio/serviço.
+app/Services/ProductionGoLiveService.php,113,ProductionGoLiveService,public,sim,bloquearInstalador,,Bloqueia operação insegura ou não autorizada em regra de negócio/serviço.
+app/Services/ProductionGoLiveService.php,122,ProductionGoLiveService,private,sim,httpsAtivo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionGoLiveService.
+app/Services/ProductionGoLiveService.php,126,ProductionGoLiveService,private,sim,tinyResumo,"string $versao, array $cfg",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionGoLiveService.
+app/Services/ProductionGoLiveService.php,139,ProductionGoLiveService,private,sim,xmlNfeResumo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionGoLiveService.
+app/Services/ProductionGoLiveService.php,147,ProductionGoLiveService,private,sim,backupResumo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionGoLiveService.
+app/Services/ProductionGoLiveService.php,153,ProductionGoLiveService,private,sim,resumoExecutivo,"string $status, int $bloqueios, int $alertas, int $score",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionGoLiveService.
+app/Services/ProductionReadinessV24Service.php,8,ProductionReadinessV24Service,public,sim,checks,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,22,ProductionReadinessV24Service,public,sim,scores,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,47,ProductionReadinessV24Service,public,sim,checklist,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,58,ProductionReadinessV24Service,public,sim,gerarSnapshotUpgrade,string $versao='V24',"Gera artefato, relatório, chave ou arquivo no módulo de regra de negócio/serviço."
+app/Services/ProductionReadinessV24Service.php,71,ProductionReadinessV24Service,private,sim,hasConfig,"array $cfg, string $key",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,72,ProductionReadinessV24Service,private,sim,tableExists,string $table,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,75,ProductionReadinessV24Service,private,sim,hasColumn,"string $table,string $column",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV24Service.php,78,ProductionReadinessV24Service,private,sim,tableList,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadinessV24Service.
+app/Services/ProductionReadinessV50Service.php,3,ProductionReadinessV50Service,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/ProductionReadinessV50Service.php,14,ProductionReadinessV50Service,public,sim,executar,,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/ProductionReadyService.php,3,ProductionReadyService,public,sim,checks,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ProductionReadyService.
+app/Services/ProdutoMapper.php,3,ProdutoMapper,private,sim,pick,"array $arr, array $keys, $default=''",Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,7,ProdutoMapper,private,sim,onlyDigits,$v,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,8,ProdutoMapper,private,sim,money,$v,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,9,ProdutoMapper,public,sim,sku,array $vsm,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,10,ProdutoMapper,public,sim,nome,array $vsm,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,12,ProdutoMapper,public,sim,normalizarAtivo,$valor,Padroniza formato de dados usado por produtos.
+app/Services/ProdutoMapper.php,21,ProdutoMapper,public,sim,situacaoTiny,array $vsm,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,28,ProdutoMapper,public,sim,estoque,array $vsm,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,36,ProdutoMapper,public,sim,determinarEvento,array $vsm,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,57,ProdutoMapper,public,sim,referenciaEvento,"array $vsm, string $tipoEvento",Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoMapper.php,67,ProdutoMapper,public,sim,validarVsmProduto,array $vsm,Valida dados/regras antes de concluir operação de produtos.
+app/Services/ProdutoMapper.php,90,ProdutoMapper,public,sim,vsmParaTiny,array $vsm,Converte/mapeia dados entre formatos do módulo de produtos.
+app/Services/ProdutoMapper.php,115,ProdutoMapper,public,sim,vsmStatusParaTiny,array $vsm,Converte/mapeia dados entre formatos do módulo de produtos.
+app/Services/ProdutoMapper.php,123,ProdutoMapper,public,sim,extrairProdutoTinyId,array $ret,Função auxiliar do domínio de produtos; usada para apoiar regras internas da classe ProdutoMapper.
+app/Services/ProdutoTinyPreflightService.php,3,ProdutoTinyPreflightService,private,sim,normalizarSku,string $sku,Padroniza formato de dados usado por Tiny/Olist.
+app/Services/ProdutoTinyPreflightService.php,5,ProdutoTinyPreflightService,public,sim,analisarRetornoPesquisa,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe ProdutoTinyPreflightService.
+app/Services/ProdutoTinyPreflightService.php,34,ProdutoTinyPreflightService,public,sim,consultarOuPendenciar,"TinyClientInterface $tiny, string $sku, string $tipoEvento, array $payload, int $filaId, string $trace",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe ProdutoTinyPreflightService.
+app/Services/ProdutoTinyPreflightService.php,61,ProdutoTinyPreflightService,public,sim,registrarPendencia,"string $sku, string $tipoEvento, string $motivo, string $mensagem, array $payload, array $retorno, int $filaId, string $trace",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe ProdutoTinyPreflightService.
+app/Services/ProdutoTinyPreflightService.php,74,ProdutoTinyPreflightService,public,sim,registrarAlertaInativoComEstoque,"string $sku, float $estoque, array $payload, int $filaId, string $trace",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe ProdutoTinyPreflightService.
+app/Services/ProdutoVsmApprovalGuardService.php,7,ProdutoVsmApprovalGuardService,public,sim,payloadFromPending,array $p,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,12,ProdutoVsmApprovalGuardService,public,sim,ean,"array $p, array $payload",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,16,ProdutoVsmApprovalGuardService,public,sim,ncm,array $payload,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,20,ProdutoVsmApprovalGuardService,public,sim,name,"array $p, array $payload",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,24,ProdutoVsmApprovalGuardService,public,sim,categoryMapped,array $p,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,28,ProdutoVsmApprovalGuardService,public,sim,duplicateCandidates,"array $p, array $payload",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,66,ProdutoVsmApprovalGuardService,public,sim,checklist,array $p,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmApprovalGuardService.
+app/Services/ProdutoVsmApprovalGuardService.php,87,ProdutoVsmApprovalGuardService,public,sim,registrarHistorico,"int $pendenciaId, string $acao, string $resultado, string $mensagem, array $contexto=[]",Registra ou consulta auditoria/histórico de VSM.
+app/Services/ProdutoVsmGovernanceService.php,3,ProdutoVsmGovernanceService,public,sim,isNewProductEvent,string $tipoFila,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmGovernanceService.
+app/Services/ProdutoVsmGovernanceService.php,7,ProdutoVsmGovernanceService,public,sim,sku,string $sku,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmGovernanceService.
+app/Services/ProdutoVsmGovernanceService.php,9,ProdutoVsmGovernanceService,public,sim,mappingForSku,string $sku,Converte/mapeia dados entre formatos do módulo de VSM.
+app/Services/ProdutoVsmGovernanceService.php,24,ProdutoVsmGovernanceService,public,sim,categoryMappingForPayload,array $payload,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmGovernanceService.
+app/Services/ProdutoVsmGovernanceService.php,47,ProdutoVsmGovernanceService,public,sim,isAutoCreateAllowed,array $config,Autoriza operação conforme configuração/regra de VSM.
+app/Services/ProdutoVsmGovernanceService.php,56,ProdutoVsmGovernanceService,public,sim,createPending,"array $payload, string $sku, string $tipoEvento, string $motivo, string $mensagem, ?int $filaId=null, ?string $traceId=null, array $extras=[]",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmGovernanceService.
+app/Services/ProdutoVsmGovernanceService.php,93,ProdutoVsmGovernanceService,public,sim,evaluate,"array $payload, string $sku, string $tipoFila, array $config",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe ProdutoVsmGovernanceService.
+app/Services/QrCodeService.php,21,QrCodeService,public,sim,svg,"string $text, int $scale = 5, int $border = 4",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,27,QrCodeService,public,sim,dataUri,"string $text, int $scale = 5, int $border = 4",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,31,QrCodeService,private,não,encode,string $text,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,62,QrCodeService,private,não,chooseVersion,int $byteLength,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,73,QrCodeService,private,não,createDataCodewords,"array $bytes, int $version",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,95,QrCodeService,private,não,appendBits,"array &$bits, int $value, int $length",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,99,QrCodeService,private,não,numDataCodewords,int $version,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,103,QrCodeService,private,não,addErrorCorrectionAndInterleave,"array $data, int $version",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,135,QrCodeService,private,não,reedSolomonRemainder,"array $data, int $degree",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,149,QrCodeService,private,não,reedSolomonDivisor,int $degree,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,163,QrCodeService,private,não,gfMultiply,"int $x, int $y",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,172,QrCodeService,private,não,drawFunctionPatterns,,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,197,QrCodeService,private,não,drawFinderPattern,"int $cx, int $cy",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,209,QrCodeService,private,não,drawAlignmentPattern,"int $cx, int $cy",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,218,QrCodeService,private,não,setFunctionModule,"int $x, int $y, bool $black",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,224,QrCodeService,private,não,drawFormatBits,int $mask,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,241,QrCodeService,private,não,drawVersionBits,,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,254,QrCodeService,private,não,drawCodewords,array $codewords,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,277,QrCodeService,private,não,applyMask,int $mask,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,286,QrCodeService,private,não,maskBit,"int $mask, int $x, int $y",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,300,QrCodeService,private,não,penaltyScore,,Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QrCodeService.php,335,QrCodeService,private,não,toSvg,"int $scale, int $border",Função auxiliar do domínio de QR Code/2FA; usada para apoiar regras internas da classe QrCodeService.
+app/Services/QueueAnalyticsService.php,3,QueueAnalyticsService,public,sim,resumo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueAnalyticsService.
+app/Services/QueueService.php,5,QueueService,public,sim,liberarTravados,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueService.
+app/Services/QueueService.php,12,QueueService,public,sim,pegarProximo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueService.
+app/Services/QueueService.php,30,QueueService,public,sim,marcarResultado,"int $id, bool $sucesso, array $retorno, ?string $codigoErro=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueService.
+app/Services/QueueService.php,51,QueueService,public,sim,reprocessar,int $id,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueService.
+app/Services/QueueV24AnalyticsService.php,3,QueueV24AnalyticsService,public,sim,resumoAvancado,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueV24AnalyticsService.
+app/Services/QueueV24AnalyticsService.php,12,QueueV24AnalyticsService,public,sim,snapshot,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueV24AnalyticsService.
+app/Services/QueueV24AnalyticsService.php,19,QueueV24AnalyticsService,private,sim,tableExists,string $table,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueV24AnalyticsService.
+app/Services/QueueV24AnalyticsService.php,20,QueueV24AnalyticsService,private,sim,hasColumn,"string $table,string $column",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe QueueV24AnalyticsService.
+app/Services/RealtimeHealthService.php,3,RealtimeHealthService,public,sim,snapshot,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,14,RealtimeHealthService,private,sim,db,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,24,RealtimeHealthService,private,sim,fila,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,25,RealtimeHealthService,private,sim,tiny,"string $label,string $cb,string $table",Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,26,RealtimeHealthService,private,sim,vsm,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,27,RealtimeHealthService,private,sim,fiscal,,Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/RealtimeHealthService.php,28,RealtimeHealthService,private,sim,c,"string $nome,string $status,string $detalhe",Função auxiliar do domínio de health check; usada para apoiar regras internas da classe RealtimeHealthService.
+app/Services/ReconciliationService.php,3,ReconciliationService,public,sim,registrarManual,"string $sku, float $tiny, float $vsm, string $origem='manual', array $detalhesExtra=[]",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ReconciliationService.
+app/Services/ReconciliationService.php,12,ReconciliationService,public,sim,reconciliarSku,string $sku,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ReconciliationService.
+app/Services/ReconciliationService.php,28,ReconciliationService,public,sim,resumo,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ReconciliationService.
+app/Services/RetentionCleanupService.php,3,RetentionCleanupService,public,sim,executar,"int $dias=90, bool $dryRun=true",Executa processo operacional solicitado pelo painel ou worker.
+app/Services/RetentionService.php,3,RetentionService,public,sim,limparOperacional,"int $diasLogs=90, int $diasAuditoria=180, int $diasWebhooks=180",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RetentionService.
+app/Services/RetryPolicyService.php,3,RetryPolicyService,public,sim,attempts,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RetryPolicyService.
+app/Services/RetryPolicyService.php,7,RetryPolicyService,public,sim,baseDelayMs,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RetryPolicyService.
+app/Services/RetryPolicyService.php,11,RetryPolicyService,public,sim,shouldRetry,"?int $http, ?string $curlError, $decoded=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RetryPolicyService.
+app/Services/RetryPolicyService.php,17,RetryPolicyService,public,sim,sleep,int $attempt,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RetryPolicyService.
+app/Services/RouteModuleRegistry.php,3,RouteModuleRegistry,public,sim,groups,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RouteModuleRegistry.
+app/Services/RouteModuleRegistry.php,13,RouteModuleRegistry,public,sim,technicalPages,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RouteModuleRegistry.
+app/Services/RouteModuleRegistry.php,14,RouteModuleRegistry,public,sim,moduleForPage,string $page,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RouteModuleRegistry.
+app/Services/RouteModuleRegistry.php,15,RouteModuleRegistry,public,sim,architectureControllers,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe RouteModuleRegistry.
+app/Services/RouteRateLimiterService.php,4,RouteRateLimiterService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/RouteRateLimiterService.php,20,RouteRateLimiterService,public,sim,enforce,?string $route=null,Função auxiliar do domínio de rate limit; usada para apoiar regras internas da classe RouteRateLimiterService.
+app/Services/SafeDb.php,3,SafeDb,public,sim,assertIdentifier,"string $value, string $label='identificador'",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,10,SafeDb,public,sim,assertTable,string $table,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,18,SafeDb,public,sim,assertColumn,"string $table, string $column",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,25,SafeDb,public,sim,quoteIdent,string $ident,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,28,SafeDb,public,sim,selectAll,"string $table, ?string $orderBy=null, string $direction='DESC', int $limit=100",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,41,SafeDb,public,sim,countWhere,"string $table, array $filters=[]",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeDb.
+app/Services/SafeDb.php,60,SafeDb,public,sim,updateAllowed,"string $table, array $data, array $allowed, array $where",Autoriza operação conforme configuração/regra de regra de negócio/serviço.
+app/Services/SafeSqlUpgradeService.php,4,SafeSqlUpgradeService,public,sim,ensureMigrationsTable,PDO $pdo,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/SafeSqlUpgradeService.php,17,SafeSqlUpgradeService,public,sim,migrationApplied,"PDO $pdo, string $migration",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/SafeSqlUpgradeService.php,24,SafeSqlUpgradeService,public,sim,recordMigration,"PDO $pdo, string $migration, string $checksum='', string $status='aplicada', string $mensagem=''",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/SafeSqlUpgradeService.php,30,SafeSqlUpgradeService,public,sim,addColumnIfMissing,"PDO $pdo, string $table, string $column, string $definition",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/SafeSqlUpgradeService.php,36,SafeSqlUpgradeService,public,sim,tableExists,"PDO $pdo, string $table",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/SafeSqlUpgradeService.php,37,SafeSqlUpgradeService,public,sim,runStatements,"PDO $pdo, string $sql",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SafeSqlUpgradeService.
+app/Services/Secrets.php,3,Secrets,public,sim,mask,?string $value,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Secrets.
+app/Services/Secrets.php,10,Secrets,public,sim,keepIfMasked,"string $posted, ?string $current",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe Secrets.
+app/Services/SecurityAuditService.php,3,SecurityAuditService,public,sim,record,"string $evento, string $nivel='info', array $data=[]",Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityAuditService.
+app/Services/SecurityAuditService.php,10,SecurityAuditService,public,sim,recentes,int $limit=100,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityAuditService.
+app/Services/SecurityEventService.php,3,SecurityEventService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/SecurityEventService.php,38,SecurityEventService,public,sim,ip,,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityEventService.
+app/Services/SecurityEventService.php,43,SecurityEventService,public,sim,log,"string $tipo, string $severidade='medio', string $detalhe='', array $contexto=[]",Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityEventService.
+app/Services/SecurityHardeningService.php,3,SecurityHardeningService,public,sim,status,,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityHardeningService.
+app/Services/SecurityHardeningService.php,34,SecurityHardeningService,private,sim,strongKey,string $key,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityHardeningService.
+app/Services/SecurityHardeningService.php,39,SecurityHardeningService,public,sim,maskSecretsInArray,array $data,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityHardeningService.
+app/Services/SecurityScoreService.php,3,SecurityScoreService,public,sim,evaluate,,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe SecurityScoreService.
+app/Services/SelfTestService.php,3,SelfTestService,public,sim,executar,,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/SensitiveDataService.php,9,SensitiveDataService,public,sim,mask,mixed $value,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SensitiveDataService.
+app/Services/SensitiveDataService.php,23,SensitiveDataService,private,sim,isSensitiveKey,string $key,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SensitiveDataService.
+app/Services/SensitiveDataService.php,30,SensitiveDataService,private,sim,maskScalar,mixed $v,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SensitiveDataService.
+app/Services/SensitiveDataService.php,38,SensitiveDataService,private,sim,maskJsonString,string $body,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SensitiveDataService.
+app/Services/ShellCommandService.php,3,ShellCommandService,public,sim,disabled,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ShellCommandService.
+app/Services/ShellCommandService.php,10,ShellCommandService,public,sim,assertNoShellUse,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ShellCommandService.
+app/Services/ShellCommandService.php,14,ShellCommandService,public,sim,detailedScan,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe ShellCommandService.
+app/Services/SimpleCache.php,3,SimpleCache,private,sim,dir,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SimpleCache.
+app/Services/SimpleCache.php,8,SimpleCache,private,sim,file,string $key,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SimpleCache.
+app/Services/SimpleCache.php,11,SimpleCache,public,sim,remember,"string $key, int $ttlSeconds, callable $callback",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SimpleCache.
+app/Services/SimpleCache.php,21,SimpleCache,public,sim,forget,string $prefix='',Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SimpleCache.
+app/Services/SyncRulesService.php,16,SyncRulesService,public,sim,all,,"Retorna coleção completa de configurações, regras ou registros."
+app/Services/SyncRulesService.php,25,SyncRulesService,public,sim,enabled,string $key,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SyncRulesService.
+app/Services/SyncRulesService.php,30,SyncRulesService,public,sim,explain,string $key,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SyncRulesService.
+app/Services/SyncRulesService.php,46,SyncRulesService,public,sim,skipped,"string $key, array $payload = []",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe SyncRulesService.
+app/Services/TesteRealTinyService.php,10,TesteRealTinyService,public,sim,skuPadrao,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,14,TesteRealTinyService,public,sim,cliente,string $modo='auto',Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,21,TesteRealTinyService,public,sim,versaoEfetiva,string $modo='auto',Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,31,TesteRealTinyService,public,sim,skuSeguro,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,35,TesteRealTinyService,public,sim,validarEntradaSegura,array $input,Valida dados/regras antes de concluir operação de Tiny/Olist.
+app/Services/TesteRealTinyService.php,47,TesteRealTinyService,public,sim,payloadProduto,array $input,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,75,TesteRealTinyService,public,sim,executar,array $input,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/TesteRealTinyService.php,158,TesteRealTinyService,private,sim,registrarHistorico,"array $resumo, array $produtoVsm, array $produtoTiny",Registra ou consulta auditoria/histórico de Tiny/Olist.
+app/Services/TesteRealTinyService.php,174,TesteRealTinyService,public,sim,ultimos,int $limit=20,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,183,TesteRealTinyService,public,sim,ensureTable,PDO $pdo,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,203,TesteRealTinyService,public,sim,retornoOk,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TesteRealTinyService.php,211,TesteRealTinyService,public,sim,resumoRetorno,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TesteRealTinyService.
+app/Services/TinyClientInterface.php,3,global,public,não,criarPedido,array $pedido,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyClientInterface.php,4,global,public,não,consultarPedido,string $id,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe global.
+app/Services/TinyClientInterface.php,5,global,public,não,consultarProduto,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe global.
+app/Services/TinyClientInterface.php,6,global,public,não,atualizarEstoque,"string $sku, float $qtd","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyClientInterface.php,7,global,public,não,criarProduto,array $produto,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyClientInterface.php,8,global,public,não,atualizarProduto,array $produto,"Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyClientInterface.php,9,global,public,não,atualizarStatusProduto,"string $sku, string $situacao","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyEnvironmentReadinessService.php,3,TinyEnvironmentReadinessService,public,sim,analisar,"array $cfg, array $checklist=[]",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyEnvironmentReadinessService.
+app/Services/TinyErrorCatalog.php,3,TinyErrorCatalog,public,sim,detectar,array $retorno,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyErrorCatalog.
+app/Services/TinyErrorCatalog.php,24,TinyErrorCatalog,public,sim,info,string $code,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyErrorCatalog.
+app/Services/TinyFactory.php,3,TinyFactory,public,sim,make,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyFactory.
+app/Services/TinyHomologationDiagnosisService.php,3,TinyHomologationDiagnosisService,public,sim,montar,"array $checks, ?array $ultimo=null, string $versao='Tiny'",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologationDiagnosisService.
+app/Services/TinyHomologationDiagnosisService.php,42,TinyHomologationDiagnosisService,public,sim,statusEtapa,"array $etapa, bool $pedidoOpcional=false",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyHomologationDiagnosisService.
+app/Services/TinyV2ErrorCatalogService.php,3,TinyV2ErrorCatalogService,public,sim,all,,"Retorna coleção completa de configurações, regras ou registros."
+app/Services/TinyV2HomologationService.php,3,TinyV2HomologationService,public,sim,resumo,array $cfg,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,26,TinyV2HomologationService,private,sim,checksBase,"array $cfg, ?array $ultimo",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,41,TinyV2HomologationService,private,sim,etapaStatus,"array $etapas, string $key",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,48,TinyV2HomologationService,public,sim,executar,array $input,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/TinyV2HomologationService.php,141,TinyV2HomologationService,private,sim,extrairSaldoTiny,"array $ret, array $produtoRet=[]",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,162,TinyV2HomologationService,private,sim,extrairSaldoGenerico,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,170,TinyV2HomologationService,private,sim,retornoOk,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,177,TinyV2HomologationService,private,sim,resumoRetorno,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2HomologationService.php,185,TinyV2HomologationService,private,sim,registrar,array $res,"Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/TinyV2HomologationService.php,192,TinyV2HomologationService,public,sim,historico,int $limit=10,Registra ou consulta auditoria/histórico de Tiny/Olist.
+app/Services/TinyV2HomologationService.php,201,TinyV2HomologationService,public,sim,ensureTable,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2HomologationService.
+app/Services/TinyV2ObservabilityService.php,3,TinyV2ObservabilityService,public,sim,metricas,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2ObservabilityService.
+app/Services/TinyV2ObservabilityService.php,8,TinyV2ObservabilityService,public,sim,erros,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2ObservabilityService.
+app/Services/TinyV2ObservabilityService.php,15,TinyV2ObservabilityService,public,sim,retryPolicy,string $codigo,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2ObservabilityService.
+app/Services/TinyV2ObservabilityService.php,22,TinyV2ObservabilityService,private,sim,tableExists,string $table,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2ObservabilityService.
+app/Services/TinyV2Service.php,4,TinyV2Service,public,não,__construct,?array $cfg=null,Inicializa dependências internas de TinyV2Service.
+app/Services/TinyV2Service.php,6,TinyV2Service,private,não,post,"string $endpoint, array $data",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2Service.
+app/Services/TinyV2Service.php,56,TinyV2Service,private,sim,logEndpoint,"string $endpoint, string $metodo, int $http, bool $sucesso, int $tempoMs, array $request, $response, ?string $erro=null",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2Service.
+app/Services/TinyV2Service.php,68,TinyV2Service,public,não,criarPedido,array $pedido,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyV2Service.php,69,TinyV2Service,public,não,criarProduto,array $produto,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyV2Service.php,70,TinyV2Service,public,não,atualizarProduto,array $produto,"Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV2Service.php,71,TinyV2Service,public,não,atualizarStatusProduto,"string $sku, string $situacao","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV2Service.php,79,TinyV2Service,public,não,consultarPedido,string $id,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2Service.
+app/Services/TinyV2Service.php,80,TinyV2Service,public,não,consultarProduto,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2Service.
+app/Services/TinyV2Service.php,82,TinyV2Service,public,não,consultarEstoquePorSku,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV2Service.
+app/Services/TinyV2Service.php,94,TinyV2Service,public,não,atualizarEstoque,"string $sku, float $qtd","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV2Service.php,96,TinyV2Service,public,não,enviarNfeXmlPedido,"string $pedidoId, array $dados",Envia dados para integração/destino externo no módulo de Tiny/Olist.
+app/Services/TinyV3EndpointCatalog.php,3,TinyV3EndpointCatalog,public,sim,defaults,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3EndpointCatalog.
+app/Services/TinyV3EndpointCatalog.php,17,TinyV3EndpointCatalog,public,sim,get,string $key,"Lê configuração, registro ou valor persistido."
+app/Services/TinyV3EndpointCatalog.php,22,TinyV3EndpointCatalog,public,sim,fill,"string $template, array $vars",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3EndpointCatalog.
+app/Services/TinyV3FichaTecnicaService.php,3,TinyV3FichaTecnicaService,public,sim,itens,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3FichaTecnicaService.
+app/Services/TinyV3FichaTecnicaService.php,25,TinyV3FichaTecnicaService,public,sim,score,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3FichaTecnicaService.
+app/Services/TinyV3HomologationService.php,3,TinyV3HomologationService,public,sim,resumo,array $cfg,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,26,TinyV3HomologationService,private,sim,checksBase,"array $cfg, ?array $ultimo",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,45,TinyV3HomologationService,private,sim,etapaStatus,"array $etapas, string $key",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,52,TinyV3HomologationService,public,sim,executar,array $input,Executa processo operacional solicitado pelo painel ou worker.
+app/Services/TinyV3HomologationService.php,171,TinyV3HomologationService,private,sim,extrairSaldoTiny,"array $estoqueRet, array $produtoRet=[]",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,183,TinyV3HomologationService,private,sim,extrairSaldoGenerico,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,191,TinyV3HomologationService,private,sim,acaoEstoque,"array $tinyRet, array $vsmRet, $dif",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,199,TinyV3HomologationService,private,sim,retornoOk,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,206,TinyV3HomologationService,private,sim,resumoRetorno,array $ret,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3HomologationService.php,214,TinyV3HomologationService,private,sim,registrar,array $res,"Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/TinyV3HomologationService.php,221,TinyV3HomologationService,public,sim,historico,int $limit=10,Registra ou consulta auditoria/histórico de Tiny/Olist.
+app/Services/TinyV3HomologationService.php,230,TinyV3HomologationService,public,sim,ensureTable,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3HomologationService.
+app/Services/TinyV3Service.php,6,TinyV3Service,public,não,__construct,?array $cfg=null,Inicializa dependências internas de TinyV3Service.
+app/Services/TinyV3Service.php,11,TinyV3Service,private,não,token,,Gere/valida/consulta token seguro no módulo de Tiny/Olist.
+app/Services/TinyV3Service.php,15,TinyV3Service,private,não,request,"string $method, string $path, array $payload=[], array $query=[]",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,66,TinyV3Service,private,não,logEndpoint,"string $endpoint, string $metodo, int $httpCode, bool $sucesso, int $tempoMs, string $trace, array $requestBody=[], ?string $responseBody=null, ?string $erro=null",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,80,TinyV3Service,private,não,normalizeList,array $ret,Padroniza formato de dados usado por Tiny/Olist.
+app/Services/TinyV3Service.php,89,TinyV3Service,public,não,consultarProduto,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,104,TinyV3Service,public,não,criarProduto,array $produto,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyV3Service.php,106,TinyV3Service,public,não,atualizarProduto,array $produto,"Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV3Service.php,114,TinyV3Service,public,não,atualizarStatusProduto,"string $sku, string $situacao","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV3Service.php,121,TinyV3Service,public,não,atualizarEstoque,"string $sku, float $qtd","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyV3Service.php,127,TinyV3Service,public,não,consultarPedido,string $id,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,128,TinyV3Service,public,não,criarPedido,array $pedido,"Cria registro, payload ou recurso do módulo de Tiny/Olist."
+app/Services/TinyV3Service.php,129,TinyV3Service,public,não,consultarNotaFiscal,string $id,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,130,TinyV3Service,public,não,lancarEstoquePedido,string $idPedido,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,132,TinyV3Service,public,não,testarModulo,"string $modulo, array $params=[]",Executa teste/diagnóstico controlado do módulo de Tiny/Olist.
+app/Services/TinyV3Service.php,144,TinyV3Service,public,não,consultarEstoquePorSku,string $sku,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3Service.
+app/Services/TinyV3Service.php,152,TinyV3Service,public,não,enviarNfeXmlPedido,"string $pedidoId, array $dados",Envia dados para integração/destino externo no módulo de Tiny/Olist.
+app/Services/TinyV3TokenService.php,3,TinyV3TokenService,public,sim,getTokenRow,?string $ambiente=null,Gere/valida/consulta token seguro no módulo de Tiny/Olist.
+app/Services/TinyV3TokenService.php,20,TinyV3TokenService,public,sim,accessToken,,Gere/valida/consulta token seguro no módulo de Tiny/Olist.
+app/Services/TinyV3TokenService.php,81,TinyV3TokenService,public,sim,isExpired,?array $row=null,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyV3TokenService.php,87,TinyV3TokenService,public,sim,saveManual,"string $accessToken, ?string $refreshToken=null, int $expiresIn=3600, ?string $scope=null, ?string $ambiente=null",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyV3TokenService.php,91,TinyV3TokenService,public,sim,saveOAuthToken,"string $accessToken, ?string $refreshToken=null, int $expiresIn=3600, ?string $scope=null, ?string $ambiente=null",Gere/valida/consulta token seguro no módulo de Tiny/Olist.
+app/Services/TinyV3TokenService.php,95,TinyV3TokenService,private,sim,saveToken,"string $accessToken, ?string $refreshToken, int $expiresIn, ?string $scope, string $origem, ?string $ambiente=null",Gere/valida/consulta token seguro no módulo de Tiny/Olist.
+app/Services/TinyV3TokenService.php,127,TinyV3TokenService,public,sim,refresh,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyV3TokenService.php,153,TinyV3TokenService,public,sim,status,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyV3TokenService.php,173,TinyV3TokenService,public,sim,statusResumo,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyV3TokenService.php,191,TinyV3TokenService,public,sim,homologationReady,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyV3TokenService.
+app/Services/TinyValidationService.php,7,TinyValidationService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/TinyValidationService.php,26,TinyValidationService,public,sim,ultimo,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyValidationService.
+app/Services/TinyValidationService.php,33,TinyValidationService,public,sim,executar,"string $versao, array $params=[]",Executa processo operacional solicitado pelo painel ou worker.
+app/Services/TinyValidationService.php,94,TinyValidationService,public,sim,podeMarcarV3Operacional,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyValidationService.
+app/Services/TinyWebhookSecurityService.php,3,TinyWebhookSecurityService,public,sim,validar,"array $config, string $raw, array $payload","Valida payload, banco, regra, arquivo ou configuração."
+app/Services/TinyWebhookSecurityService.php,53,TinyWebhookSecurityService,private,sim,auditBlock,"string $codigo, string $mensagem, array $headers, string $hash, array $extra=[]",Bloqueia operação insegura ou não autorizada em Tiny/Olist.
+app/Services/TinyWebhookService.php,3,TinyWebhookService,public,sim,rawPayload,,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TinyWebhookService.php,10,TinyWebhookService,public,sim,normalizarHeaders,,Padroniza formato de dados usado por Tiny/Olist.
+app/Services/TinyWebhookService.php,22,TinyWebhookService,public,sim,validarBase,"array $payload, string $tipoEsperado",Valida dados/regras antes de concluir operação de Tiny/Olist.
+app/Services/TinyWebhookService.php,41,TinyWebhookService,public,sim,tipo,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TinyWebhookService.php,45,TinyWebhookService,public,sim,referencia,"array $payload, string $tipo",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TinyWebhookService.php,67,TinyWebhookService,public,sim,dados,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TinyWebhookService.php,72,TinyWebhookService,public,sim,registrar,"string $tipo, string $raw, array $payload, string $status='recebido', ?string $mensagem=null","Registra evento, histórico, auditoria ou snapshot no banco."
+app/Services/TinyWebhookService.php,108,TinyWebhookService,public,sim,atualizarStatus,"int $id, string $status, array $retorno=[]","Atualiza cadastro, status ou estrutura no módulo de Tiny/Olist."
+app/Services/TinyWebhookService.php,114,TinyWebhookService,public,sim,baixaDeEstoqueTiny,array $payload,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TinyWebhookService.php,145,TinyWebhookService,public,sim,retornoMapeamentoProduto,"array $payload, bool $ok=true, ?string $erro=null",Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe TinyWebhookService.
+app/Services/TokenVaultService.php,3,TokenVaultService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/TokenVaultService.php,23,TokenVaultService,public,sim,store,"string $provider,string $ambiente,string $type,string $plain,?string $expiresAt=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TokenVaultService.
+app/Services/TokenVaultService.php,33,TokenVaultService,public,sim,getActive,"string $provider,string $ambiente,string $type",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TokenVaultService.
+app/Services/TokenVaultService.php,40,TokenVaultService,public,sim,getActiveRow,"string $provider,string $ambiente,string $type",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TokenVaultService.
+app/Services/TokenVaultService.php,50,TokenVaultService,public,sim,rotateIfExpiring,"string $provider,string $ambiente,string $type,int $seconds=3600",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TokenVaultService.
+app/Services/TokenVaultService.php,56,TokenVaultService,public,sim,health,,Executa verificação de saúde/disponibilidade em regra de negócio/serviço.
+app/Services/TokenVaultService.php,63,TokenVaultService,private,sim,hashKey,,Gera ou valida hash para integridade/idempotência em regra de negócio/serviço.
+app/Services/TrustedProxyService.php,3,TrustedProxyService,public,sim,configuredProxies,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TrustedProxyService.
+app/Services/TrustedProxyService.php,9,TrustedProxyService,public,sim,remoteAddr,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TrustedProxyService.
+app/Services/TrustedProxyService.php,13,TrustedProxyService,public,sim,isTrustedProxy,?string $ip=null,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TrustedProxyService.
+app/Services/TrustedProxyService.php,18,TrustedProxyService,public,sim,clientIp,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TrustedProxyService.
+app/Services/TrustedProxyService.php,30,TrustedProxyService,public,sim,isHttps,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TrustedProxyService.
+app/Services/TwoFactorService.php,3,TwoFactorService,public,sim,generateSecret,int $length=20,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,9,TwoFactorService,public,sim,encryptSecret,?string $secret,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,14,TwoFactorService,public,sim,decryptSecret,?string $value,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,19,TwoFactorService,public,sim,provisioningUri,"string $email, string $secret, string $issuer='Hub de Integração'",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,24,TwoFactorService,public,sim,totp,"string $secret, ?int $timeSlice=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,34,TwoFactorService,public,sim,verify,"string $secret, string $code",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/TwoFactorService.php,43,TwoFactorService,private,sim,base32Decode,string $b32,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe TwoFactorService.
+app/Services/UniversalUpgradeService.php,3,UniversalUpgradeService,public,não,__construct,private string $root,Inicializa dependências internas de UniversalUpgradeService.
+app/Services/UniversalUpgradeService.php,5,UniversalUpgradeService,public,não,run,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe UniversalUpgradeService.
+app/Services/VisualProfileService.php,3,VisualProfileService,public,sim,current,,Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe VisualProfileService.
+app/Services/VisualProfileService.php,18,VisualProfileService,public,sim,allowedPages,string $mode,Autoriza operação conforme configuração/regra de regra de negócio/serviço.
+app/Services/VisualProfileService.php,25,VisualProfileService,public,sim,canSee,"string $page, ?string $mode=null",Função auxiliar do domínio de regra de negócio/serviço; usada para apoiar regras internas da classe VisualProfileService.
+app/Services/VisualProfileService.php,30,VisualProfileService,public,sim,label,string $mode,Converte chave técnica em rótulo legível para a interface.
+app/Services/VsmEndpointSecurityService.php,3,VsmEndpointSecurityService,public,sim,sanitizePath,string $path,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointSecurityService.
+app/Services/VsmEndpointService.php,3,VsmEndpointService,private,sim,safeExec,"PDO $pdo, string $sql",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,5,VsmEndpointService,public,sim,ensureSchema,,Garante que tabelas/colunas necessárias existam antes da operação.
+app/Services/VsmEndpointService.php,87,VsmEndpointService,public,sim,seedDefaults,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,124,VsmEndpointService,public,sim,baseConfig,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,126,VsmEndpointService,public,sim,listEndpoints,?string $categoria=null,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,137,VsmEndpointService,public,sim,listCampos,?string $categoria=null,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,148,VsmEndpointService,public,sim,validateEndpointPath,string $endpoint,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,158,VsmEndpointService,public,sim,validateMethod,string $method,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,165,VsmEndpointService,public,sim,saveEndpoint,array $p,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,191,VsmEndpointService,public,sim,saveCampo,array $p,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,208,VsmEndpointService,public,sim,buildUrl,"string $endpoint, array $params=[]",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,215,VsmEndpointService,public,sim,testEndpoint,"int $id, array $params=[], bool $modoSeguro=true",Executa teste/diagnóstico controlado do módulo de VSM.
+app/Services/VsmEndpointService.php,223,VsmEndpointService,private,sim,executeTest,"array $ep, array $params=[], bool $modoSeguro=true",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmEndpointService.php,251,VsmEndpointService,public,sim,health,,Executa verificação de saúde/disponibilidade em VSM.
+app/Services/VsmEndpointService.php,257,VsmEndpointService,public,sim,logs,int $limit=100,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmEndpointService.
+app/Services/VsmFichaTecnicaService.php,3,VsmFichaTecnicaService,public,sim,endpoints,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmFichaTecnicaService.
+app/Services/VsmFichaTecnicaService.php,8,VsmFichaTecnicaService,public,sim,metricas,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmFichaTecnicaService.
+app/Services/VsmFichaTecnicaService.php,13,VsmFichaTecnicaService,public,sim,payloads,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmFichaTecnicaService.
+app/Services/VsmFichaTecnicaService.php,18,VsmFichaTecnicaService,public,sim,registrarEndpoint,"string $nome,string $metodo,string $endpoint,string $tipo='estoque',string $ambiente='homologacao'",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmFichaTecnicaService.
+app/Services/VsmFichaTecnicaService.php,24,VsmFichaTecnicaService,private,sim,tableExists,string $table,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmFichaTecnicaService.
+app/Services/VsmService.php,4,VsmService,public,não,__construct,?array $cfg=null,Inicializa dependências internas de VsmService.
+app/Services/VsmService.php,11,VsmService,private,não,request,"string $method, string $endpoint, array $payload=[], int $timeout=30",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmService.
+app/Services/VsmService.php,60,VsmService,private,não,post,"string $endpoint, array $payload",Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmService.
+app/Services/VsmService.php,61,VsmService,public,não,enviarBaixaEstoque,array $baixa,Envia dados para integração/destino externo no módulo de VSM.
+app/Services/VsmService.php,62,VsmService,public,não,enviarPedido,array $pedido,Envia dados para integração/destino externo no módulo de VSM.
+app/Services/VsmService.php,64,VsmService,public,não,consultarEstoque,string $sku,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmService.
+app/Services/VsmSimulatorService.php,3,VsmSimulatorService,public,sim,exemplos,,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmSimulatorService.
+app/Services/VsmSimulatorService.php,13,VsmSimulatorService,public,sim,simular,string $tipo,Função auxiliar do domínio de VSM; usada para apoiar regras internas da classe VsmSimulatorService.
+app/Services/WafService.php,13,WafService,public,sim,inspect,,Função auxiliar do domínio de WAF; usada para apoiar regras internas da classe WafService.
+app/Services/WafService.php,31,WafService,public,sim,shouldInspect,string $page,Função auxiliar do domínio de WAF; usada para apoiar regras internas da classe WafService.
+app/Services/WafService.php,53,WafService,private,sim,limited,array $arr,Função auxiliar do domínio de WAF; usada para apoiar regras internas da classe WafService.
+app/Services/WafService.php,58,WafService,private,sim,rateGuard,,Função auxiliar do domínio de WAF; usada para apoiar regras internas da classe WafService.
+app/Services/WafService.php,68,WafService,private,sim,autoBlockIfNeeded,,Bloqueia operação insegura ou não autorizada em WAF.
+app/Services/WebhookSecurityService.php,3,WebhookSecurityService,private,sim,headers,,Função auxiliar do domínio de segurança; usada para apoiar regras internas da classe WebhookSecurityService.
+app/Services/WebhookSecurityService.php,18,WebhookSecurityService,public,sim,validar,"array $config, string $raw","Valida payload, banco, regra, arquivo ou configuração."
+app/Services/XmlNfeHomologationService.php,7,XmlNfeHomologationService,public,sim,responsabilidades,,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,15,XmlNfeHomologationService,public,sim,resumoOperacional,,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,22,XmlNfeHomologationService,public,sim,checksBase,,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,30,XmlNfeHomologationService,public,sim,validarChaveNfe,?string $chave,Valida dados/regras antes de concluir operação de XML/NF-e.
+app/Services/XmlNfeHomologationService.php,35,XmlNfeHomologationService,public,sim,localizarPedidoRelacionado,array $nota,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,41,XmlNfeHomologationService,public,sim,compararPedidoNota,"array $pedido, array $nota",Converte/mapeia dados entre formatos do módulo de XML/NF-e.
+app/Services/XmlNfeHomologationService.php,47,XmlNfeHomologationService,public,sim,registrarEvidencia,"string $etapa, array $contexto=[]",Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,50,XmlNfeHomologationService,private,sim,tableExists,string $table,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+app/Services/XmlNfeHomologationService.php,53,XmlNfeHomologationService,private,sim,dvNfeValido,string $chave,Função auxiliar do domínio de XML/NF-e; usada para apoiar regras internas da classe XmlNfeHomologationService.
+public/install.php,12,global,public/global,não,h,$v,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,13,global,public/global,não,random_secret,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,14,global,public/global,não,export_config,array $data,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,15,global,public/global,não,normalize_db,string $name,Padroniza formato de dados usado por utilitário/core.
+public/install.php,16,global,public/global,não,hosting_db_help,"string $db, string $user",Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,19,global,public/global,não,test_database_access,"string $host, string $db, string $user, string $pass",Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,27,global,public/global,não,run_sql,"PDO $pdo, string $sql",Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,41,global,public/global,não,install_log_error,Throwable $e,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,49,global,public/global,não,checks,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+public/install.php,200,global,public/global,não,val,"$key,$default",Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+views/auditoria_detalhe.php,1,global,public/global,não,pretty,$v,Função auxiliar do domínio de auditoria; usada para apoiar regras internas da classe global.
+views/backups.php,10,global,public/global,não,backup_size_fmt,$bytes,Função auxiliar do domínio de backups; usada para apoiar regras internas da classe global.
+views/central_homologacao.php,3,global,public/global,não,homBadge,array $resumo,Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe global.
+views/central_homologacao.php,9,global,public/global,não,homCheck,"array $checks, string $key",Função auxiliar do domínio de homologação; usada para apoiar regras internas da classe global.
+views/tiny_v2_homologacao.php,3,global,public/global,não,badgeStatusHomologacao,string $status,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe global.
+views/tiny_v3_ficha.php,20,global,public/global,não,badge_bool,$ok,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe global.
+views/tiny_v3_homologacao.php,3,global,public/global,não,badgeStatusHomologacao,string $status,Função auxiliar do domínio de Tiny/Olist; usada para apoiar regras internas da classe global.
+views/usuarios.php,91,global,public/global,não,editarUsuario,u,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+views/usuarios.php,104,global,public/global,não,alterarSenhaUsuario,u,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+views/usuarios.php,111,global,public/global,não,limparUsuarioForm,,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.
+views/usuarios.php,118,global,public/global,não,confirmarExclusaoUsuario,form,Função auxiliar do domínio de utilitário/core; usada para apoiar regras internas da classe global.

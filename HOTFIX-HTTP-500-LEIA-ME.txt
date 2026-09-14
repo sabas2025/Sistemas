@@ -1,0 +1,19 @@
+HOTFIX HTTP ERROR 500 — HUB V104.48.1
+
+Aplicação recomendada em instalação existente:
+1. Faça backup dos arquivos e do banco.
+2. NÃO substitua config/config.php.
+3. Extraia o hotfix mantendo as pastas.
+4. Confirme permissão de escrita em storage/logs.
+5. Abra public/index.php?page=login.
+6. Se houver falha, copie somente o Trace ID exibido e consulte storage/logs/bootstrap-fallback.log.
+
+O hotfix corrige:
+- exceções de bootstrap antes do tratamento global;
+- falha de schema/banco no IpBlockService;
+- logging de segurança sem derrubar o WAF;
+- fallback de auditoria com criação de diretório e lock;
+- compatibilidade .htaccess Apache 2.2/2.4 e hospedagens que bloqueiam Options;
+- diagnóstico CLI scripts/diagnose-http-500.php.
+
+O hotfix não contém config/config.php e não altera credenciais, tokens ou chaves.

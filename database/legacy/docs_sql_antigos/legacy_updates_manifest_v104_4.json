@@ -1,0 +1,22 @@
+[
+  {
+    "arquivo": "database/update_v102_soc_anti_replay_auditoria.sql",
+    "status": "LEGADO_CONTROLADO",
+    "observacao": "Mantido por rastreabilidade; novas instalações devem usar install_final_v104_7.sql."
+  },
+  {
+    "arquivo": "database/update_v104_1_backup_safe_db.sql",
+    "status": "LEGADO_CONTROLADO",
+    "observacao": "Mantido por rastreabilidade; novas instalações devem usar install_final_v104_7.sql."
+  },
+  {
+    "arquivo": "database/update_v104_2_fluxo_nfe_vsm_tiny.sql",
+    "status": "LEGADO_CONTROLADO",
+    "observacao": "Mantido por rastreabilidade; novas instalações devem usar install_final_v104_7.sql."
+  },
+  {
+    "arquivo": "database/update_v104_4_vsm_fluxos_csp_legado.sql",
+    "status": "ATIVO",
+    "observacao": "Mantido por rastreabilidade; novas instalações devem usar install_final_v104_7.sql."
+  }
+]

@@ -1,0 +1,82 @@
+/* Hub V104.39 — correção definitiva de rolagem e viewport */
+:root{--hub-scrollbar-size:10px;}
+html{
+  width:100%;
+  height:auto!important;
+  min-height:100%;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scroll-behavior:smooth;
+  scrollbar-gutter:stable;
+}
+body{
+  position:relative!important;
+  width:100%;
+  height:auto!important;
+  min-height:100vh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+.app-shell{
+  position:relative!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:100vh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+.main{
+  position:relative!important;
+  height:auto!important;
+  min-height:100vh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+.content{
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))!important;
+}
+main,section,.page-content,.dashboard-content,.content-wrapper{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+/* Apenas componentes internos usam rolagem própria. */
+.sidebar .menu,.notif-list,.dropdown-menu,.modal-body,.offcanvas-body,.table-responsive,.codebox,pre{
+  -webkit-overflow-scrolling:touch;
+}
+.modal-body,.offcanvas-body{overflow-y:auto!important;overscroll-behavior:contain;}
+.table-responsive{overflow-x:auto!important;overflow-y:visible!important;}
+/* Bloqueia o fundo somente enquanto o menu móvel estiver realmente aberto. */
+@media (max-width:991.98px){
+  body.sidebar-open{overflow:hidden!important;touch-action:none;}
+  body:not(.sidebar-open){overflow-y:auto!important;touch-action:auto;}
+  .main,.content{overflow:visible!important;}
+  .topbar{position:sticky!important;top:0!important;}
+}
+@media (min-width:992px){
+  body.sidebar-open{overflow-y:auto!important;}
+}
+/* PWA instalado: mantém a página rolável e respeita as áreas seguras. */
+@media (display-mode:standalone){
+  html,body{height:auto!important;min-height:100dvh!important;overflow-y:auto!important;}
+  .app-shell,.main{height:auto!important;min-height:100dvh!important;max-height:none!important;}
+  .content{padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))!important;}
+}
+/* Scrollbar discreta em desktop. */
+@media (hover:hover) and (pointer:fine){
+  html{scrollbar-width:thin;scrollbar-color:#94a3b8 transparent;}
+  html::-webkit-scrollbar{width:var(--hub-scrollbar-size);}
+  html::-webkit-scrollbar-track{background:transparent;}
+  html::-webkit-scrollbar-thumb{background:#94a3b8;border:2px solid transparent;background-clip:padding-box;border-radius:999px;}
+}

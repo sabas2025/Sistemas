@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------------------
+# Hub de Integração Tiny ERP ↔ VSM
+# Regra: só entra no versionamento o que o CHECKSUMS-SHA256.txt do pacote lista.
+# Tudo que é gerado em tempo de execução ou de instalação fica de fora.
+# ---------------------------------------------------------------------------
+
+# Credenciais reais. O instalador cria este arquivo a partir do config.example.php.
+# NUNCA versionar: contém host, usuário, senha do banco e segredos do Hub.
+/config/config.php
+
+# Dependências npm (o package.json e o lock são versionados; a pasta não).
+/node_modules/
+
+# Artefatos de execução dos workers, do painel e dos portões de CI.
+# Os index.html e .htaccess dentro de storage/ SÃO versionados: são a proteção
+# de diretório do pacote e constam do manifesto de integridade.
+/storage/logs/*
+!/storage/logs/index.html
+!/storage/logs/.htaccess
+/storage/backups/*
+!/storage/backups/index.html
+!/storage/backups/.htaccess
+/storage/security-reports/*
+!/storage/security-reports/index.html
+!/storage/security-reports/.htaccess
+/storage/cache/security/
+/storage/audit-v*/
+/storage/*.log
+
+# Saída das suítes de navegador.
+/test-results/
+/playwright-report/
+/blob-report/
+/.lighthouseci/
+
+# Ambiente
+.env
+.env.*

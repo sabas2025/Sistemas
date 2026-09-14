@@ -1,0 +1,46 @@
+name: PWA Quality
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  pwa-static-and-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Install quality dependencies
+        run: npm ci
+      - name: Build and validate minified assets
+        run: npm run build:pwa
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start isolated public server
+        run: php -S 127.0.0.1:8099 -t public > /tmp/hub-pwa-server.log 2>&1 &
+      - name: PWA Playwright tests
+        env:
+          HUB_BASE_URL: http://127.0.0.1:8099
+        run: npm run test:pwa
+      - name: Lighthouse quality gates
+        run: npm run lighthouse:pwa
+      - name: PHP lint telemetry endpoint
+        run: php -l public/pwa_telemetry.php
+      - name: Upload reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-quality-reports
+          path: |
+            tests/e2e/playwright-report
+            tests/e2e/test-results
+            .lighthouseci
+            /tmp/hub-pwa-server.log

@@ -1,0 +1,6 @@
+<?php require __DIR__.'/layout_top.php'; ?>
+<div class="panel"><div class="panel-header"><h2><i class="bi bi-journal-text"></i> Logs de Endpoints VSM</h2><span class="text-muted">Histórico técnico de chamadas e testes</span></div><div class="p-4">
+<?php if($erro): ?><div class="alert alert-danger"><?=e($erro)?></div><?php endif; ?>
+<div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>ID</th><th>Quando</th><th>Chave</th><th>Método executado</th><th>URL</th><th>HTTP</th><th>Tempo</th><th>Trace</th><th>Metadados sem corpo</th></tr></thead><tbody><?php foreach($logs as $l): ?><tr><td><?=e($l['id'])?></td><td><?=e($l['criado_em'])?></td><td><?=e($l['chave'])?></td><td><?=e($l['metodo_http'])?></td><td class="small"><code><?=e($l['url'])?></code></td><td><span class="badge <?=$l['sucesso']?'bg-success':'bg-danger'?>"><?=e($l['status_http'] ?? '-')?></span></td><td><?=e($l['tempo_ms'])?>ms</td><td><code><?=e($l['trace_id'])?></code></td><td><details><summary>Ver</summary><pre class="json-box"><?=e($l['resposta'] ?: $l['erro'])?></pre></details></td></tr><?php endforeach; ?></tbody></table></div>
+</div></div>
+<?php require __DIR__.'/layout_bottom.php'; ?>

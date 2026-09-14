@@ -1,0 +1,30 @@
+Correção aplicada - Warnings compact() e variáveis padrão
+
+Problema relatado:
+- Warning: compact(): Undefined variable $erro em ProdutoController.php
+
+Causa:
+- Alguns controllers chamavam compact('erro') ou compact('erroFiscal') sem inicializar a variável quando não havia exceção.
+
+Correções aplicadas:
+1. ProdutoController.php
+   - Inicializado $erro = null em index().
+   - Inicializado $erro = null em pendencias().
+
+2. FiscalController.php
+   - Garantido $erroFiscal = null em index().
+   - Inicializado $erro = null em timeline().
+
+3. BaseModuleController.php
+   - Criado pacote padrão de variáveis de view:
+     erro, erroFiscal, sucesso, mensagem, warning, info, status e busca.
+   - Criado helper defaultViewData() para próximos controllers.
+
+4. Auditoria realizada:
+   - Varredura de compact() nos controllers.
+   - Validação PHP de app/, public/ e config/.
+
+Resultado:
+- PHP validado sem erros de sintaxe.
+- Warning compact() corrigido.
+- Redução de risco de novas variáveis indefinidas nas views.

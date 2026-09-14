@@ -1,0 +1,330 @@
+{
+  "version": "V104.16",
+  "routes": [
+    {
+      "route": "alertas-operacionais",
+      "controller": "OperationCenterController"
+    },
+    {
+      "route": "ambiente-demo",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "api/notificacao/lida",
+      "controller": "direct-action"
+    },
+    {
+      "route": "api/notificacoes/recentes",
+      "controller": "direct-action"
+    },
+    {
+      "route": "api/processar-fila",
+      "controller": "direct-action"
+    },
+    {
+      "route": "api/status",
+      "controller": "direct-action"
+    },
+    {
+      "route": "api/tiny/webhook/estoque",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/tiny/webhook/nota-fiscal",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/tiny/webhook/pedido",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/tiny/webhook/produto",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/tiny/webhook/situacao-pedido",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/webhook/tiny/evento",
+      "controller": "ApiTinyController"
+    },
+    {
+      "route": "api/webhook/vsm/estoque",
+      "controller": "ApiVsmWebhookController"
+    },
+    {
+      "route": "api/webhook/vsm/pedido",
+      "controller": "ApiVsmWebhookController"
+    },
+    {
+      "route": "api/webhook/vsm/pedido-retorno",
+      "controller": "ApiVsmWebhookController"
+    },
+    {
+      "route": "api/webhook/vsm/produto",
+      "controller": "ApiVsmWebhookController"
+    },
+    {
+      "route": "backup",
+      "controller": "BackupController"
+    },
+    {
+      "route": "backup-download",
+      "controller": "BackupController"
+    },
+    {
+      "route": "backup-excluir",
+      "controller": "BackupController"
+    },
+    {
+      "route": "backup-importar",
+      "controller": "BackupController"
+    },
+    {
+      "route": "backup-restaurar",
+      "controller": "BackupController"
+    },
+    {
+      "route": "backups",
+      "controller": "BackupController"
+    },
+    {
+      "route": "central-homologacao",
+      "controller": "CentralHomologacaoController"
+    },
+    {
+      "route": "centro-operacoes",
+      "controller": "OperationCenterController"
+    },
+    {
+      "route": "conectores-plugaveis",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "dashboard-executivo",
+      "controller": "OperationCenterController"
+    },
+    {
+      "route": "divergencia-acao",
+      "controller": "DivergenceMonitorController"
+    },
+    {
+      "route": "divergencia-estoque",
+      "controller": "DivergenceMonitorController"
+    },
+    {
+      "route": "documento-comercial",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "documentos-comerciais",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "entrada-producao",
+      "controller": "ProductionGoLiveController"
+    },
+    {
+      "route": "entrada-producao-lock-install",
+      "controller": "ProductionGoLiveController"
+    },
+    {
+      "route": "entrada-producao-validar",
+      "controller": "ProductionGoLiveController"
+    },
+    {
+      "route": "evidencia-trace",
+      "controller": "EvidenceController"
+    },
+    {
+      "route": "evidencias-homologacao",
+      "controller": "EvidenceController"
+    },
+    {
+      "route": "fiscal",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-dashboard",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-health",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-reconciliacao",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-reenviar",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-timeline",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "fiscal-xml",
+      "controller": "XmlNfeController"
+    },
+    {
+      "route": "health-modulos",
+      "controller": "DatabaseMaintenanceController"
+    },
+    {
+      "route": "licencas-clientes",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "licencas-clientes-demo",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "limpeza-retencao",
+      "controller": "V50Controller"
+    },
+    {
+      "route": "limpeza-retencao-executar",
+      "controller": "V50Controller"
+    },
+    {
+      "route": "mapa-banco",
+      "controller": "DatabaseMaintenanceController"
+    },
+    {
+      "route": "monitor-divergencias",
+      "controller": "DivergenceMonitorController"
+    },
+    {
+      "route": "orquestracao-integracoes",
+      "controller": "OrquestracaoController"
+    },
+    {
+      "route": "painel-cobranca",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "painel-cobranca-demo",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "pedido-ciclo-detalhe",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pedido-ciclo-enviar-tiny",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pedido-ciclo-vida",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pedido-validacao-detalhe",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pedido-validacao-enfileirar",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pedidos-validacao-vsm",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "planos-comerciais",
+      "controller": "CommercialController"
+    },
+    {
+      "route": "producao-comercial",
+      "controller": "CommercialProductionController"
+    },
+    {
+      "route": "producao-segura",
+      "controller": "ProductionSecurityController"
+    },
+    {
+      "route": "producao-segura-executar",
+      "controller": "ProductionSecurityController"
+    },
+    {
+      "route": "produto-novo-politica",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "produto-novo-politica-salvar",
+      "controller": "V51Controller"
+    },
+    {
+      "route": "pwa-status",
+      "controller": "PwaController"
+    },
+    {
+      "route": "salvar-orquestracao-integracoes",
+      "controller": "OrquestracaoController"
+    },
+    {
+      "route": "security-assisted-test",
+      "controller": "SecurityAssistedTestController"
+    },
+    {
+      "route": "security-assisted-test-download",
+      "controller": "SecurityAssistedTestController"
+    },
+    {
+      "route": "security-assisted-test-run",
+      "controller": "SecurityAssistedTestController"
+    },
+    {
+      "route": "sobre",
+      "controller": "SistemaController"
+    },
+    {
+      "route": "testar-orquestracao-fluxo",
+      "controller": "OrquestracaoController"
+    },
+    {
+      "route": "tiny-v2-homologacao",
+      "controller": "TinyHomologacaoController"
+    },
+    {
+      "route": "tiny-v2-homologacao-executar",
+      "controller": "TinyHomologacaoController"
+    },
+    {
+      "route": "tiny-v3-homologacao",
+      "controller": "TinyHomologacaoController"
+    },
+    {
+      "route": "tiny-v3-homologacao-executar",
+      "controller": "TinyHomologacaoController"
+    },
+    {
+      "route": "tiny-validacao",
+      "controller": "V50Controller"
+    },
+    {
+      "route": "tiny-validacao-executar",
+      "controller": "V50Controller"
+    },
+    {
+      "route": "tutorial-sistema",
+      "controller": "SistemaController"
+    },
+    {
+      "route": "validar-banco",
+      "controller": "DatabaseMaintenanceController"
+    },
+    {
+      "route": "vsm-simulador",
+      "controller": "V50Controller"
+    },
+    {
+      "route": "vsm-simulador-executar",
+      "controller": "V50Controller"
+    }
+  ],
+  "count": 81
+}

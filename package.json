@@ -1,0 +1,22 @@
+{
+  "name": "hub-integracao-pwa-quality",
+  "private": true,
+  "version": "104.49.3",
+  "scripts": {
+    "build:schema": "node scripts/ci/build-consolidated-schema.mjs",
+    "check:schema": "node scripts/ci/build-consolidated-schema.mjs --check",
+    "build:pwa": "node scripts/pwa/build-assets.mjs",
+    "test:pwa": "playwright test -c tests/e2e/playwright.config.js tests/e2e/specs/pwa-v104-48.spec.js",
+    "lighthouse:pwa": "lhci autorun --config=./lighthouserc.json"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.53.0",
+    "clean-css": "^5.3.3",
+    "terser": "^5.43.1"
+  },
+  "overrides": {
+    "tmp": "^0.2.6",
+    "uuid": "^11.1.1"
+  }
+}

@@ -1,0 +1,15 @@
+HOTFIX V104.48.1-R2 — VSM / SEGURANÇA / SELF-TEST
+
+1) Faça backup do banco e dos arquivos.
+2) Extraia o ZIP na raiz do HUB.
+3) NÃO substitua config/config.php.
+4) Abra Central Técnica > Banco > Mapa do Banco.
+5) Clique em “Aplicar tabelas e migrations pendentes”.
+6) Se o painel não puder executar DDL, rode no phpMyAdmin:
+   database/migrations/20260712_004_vsm_security_selftest_recovery.sql
+7) Teste:
+   public/index.php?page=vsm-testes
+   public/index.php?page=selftest
+8) Regere a baseline FIM após validar.
+
+O SQL é idempotente e não contém DROP, TRUNCATE ou DELETE FROM.

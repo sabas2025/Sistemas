@@ -1,0 +1,12 @@
+{
+  "name": "hub-integracao-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "//": "A-03: versão fixada (era 'latest', o que tornava a suíte irreprodutível - a mesma árvore podia passar hoje e falhar amanhã sem mudança de código). Use npm ci com o package-lock.json versionado.",
+  "devDependencies": {
+    "@playwright/test": "1.53.0"
+  }
+}
