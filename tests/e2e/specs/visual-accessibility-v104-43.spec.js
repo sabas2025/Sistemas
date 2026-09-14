@@ -32,9 +32,17 @@ test.describe('V104.43 visual accessibility',()=>{
     });
   }
   test('dark theme persists',async({page})=>{
+    // PR #2, dois defeitos deste teste (o Hub está correto nos dois casos):
+    // 1. O menu .topbar-more é MOBILE por desenho: app.css declara display:none e só o mostra em
+    //    @media(max-width:991.98px). O teste rodava no viewport padrão (1280x720), onde o botão
+    //    está corretamente escondido, e o clique esperava para sempre. Daí o viewport estreito.
+    // 2. O seletor [data-hub-theme] casa com o <body> (que carrega data-hub-theme="light"), não
+    //    com o botão. O botão é [data-hub-theme-toggle]. Clicar no body não alterna nada, então a
+    //    asserção da linha seguinte falharia mesmo com o menu aberto.
+    await page.setViewportSize({width:390,height:844});
     await page.goto(baseURL+'index.php?page=dashboard');
     await page.locator('[data-topbar-more]').click();
-    await page.locator('[data-hub-theme]').click();
+    await page.locator('[data-hub-theme-toggle]').click();
     await expect(page.locator('body')).toHaveAttribute('data-hub-theme','dark');
     await page.reload();
     await expect(page.locator('body')).toHaveAttribute('data-hub-theme','dark');
