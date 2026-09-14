@@ -2,15 +2,33 @@ const { test, expect } = require('@playwright/test');
 const baseURL = process.env.HUB_BASE_URL || 'http://127.0.0.1:8000/public/';
 const user = process.env.HUB_USER || '';
 const pass = process.env.HUB_PASS || '';
+/**
+ * PR #2 — este helper era a causa das QUATRO falhas deste arquivo.
+ *
+ * Ele fazia `Promise.all([page.waitForLoadState('networkidle'), click()])`. Como a tela de login
+ * já estava ociosa, o waitForLoadState resolvia de imediato e o Promise.all terminava assim que o
+ * clique era DESPACHADO — antes de a navegação do POST completar. O beforeEach retornava, o teste
+ * chamava goto(dashboard) e atropelava o POST em voo: a sessão nunca era criada.
+ *
+ * E o helper não conferia nada. Então os quatro testes caíam no login e falhavam mais adiante
+ * procurando elementos que só existem no layout AUTENTICADO — #hubMainContent e
+ * [data-topbar-more] — cada um com uma mensagem diferente, nenhuma apontando a causa.
+ *
+ * O spec irmão visual-responsive.spec.js sempre passou porque faz o clique simples, sem esse
+ * Promise.all. Agora o login é CONFERIDO aqui: se não autenticar, falha neste ponto e diz por quê.
+ */
 async function login(page){
   await page.goto(baseURL+'index.php?page=login');
-  if(await page.locator('input[name="email"],input[name="usuario"]').count()){
-    await page.locator('input[name="email"],input[name="usuario"]').first().fill(user);
+  const campoUsuario = page.locator('input[name="email"],input[name="usuario"]');
+  if(await campoUsuario.count()){
+    await campoUsuario.first().fill(user);
     await page.locator('input[name="senha"],input[type="password"]').first().fill(pass);
-    await Promise.all([page.waitForLoadState('networkidle'),page.locator('button[type="submit"]').first().click()]);
+    await page.locator('button[type="submit"]').first().click();
   }
+  await expect(page.locator('#hubMainContent'),'o login do E2E precisa autenticar antes dos testes').toBeVisible({timeout:15000});
 }
 test.describe('V104.43 visual accessibility',()=>{
+  test.skip(!user || !pass, 'Defina HUB_USER e HUB_PASS');
   test.beforeEach(async({page})=>{await login(page);});
   test('command palette and keyboard navigation',async({page})=>{
     await page.goto(baseURL+'index.php?page=dashboard');

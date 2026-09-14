@@ -614,7 +614,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/logs
 69b817bdadb042dbe7f813b36e077ca2228433402494cc7bc496eeab8fa3fdb3  ./tests/e2e/specs/oauth-callback-security.spec.js
 27e4a8d1c964059e56f81ed5b80bcb6f1e7467e23fd0f39eff1f69869af09324  ./tests/e2e/specs/public-security.spec.js
 1d0c71774fd50fc8cb7b23b97a26daeb9bcf0746f9b320b71279e38a6e851419  ./tests/e2e/specs/pwa-v104-48.spec.js
-e6fc61de781547969253678cee8cef4916a36efd6449ea744e39b5a5d1b08b4a  ./tests/e2e/specs/visual-accessibility-v104-43.spec.js
+62f901bcf85279a068329ca85499e42785f5b475a93717fe8bc65fa369f35653  ./tests/e2e/specs/visual-accessibility-v104-43.spec.js
 1fe899f224716aea708816e17dc2adacb3d7e86560d4e8e2962dfddb9a9001b1  ./tests/e2e/specs/visual-responsive.spec.js
 ef536dce7c05981a9f808080b542f4cc644ad983101800ace7080c8c7b4dfb1f  ./tests/enterprise/_helpers.php
 8e9ac173380a9b4b366e34eddd384d75e1fbc752510b95590db4c1d53395a5bf  ./tests/enterprise/run_regression.php
