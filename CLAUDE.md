@@ -244,6 +244,16 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   aplicação. **Ao mexer na E2E, confira as duas formas** — e lembre que 404 e 503 dizem coisas
   diferentes: 404 é rota errada, 503 é aplicação alcançada sem banco.
 
+- **`<button>` sem `type` num form É submit, mas `button[type="submit"]` não o encontra.** Terceira
+  camada da primeira CI real (PR #2): com a URL corrigida, o login passou a renderizar e os testes
+  preencheram e-mail e senha — e travaram no clique. `views/login.php` declarava
+  `<button class="...login-submit">Entrar no Hub</button>` sem `type`. Para o navegador isso é
+  submit (é o padrão do HTML), então **o login sempre funcionou para o usuário real**; o seletor CSS
+  é que casa por atributo, e o atributo não existia. Quatro specs usam `button[type="submit"]`.
+  Corrigido declarando o atributo — comportamento idêntico, e consistente com o botão irmão do
+  mesmo form, que já declarava `type="button"`. **Ao escrever seletor de E2E, lembre que o padrão
+  implícito do HTML não aparece no DOM como atributo.**
+
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
   15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é

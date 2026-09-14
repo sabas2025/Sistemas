@@ -103,7 +103,7 @@
           <div class="mb-3"><label class="form-label">E-mail</label><input class="form-control form-control-lg" name="email" autocomplete="username" required></div>
           <div class="mb-3"><label class="form-label">Senha</label><input type="password" class="form-control form-control-lg" name="senha" autocomplete="current-password" required></div>
         <?php endif; ?>
-        <button class="btn btn-primary btn-lg w-100 login-submit">Entrar no Hub</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100 login-submit">Entrar no Hub</button>
         <button class="btn btn-outline-primary btn-lg w-100 mt-2 d-none" type="button" data-pwa-install>📲 Instalar aplicativo do Hub</button>
       </form>
 
