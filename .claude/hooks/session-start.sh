@@ -57,11 +57,20 @@ fi
 if command -v node >/dev/null 2>&1; then
   echo "  node .......... $(node -v)"
   if [ -f package.json ]; then
-    if [ -d node_modules ]; then
-      echo "  npm ........... node_modules presente ($(ls node_modules | wc -l) pacotes no topo)"
+    # Contar pastas em node_modules NÃO prova instalação boa: já vi neste container um
+    # "npm ci" criar 261 diretórios vazios, sem extrair nada. O hook chegou a relatar
+    # "261 pacotes" sobre uma árvore inútil - indicador que mente, produzido aqui mesmo.
+    # A conferência agora é a mesma da CI: o pacote resolve, ou não está instalado.
+    if [ -d node_modules ] && node -e "['clean-css','terser'].forEach(p=>require.resolve(p+'/package.json'))" 2>/dev/null; then
+      echo "  npm ........... dependências resolvem ($(ls node_modules | wc -l) pacotes no topo)"
+    elif [ -d node_modules ]; then
+      echo "  ‼️  node_modules existe mas está INCOMPLETO (pacotes não resolvem)"
+      echo "                  os 12 portões não dependem disso; para build:pwa/test:pwa:"
+      echo "                  rm -rf node_modules && npm ci"
+      ressalvas=$((ressalvas + 1))
     else
       echo "  npm ........... node_modules ausente — os 12 portões NÃO dependem disso"
-      echo "                  para build:pwa/test:pwa/lighthouse:pwa: npm install (leva ~7 min)"
+      echo "                  para build:pwa/test:pwa/lighthouse:pwa: npm ci (leva ~8 min)"
     fi
   fi
 else

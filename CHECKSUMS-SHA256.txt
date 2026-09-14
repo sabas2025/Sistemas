@@ -1,5 +1,5 @@
-4578a0d75dd5c9a20fe30e44a672ac6d494feeb4916bd11d5f631c4288fcb93c  ./.github/workflows/hub-ci.yml
-14f7a76427c22230f59f61bedb6b072de8088495e5658edefdea9f0ceb431cfd  ./.github/workflows/pwa-quality.yml
+3f6d7587d99048795a8ee3a64e3c233b2c46c929b73dd7db22b4559346069fc2  ./.github/workflows/hub-ci.yml
+5083eea8caf30132d19825989ce362e3b3fc975fee8ee1851dea519d2eefaccf  ./.github/workflows/pwa-quality.yml
 7bffc672376fa470ba1dfc4fbded59d7f4227e136e987d17f2f9b91fd3e4f2d5  ./.htaccess
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md

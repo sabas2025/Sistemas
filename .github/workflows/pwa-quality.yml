@@ -13,13 +13,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
       - name: Install quality dependencies
-        run: npm ci
+        # A primeira execucao real da CI (PR #2) mostrou que "npm ci" pode SAIR COM CODIGO 0 e
+        # ainda assim deixar node_modules incompleto: apos 7min55s ele morreu com
+        # "npm error Exit handler never called!", o passo passou, e a falha so apareceu tres
+        # passos adiante como ERR_MODULE_NOT_FOUND em clean-css. Indicador que mente.
+        # Aqui a instalacao e CONFERIDA no proprio passo: se faltar pacote, falha aqui, com o
+        # nome do que faltou. Uma repeticao cobre a quebra transitoria do npm.
+        run: |
+          instalar() { npm ci --no-audit --no-fund; }
+          conferir() {
+            node -e "
+              const need = ['clean-css','terser','@playwright/test','@lhci/cli'];
+              const faltam = need.filter(p => { try { require.resolve(p + '/package.json'); return false; } catch { return true; } });
+              if (faltam.length) { console.error('Instalacao npm incompleta. Faltam: ' + faltam.join(', ')); process.exit(1); }
+              console.log('Dependencias conferidas: ' + need.join(', '));
+            "
+          }
+          instalar || echo "npm ci retornou erro; a conferencia abaixo decide."
+          if ! conferir; then
+            echo "::warning::Instalacao npm saiu incompleta. Limpando e repetindo uma vez."
+            rm -rf node_modules
+            instalar || echo "npm ci falhou de novo; a conferencia abaixo decide."
+            conferir
+          fi
       - name: Build and validate minified assets
         run: npm run build:pwa
       - name: Install Chromium

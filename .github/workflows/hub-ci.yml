@@ -113,7 +113,7 @@ jobs:
           extensions: pdo_mysql, curl, mbstring, openssl, zip
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Provisionar schema e administrador de teste
         env:
           HUB_TEST_DB_HOST: 127.0.0.1
