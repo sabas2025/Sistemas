@@ -132,7 +132,9 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 - **R5** — base funcional.
 - **R6** — correções da reauditoria (achados A-01 a A-13), auto-auditoria (B-01 a B-06) e
   portabilidade MariaDB.
-- **R7** — as 12 melhorias da seção 8 do relatório R6, com destaque para isolamento multiempresa.
+- **R7** — as 12 melhorias da seção 8 do relatório R6 (destaque: isolamento multiempresa), mais a
+  auditoria do `PROMPT_-_HUB.md` (F-01, F-02) e a auditoria de capacidade para
+  **100 clientes / 500 pedidos por minuto** (C-01 a C-08, todos aplicados).
 
 **Documentos que explicam as decisões (leia antes de "corrigir" algo que parece defeito)**
 - `SECURITY.md` — modelo de ameaças e **decisões deliberadas** (por que a rota degrada aberta, por
@@ -140,11 +142,16 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
   o redirecionamento HTTPS saiu do `.htaccess`).
 - `RELATORIO-V104.49.3-R6-AUDITORIA-E-CORRECOES-2026-09-14.md`
 - `RELATORIO-V104.49.3-R7-MELHORIAS-APLICADAS-2026-09-14.md`
+- `RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md` — auditoria pelas 12 fases deste documento
+- `RELATORIO-CAPACIDADE-100-CLIENTES-500-PEDIDOS-MIN-2026-09-14.md` — **meta de carga e o adendo
+  com as 8 correções**; leia antes de mexer em rate limit, retenção, sessão ou tipo de chave
 
 **Serviços centrais criados nesta linha — use-os, não crie paralelos**
 | Serviço | Responsabilidade |
 |---|---|
-| `TenantScopeService` | Isolamento por empresa. Catálogo de 31 tabelas, `where()`, `stamp()`, `run()`, `applyToSelect/Insert()` |
+| `TenantScopeService` | Isolamento por empresa. Catálogo de **32 tabelas**, `where()`, `stamp()`, `run()`, `applyToSelect/Insert()` |
+| `AtomicRateCounterService` | Contador de janela deslizante **atômico** (leitura e escrita sob o mesmo lock). Base do `RateLimitService` |
+| `DatabaseSessionHandler` | Sessão compartilhada entre servidores (opt-in por `security.session_driver='database'`) |
 | `RateLimitService` | **Fachada única** de rate limit. Superfície sem política declarada é recusada em tempo de chamada |
 | `SecurityHealthService` | Estado de degradação dos controles, com TTL, exposto em `api/status` |
 | `RouteCatalogService` | **Fonte única** de classificação de rota. Igualdade exata, nunca substring |
@@ -153,7 +160,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
 
 **Portões de CI (12) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (33 testes) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**35 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php`
@@ -173,10 +180,34 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   literal. Foi assim que `count()`/`tableRows()` quase ficaram sem isolamento.
 - **Regenerar `CHECKSUMS-SHA256.txt` por último**, sobre a árvore congelada, e limpar artefatos de
   execução local (`storage/cache/security`, `storage/audit-*`) antes de empacotar.
+- **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
+  era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
+  do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
+  (`webhook_inbound`) e é classificado pelo `RouteCatalogService`.
+- **Chave de balde compartilhada vira gargalo.** No C-01, a chave `(ip, usuario_id, rota, metodo,
+  janela)` fazia os 500 pedidos do minuto colapsarem numa única linha, serializando a entrada.
+- **Não faça manutenção de tabela no caminho da requisição.** O C-04: expurgo de até 30 mil
+  deleções rodava dentro de uma requisição de usuário sorteada. Está em `workers/worker_retencao.php`.
+- **Migration que pula tabela também pula o índice dela.** O C-03: `pedidos_integracao` já tinha
+  `empresa_id`, então a migration de isolamento a ignorou — e ficou sem índice, a única das 32.
+- **Indicador que mente é pior que indicador ausente.** Os achados F-01 e F-02: checagens que
+  apontavam para um método inexistente e para uma coluna removida ficavam vermelhas para sempre,
+  anulando o alarme verdadeiro. Ao criar checagem, derive o nome por reflexão/catálogo.
 
 **Pendências abertas**
+- **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
+  drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
+  hoje, horas depois. **Quanto antes rodar, mais barata.**
 - Validar o isolamento multiempresa **contra banco real com duas empresas** (seção 5 do `SECURITY.md`).
 - Marcar `Hub CI / gate` como *required* na proteção de branch.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
+- `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.
+
+**Ordem de implantação das migrations de capacidade:** backup verificado → `011` (índices) →
+`013` (logs + sessões) → agendar `worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
+
+**Nunca validado contra banco real nesta linha de trabalho.** Todas as auditorias da R6/R7 foram
+**estáticas**: não havia MySQL nem Docker no ambiente. Os portões de runtime MySQL 8 / MariaDB 11.4
+rodam só na CI. Antes de produção, exercite o `gate` completo.
