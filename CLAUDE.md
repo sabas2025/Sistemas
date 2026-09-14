@@ -142,6 +142,10 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
   o redirecionamento HTTPS saiu do `.htaccess`).
 - `RELATORIO-V104.49.3-R6-AUDITORIA-E-CORRECOES-2026-09-14.md`
 - `RELATORIO-V104.49.3-R7-MELHORIAS-APLICADAS-2026-09-14.md`
+- `RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
+  classmap). **As três tabelas que elas escreviam continuam no schema** (`connector_operational_checks`,
+  `comercial_demo_reset_logs`, `system_release_checks`): estão em `database/modules/core.sql`, no
+  `schema_inventory_current.json` e em três portões de CI — não faça `DROP`
 - `RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md` — auditoria pelas 12 fases deste documento
 - `RELATORIO-CAPACIDADE-100-CLIENTES-500-PEDIDOS-MIN-2026-09-14.md` — **meta de carga e o adendo
   com as 8 correções**; leia antes de mexer em rate limit, retenção, sessão ou tipo de chave
