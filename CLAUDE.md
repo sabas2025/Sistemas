@@ -197,6 +197,10 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   literal. Foi assim que `count()`/`tableRows()` quase ficaram sem isolamento.
 - **Regenerar `CHECKSUMS-SHA256.txt` por último**, sobre a árvore congelada, e limpar artefatos de
   execução local (`storage/cache/security`, `storage/audit-*`) antes de empacotar.
+  Com o Hub no repositório há uma armadilha nova: **editar este `CLAUDE.md` invalida a linha dele
+  no manifesto**, que passa a acusar `FAILED`. Nada na CI verifica o manifesto, então a falha é
+  silenciosa — indicador que mente. Ao mexer neste arquivo, regenere a linha:
+  `sha256sum CLAUDE.md` e substitua a entrada `./CLAUDE.md` no `CHECKSUMS-SHA256.txt`.
 - **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
   era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
   do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
