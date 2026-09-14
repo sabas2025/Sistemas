@@ -193,6 +193,13 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **MariaDB ≠ MySQL 8**: largura de exibição em `COLUMN_TYPE`, `COLUMN_DEFAULT` como expressão SQL,
   necessidade de drenar result set (`query()` + `closeCursor()`). Quatro defeitos vieram daí, um
   impedia a instalação. A matriz de CI existe por isso.
+  **A divergência não para no SQL: alcança os binários.** Na primeira execução real da CI (PR #2),
+  os dois jobs sobre `mariadb:11.4` falharam e o de `mysql:8.0` passou, com o *mesmo*
+  `--health-cmd="mysqladmin ping"`. O servidor MariaDB estava de pé — o log diz
+  `ready for connections` seis segundos após subir — mas o Actions o declarou `unhealthy` dois
+  minutos depois, porque a sonda nunca teve sucesso: **o MariaDB 11.x renomeou os binários `mysql*`
+  para `mariadb*`**. O job morria antes de qualquer teste rodar. O `health-cmd` agora tenta
+  `mariadb-admin` e cai para `mysqladmin`, servindo às duas imagens.
 - **Consulta com nome de tabela interpolado** escapa de varredura que procura `FROM <tabela>`
   literal. Foi assim que `count()`/`tableRows()` quase ficaram sem isolamento.
 - **Regenerar `CHECKSUMS-SHA256.txt` por último**, sobre a árvore congelada, e limpar artefatos de
