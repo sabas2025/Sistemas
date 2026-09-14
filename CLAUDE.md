@@ -142,6 +142,10 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
   o redirecionamento HTTPS saiu do `.htaccess`).
 - `RELATORIO-V104.49.3-R6-AUDITORIA-E-CORRECOES-2026-09-14.md`
 - `RELATORIO-V104.49.3-R7-MELHORIAS-APLICADAS-2026-09-14.md`
+- `RELATORIO-AUDITORIA-FINAL-COMPLETA-2026-09-14.md` — auditoria completa final (achados G-01 a G-06)
+- `RELATORIO-CORRECOES-G01-G02-2026-09-14.md` — G-01 e G-02 aplicados e validados. **Ressalva viva:**
+  `SensitiveDataService::KEYS` cobre `nome_cliente`/`cliente_nome`, **não** uma chave `nome` solta —
+  ampliar o catálogo afeta o log do sistema inteiro, é decisão de produto
 - `RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
   classmap). **As três tabelas que elas escreviam continuam no schema** (`connector_operational_checks`,
   `comercial_demo_reset_logs`, `system_release_checks`): estão em `database/modules/core.sql`, no
@@ -164,7 +168,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
 
 **Portões de CI (12) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**35 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**37 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php`
@@ -197,6 +201,19 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **Indicador que mente é pior que indicador ausente.** Os achados F-01 e F-02: checagens que
   apontavam para um método inexistente e para uma coluna removida ficavam vermelhas para sempre,
   anulando o alarme verdadeiro. Ao criar checagem, derive o nome por reflexão/catálogo.
+- **Tipo errado dentro de `catch(Throwable)` mata a escrita em silêncio.** O achado G-01:
+  `TinyV2Service::logEndpoint()` passava `array $request` para
+  `SensitiveDataService::maskJson(string $body)`. Array não é coercível para string em PHP 8, o
+  `TypeError` era garantido em toda chamada, e o `catch` do próprio método o rebaixava a aviso
+  best-effort — `tiny_v2_endpoint_logs` ficou **anos vazia** e o painel de saúde do Tiny V2
+  mostrava verde com "sem chamada recente" sob tráfego real. Ao envolver gravação em
+  `catch(Throwable)`, confira os **tipos declarados** de tudo que entra no `execute()`. Para
+  payload destinado a log use `SensitiveDataService::sanitizeForStorage()` (aceita `mixed`),
+  nunca `maskJson()` (só `string`).
+- **`Audit::event()` NÃO mascara nada.** A máscara é de quem chama. `TinyV3Service` e `VsmService`
+  aplicam `SensitiveDataService::mask()` na requisição e na resposta; o `TinyV2Service` era o único
+  que não aplicava no caminho de sucesso (achado G-02). Ao adicionar um cliente de integração,
+  copie o desenho do V3, não o do V2 antigo.
 
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
