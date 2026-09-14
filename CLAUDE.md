@@ -146,6 +146,9 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 - `RELATORIO-CORRECOES-G01-G02-2026-09-14.md` — G-01 e G-02 aplicados e validados. **Ressalva viva:**
   `SensitiveDataService::KEYS` cobre `nome_cliente`/`cliente_nome`, **não** uma chave `nome` solta —
   ampliar o catálogo afeta o log do sistema inteiro, é decisão de produto
+- `RELATORIO-CORRECAO-G03-2026-09-14.md` — jitter no reagendamento das filas. **O achado apontava
+  um ponto; havia quatro** (`QueueService`, `EnterpriseIdempotencyGuardService`,
+  `EstoqueEnterpriseService`, `FiscalEnterpriseService`). Ao mexer em backoff, procure os quatro
 - `RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
   classmap). **As três tabelas que elas escreviam continuam no schema** (`connector_operational_checks`,
   `comercial_demo_reset_logs`, `system_release_checks`): estão em `database/modules/core.sql`, no
@@ -166,9 +169,10 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `SecretStrengthService` | Força, reuso e valores conhecidos de segredo |
 | `ClassmapBuilderService` | Geração do classmap |
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
+| `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (12) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**37 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**38 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php`
@@ -214,6 +218,13 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   aplicam `SensitiveDataService::mask()` na requisição e na resposta; o `TinyV2Service` era o único
   que não aplicava no caminho de sucesso (achado G-02). Ao adicionar um cliente de integração,
   copie o desenho do V3, não o do V2 antigo.
+
+- **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
+  **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
+  15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é
+  `atraso da política + random(0, teto)`, com teto de 10% do atraso, piso 30 s e limite 300 s, em
+  `RetryPolicyService::jitterSegundos()`. Medido: 500 itens que falham no mesmo segundo passam de
+  **1** para **31 segundos distintos** (atraso de 5 min) e **91** (15 min).
 
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
