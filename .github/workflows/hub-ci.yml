@@ -124,11 +124,21 @@ jobs:
           # B-05: confirmação explícita exigida pelo script, que é destrutivo por natureza.
           HUB_CI_E2E_CONFIRM: '1'
         run: php scripts/ci/provision-e2e-environment.php
+      # Auditoria da primeira execucao real da CI (PR #2): a suite E2E rodava contra o caminho
+      # errado e 20 de 23 testes falhavam com "element(s) not found". A causa era a URL, nao o Hub.
+      # Com document root na raiz e HUB_BASE_URL terminando em /public, as DUAS formas de navegar
+      # usadas pelos specs erravam o alvo:
+      #   page.goto('/index.php?...')      -> barra inicial resolve contra a ORIGEM e descarta
+      #                                       /public  => http://127.0.0.1:8000/index.php  = 404
+      #   page.goto(baseURL+'index.php...') -> baseURL sem barra final concatena grudado
+      #                                       => .../publicindex.php                        = 404
+      # Servir a partir de public/ com baseURL terminando em barra acerta as duas. Tambem e o que
+      # o LEIA-ME-INSTALACAO-E-ATUALIZACAO.md recomenda como document root.
       - name: Subir servidor local isolado
         run: |
-          php -S 127.0.0.1:8000 -t . > /tmp/php-server.log 2>&1 &
+          php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -fsS "http://127.0.0.1:8000/public/index.php?page=login" > /dev/null; then exit 0; fi
+            if curl -fsS "http://127.0.0.1:8000/index.php?page=login" > /dev/null; then exit 0; fi
             sleep 1
           done
           echo "Servidor local não respondeu a tempo:"; cat /tmp/php-server.log; exit 1
@@ -142,7 +152,7 @@ jobs:
         working-directory: tests/e2e
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-result.json
-          HUB_BASE_URL: http://127.0.0.1:8000/public
+          HUB_BASE_URL: http://127.0.0.1:8000/
           HUB_USER: ci@example.invalid
           HUB_PASS: CI-only-password-2026
         run: |

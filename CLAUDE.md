@@ -235,6 +235,15 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   que não aplicava no caminho de sucesso (achado G-02). Ao adicionar um cliente de integração,
   copie o desenho do V3, não o do V2 antigo.
 
+- **Em Playwright, `page.goto('/x')` descarta o caminho da `baseURL`.** Na primeira execução real
+  da CI (PR #2) a suíte E2E rodou e 20 de 23 testes falharam com `element(s) not found`. Não era o
+  Hub: era a URL. Com `php -S -t .` e `HUB_BASE_URL=.../public`, as duas formas usadas pelos specs
+  erravam o alvo — `goto('/index.php')` resolve contra a **origem** e vira `/index.php` (404), e
+  `goto(baseURL+'index.php')` com baseURL sem barra final vira `/publicindex.php` (404). Medido:
+  os dois davam 404; servindo de `public/` com baseURL terminando em barra, os dois alcançam a
+  aplicação. **Ao mexer na E2E, confira as duas formas** — e lembre que 404 e 503 dizem coisas
+  diferentes: 404 é rota errada, 503 é aplicação alcançada sem banco.
+
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
   15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é

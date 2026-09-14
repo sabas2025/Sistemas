@@ -223,7 +223,17 @@ hub_check($checks,'Suíte Enterprise executa todos os testes mesmo com falhas (A
     str_contains($runner, 'if php "$test_file"; then') && str_contains($runner, 'failed_files'));
 $workflow = hub_read('.github/workflows/hub-ci.yml');
 hub_check($checks,'E2E do CI provisiona ambiente próprio e define HUB_BASE_URL (A-03)',
-    str_contains($workflow, 'provision-e2e-environment.php') && str_contains($workflow, 'HUB_BASE_URL: http://127.0.0.1:8000/public'));
+    str_contains($workflow, 'provision-e2e-environment.php')
+    && preg_match('~HUB_BASE_URL: http://127\\.0\\.0\\.1:8000/\\s*$~m', $workflow) === 1);
+// PR #2: o document root do servidor e a baseURL PRECISAM concordar. Antes divergiam - servidor
+// com "-t ." e baseURL terminando em /public - e as duas formas de navegar usadas pelos specs
+// erravam o alvo: goto('/index.php') resolve contra a origem e descarta /public (404), e
+// goto(baseURL+'index.php') concatena grudado virando /publicindex.php (404). Resultado medido:
+// 20 de 23 testes falhando com "element(s) not found", sem nenhum defeito no Hub.
+hub_check($checks,'Servidor E2E serve public/ e a baseURL não repete o caminho (PR #2)',
+    str_contains($workflow, 'php -S 127.0.0.1:8000 -t public')
+    && !str_contains($workflow, 'HUB_BASE_URL: http://127.0.0.1:8000/public')
+    && !str_contains($workflow, 'php -S 127.0.0.1:8000 -t .'));
 hub_check($checks,'Teste E2E pulado reprova o gate em vez de passar em silêncio (A-03)',
     str_contains($workflow, 'stats.skipped'));
 hub_check($checks,'Playwright está com versão travada e lockfile presente (A-03)',
