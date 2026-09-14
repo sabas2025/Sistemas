@@ -25,7 +25,11 @@ for (const size of sizes) {
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 2);
     if (metrics.scrollHeight > metrics.clientHeight + 20) {
       await page.evaluate(() => window.scrollTo(0, Math.min(300, document.documentElement.scrollHeight)));
-      expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+      // PR #2: a folha scroll-enterprise.css (correção V104.39) declara html{scroll-behavior:smooth}.
+      // Com isso window.scrollTo ANIMA e retorna na hora, e ler window.scrollY no evaluate seguinte
+      // pegava 0 — não porque a página estivesse travada, mas porque a animação ainda não tinha
+      // andado. expect.poll espera a rolagem assentar e continua provando o que importa: que rola.
+      await expect.poll(() => page.evaluate(() => window.scrollY), {timeout: 5000}).toBeGreaterThan(0);
     }
     await page.screenshot({path:`test-results/visual-${size.name}-${route}.png`, fullPage:true});
    }
