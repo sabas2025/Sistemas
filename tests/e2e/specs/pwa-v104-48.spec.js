@@ -57,7 +57,20 @@ test.describe('PWA V104.48', () => {
   test('telemetria rejeita GET e eventos fora da lista branca', async ({ request }) => {
     const get = await request.get('/pwa_telemetry.php');
     expect(get.status()).toBe(405);
-    const invalid = await request.post('/pwa_telemetry.php', { data: { event: 'token_dump', message: 'x' } });
-    expect(invalid.status()).toBe(422);
+
+    // PR #2: o endpoint checa Sec-Fetch-Site ANTES da lista branca e trata a AUSÊNCIA do cabeçalho
+    // como não confiável — é a correção do achado A-07, que fechava a porta para curl e scripts.
+    // O `request` do Playwright é cliente HTTP, não navegação de navegador, e não envia esse
+    // cabeçalho: por isso a resposta era 403 e o ramo do 422 nunca era alcançado. Medido no
+    // endpoint: sem o cabeçalho 403; com ele e evento fora da lista 422; com evento válido 202.
+    // Agora o teste cobre as DUAS garantias, em vez de só tentar a segunda.
+    const semOrigem = await request.post('/pwa_telemetry.php', { data: { event: 'token_dump', message: 'x' } });
+    expect(semOrigem.status(), 'sem Sec-Fetch-Site o endpoint recusa (A-07)').toBe(403);
+
+    const invalid = await request.post('/pwa_telemetry.php', {
+      headers: { 'Sec-Fetch-Site': 'same-origin' },
+      data: { event: 'token_dump', message: 'x' }
+    });
+    expect(invalid.status(), 'evento fora da lista branca é recusado com 422').toBe(422);
   });
 });
