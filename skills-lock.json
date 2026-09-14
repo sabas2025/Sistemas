@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "security-audit": {
+      "source": "kursku/skills",
+      "sourceType": "github",
+      "skillPath": "packs/global-skillshare-import/wave-010/security-audit/SKILL.md",
+      "computedHash": "cd165c9009766963e819fc22ae4479174ff65156fb1b155805de9db7a73bbfee"
+    }
+  }
+}
