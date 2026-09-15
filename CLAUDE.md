@@ -368,14 +368,16 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
   hoje, horas depois. **Quanto antes rodar, mais barata.**
-- **H-01 — o isolamento multiempresa está INERTE em runtime.** Validado em 2026-09-15 contra banco
-  real com duas empresas (era a pendência aberta da seção 5 do `SECURITY.md`) e **reprovou**:
-  `TenantContextService::set()` não tem chamador nenhum, então `$_SESSION['tenant_empresa_id']`
-  nunca existe e `TenantScopeService::where()` devolve predicado vazio. Medido por HTTP: a tela de
-  pedidos mostrou as linhas das duas empresas. O mecanismo está certo — injetando a empresa, isola.
-  Corrigir depende de definir o vínculo usuário↔empresa, que **não existe no schema** (`usuarios`
-  não tem `empresa_id` nem `filial_id`): é decisão de produto. Até lá, **não opere dois clientes na
-  mesma instalação**.
+- **H-01 — leitura isolada; a ESCRITA DE ENTRADA ainda não.** A metade resolvida: `usuarios` ganhou
+  `empresa_id` (migration `20260915_014`) e `Auth::finalizeLogin()` carimba
+  `$_SESSION['tenant_empresa_id']`. Medido por HTTP, lendo a sessão de cada usuário: ALFA vê só
+  ALFA + legado, BETA só BETA + legado, usuário sem empresa vê tudo (de propósito — aplicar não
+  esvazia tela de ninguém). **A metade aberta:** webhook e fila rodam sem sessão, então
+  `applyToInsert()` devolve o SQL intacto e a linha nasce com `empresa_id` NULL — visível a todas
+  as empresas, porque `where()` inclui NULL. É o caso de `ApiController.php:739`. Resolver exige
+  decidir de onde a entrada tira a empresa (token de webhook por empresa? coluna na fila? empresa
+  por conexão Tiny/VSM?) — decisão de produto. **Também não há tela para atribuir empresa a
+  usuário**: hoje é `UPDATE usuarios SET empresa_id = …`.
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
@@ -397,7 +399,7 @@ no PR #2:
 | **E2E autenticado** (23 testes, Playwright) contra MariaDB | CI, `e2e-authenticated` | verde |
 | Login, sessão, rotas do painel, 404 de rota desconhecida | sessão local, MariaDB 10.11 | verde |
 | `pwa-static-and-e2e` (Lighthouse + PWA) | CI, workflow `pwa-quality.yml` | verde |
-| **Isolamento multiempresa, duas empresas** | sessão local, MariaDB 10.11 | **REPROVOU — ver H-01** |
+| **Isolamento multiempresa, duas empresas** | sessão local, MariaDB 10.11 | leitura isola; escrita de entrada não — ver H-01 |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

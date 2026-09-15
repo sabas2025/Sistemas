@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
   tentativas_login INT DEFAULT 0,
   bloqueado_ate DATETIME NULL,
   session_version INT NOT NULL DEFAULT 0,
-  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  empresa_id INT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_usuarios_empresa (empresa_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

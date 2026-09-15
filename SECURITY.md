@@ -137,22 +137,39 @@ O isolamento de dados é aplicado por `TenantScopeService`, que filtra por `empr
 registradas em seu catálogo, e é verificado estaticamente por `scripts/ci/tenant-scope-check.php` —
 toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exceção justificada.
 
-> ### ⚠️ NÃO opere dois clientes na mesma instalação hoje
+> ### Estado do isolamento em 2026-09-15 — leitura isolada, escrita de entrada ainda não
 >
-> A validação de runtime foi feita em **2026-09-15**, contra banco real com duas empresas, e
-> **reprovou**. Os passos 1 a 3 abaixo **não bastam**: eles ligam o bloqueio de rota e provam que
-> as consultas passam pelo `TenantScopeService`, mas **nada no aplicativo seleciona a empresa
-> ativa**. `TenantContextService::set()` não tem nenhum chamador, então
-> `$_SESSION['tenant_empresa_id']` nunca existe, `currentEmpresaId()` devolve `null` e
-> `TenantScopeService::where()` devolve predicado **vazio** — os 162 pontos que roteiam consultas
-> pelo serviço não filtram nada.
+> A validação de runtime foi feita contra banco real com duas empresas. Na primeira passagem
+> **reprovou**: nada selecionava a empresa ativa, `$_SESSION['tenant_empresa_id']` nunca existia e
+> `TenantScopeService::where()` devolvia predicado vazio — a tela de pedidos mostrava as linhas
+> das duas empresas.
 >
-> Medido por HTTP, autenticado, com duas empresas povoadas: a tela de pedidos mostrou as linhas
-> **das duas**. Injetando a empresa na sessão, o filtro isola corretamente — o mecanismo está
-> certo, só nunca é ligado.
+> **Corrigido (achado H-01).** `usuarios` ganhou `empresa_id` (migration `20260915_014`) e
+> `Auth::finalizeLogin()` passou a carimbar a sessão. Medido depois, lendo o arquivo de sessão de
+> cada usuário:
 >
-> Corrigir depende de definir o vínculo usuário↔empresa, que **não existe no schema** (`usuarios`
-> não tem `empresa_id` nem `filial_id`). É decisão de produto, não conserto pontual.
+> | usuário | sessão | a tela de pedidos mostra |
+> |---|---|---|
+> | `alfa@` (empresa 1) | `tenant_empresa_id\|i:1` | ALFA-001, ALFA-002, LEGADO-1 |
+> | `beta@` (empresa 2) | `tenant_empresa_id\|i:2` | BETA-001, BETA-002, LEGADO-1 |
+> | admin sem empresa | sem a chave | todas as linhas |
+>
+> Usuário sem empresa continua vendo tudo, de propósito: aplicar a migration não esvazia tela de
+> ninguém, e o isolamento entra em vigor por usuário conforme as empresas são atribuídas.
+>
+> ### ⚠️ O que ainda NÃO está isolado: a escrita vinda de fora
+>
+> Webhook e processamento de fila rodam **sem sessão de usuário**. Sem empresa ativa,
+> `TenantScopeService::applyToInsert()` devolve o SQL intacto — então a linha nasce com
+> `empresa_id` NULL e, por `where()` incluir NULL, fica **visível a todas as empresas**. É o caso
+> de `ApiController.php:739`, que grava `pedidos_integracao` no caminho de entrada.
+>
+> Ou seja: hoje a **leitura** está isolada para quem entra pelo painel com empresa atribuída; a
+> **entrada de dados** ainda não tem de onde tirar a empresa. Resolver isso exige decidir a fonte
+> (token do webhook por empresa? coluna na fila? empresa por conexão Tiny/VSM?) — decisão de
+> produto, como foi a do vínculo usuário↔empresa.
+>
+> Não há tela para atribuir empresa a usuário: hoje é `UPDATE usuarios SET empresa_id = …`.
 
 **Antes de usar com mais de um cliente na mesma instalação:**
 
@@ -161,8 +178,9 @@ toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exc
    passa pelo serviço, não que exista empresa ativa. Verde aqui não é prova de isolamento.
 2. Aplique a migration `20260914_010_tenant_isolation.sql` e confira o backfill.
 3. Ligue `commercial.tenant_scope_required`.
-4. **Resolva a seleção de empresa ativa** (o aviso acima) — sem isso os passos 1 a 3 dão uma falsa
-   sensação de isolamento.
+4. Atribua a empresa a cada usuário (`usuarios.empresa_id`) — sem isso ele vê tudo. E **resolva a
+   empresa no caminho de entrada** (o aviso acima), ou os pedidos que chegarem por webhook ficarão
+   visíveis a todas as empresas.
 5. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
    outra. Dá para reproduzir sem Docker; a receita está no `CLAUDE.md`, na seção de validação
    contra banco real.
