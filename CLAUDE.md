@@ -178,11 +178,13 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
-**Portões de CI (12) — todos precisam ficar verdes**
+**Portões de CI (13) — todos precisam ficar verdes**
 `php-lint.sh` · `enterprise-tests.sh` (**38 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
-`sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php`
+`sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
+**`build-assets.mjs --check`** (`npm run check:pwa`, desde 2026-09-15: os `.min` servidos têm de
+bater com a fonte — por isso o `static-enterprise` agora instala Node e dependências)
 Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do workflow.
 
 **Armadilhas já pagas caro — não repita**
@@ -307,6 +309,44 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   Corrigido declarando o atributo — comportamento idêntico, e consistente com o botão irmão do
   mesmo form, que já declarava `type="button"`. **Ao escrever seletor de E2E, lembre que o padrão
   implícito do HTML não aparece no DOM como atributo.**
+
+- **Folha de estilo que a tela carrega mas o build NÃO regenera.** `views/layout_top.php:50` carrega
+  `integration-center.min.css`, e `scripts/pwa/build-assets.mjs` não listava
+  `integration-center.css` em `cssFiles`. O minificado servido era de julho e podia divergir da
+  fonte sem nada acusar: **editar o `.css` não chegava na tela**. Descoberto ao corrigir a
+  divergência PWA↔web — a edição simplesmente não teve efeito. Conferido antes de incluir a folha
+  no build que minificar a fonte reproduz o `.min.css` commitado (só normalizações do clean-css:
+  `0%`→`0`, aspas em `[data-hub-theme=dark]`, ordem de seletores), então a inclusão não muda o CSS
+  servido. **Ao mexer em qualquer `.css`/`.js` de `public/assets/`, confira antes se ele está na
+  lista do build** — a varredura que encontra órfãs compara os `*.min.*` referenciados nas views
+  com `cssFiles`/`jsFiles`. Hoje não há nenhuma órfã — e desde 2026-09-15 o portão
+  `npm run check:pwa` trava a CI quando um `.min` sai de sincronia com a fonte. **A própria CI
+  mascarava o problema antes disso:** rodava `npm run build:pwa`, que reescrevia os `.min` no
+  runner, então os testes rodavam contra assets recém-construídos enquanto os commitados podiam
+  estar velhos. O passo agora confere em vez de consertar, nos dois workflows. Conferido que o
+  portão pega os dois casos: fonte editada sem rebuild, e `.min` ausente.
+
+- **`grep` não encontra a regra que decide, quando ela vive num `padding` abreviado.** Ao alinhar a
+  `.topbar` do PWA com a web eu troquei a base de 8px para 12px com base no que o grep achou — e
+  **inverti a divergência no mobile** (web 8px, PWA 12px), porque existe
+  `.topbar{padding:calc(8px + var(--hub-safe-top)) … !important}` num bloco `max-width:991.98px`,
+  que o grep por `padding-top` nunca casaria e que **já soma o recorte**. A regra standalone era
+  redundante no mobile. Quem resolveu foi perguntar ao navegador, não ao grep:
+  `CSS.getMatchedStylesForNode` via CDP lista todas as regras que casam, na ordem de precedência,
+  com `!important` e media query. **Antes de afirmar qual valor a web usa, meça o computado e peça
+  a lista de regras casadas** — em folha com cascata de 5 arquivos e `!important` espalhado, ler
+  CSS de cabeça erra.
+
+- **PWA e web são idênticos por medição, não por promessa.** Em 2026-09-15 as cinco divergências
+  reais foram eliminadas e o resultado é **zero diferença de CSS em 20 combinações tela/rota**
+  (10 rotas × 2 tamanhos). O que sobra no diff e **não** é divergência: as alturas
+  (`scrollHeight`/`clientHeight`/`height`), porque a janela do app não tem barra de endereço
+  (761→848 no desktop, 705→792 no celular), e `.app-shell` ganhar `#f8fafc` no standalone, que é
+  inócuo — `html`, `body`, `.main` e `.content` já são essa cor nos dois modos. Para repetir a
+  medição: Chromium com `launchPersistentContext` e `--app=<url>` dá `display-mode: standalone`
+  de verdade (`chromium.launch({args:['--app=…']})` **não** dá, e
+  `Emulation.setEmulatedMedia` com a feature `display-mode` é ignorado), e compara-se o estilo
+  computado contra uma aba comum.
 
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua

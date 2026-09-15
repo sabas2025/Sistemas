@@ -6,6 +6,7 @@
     "build:schema": "node scripts/ci/build-consolidated-schema.mjs",
     "check:schema": "node scripts/ci/build-consolidated-schema.mjs --check",
     "build:pwa": "node scripts/pwa/build-assets.mjs",
+    "check:pwa": "node scripts/pwa/build-assets.mjs --check",
     "test:pwa": "playwright test -c tests/e2e/playwright.config.js tests/e2e/specs/pwa-v104-48.spec.js",
     "lighthouse:pwa": "lhci autorun --config=./lighthouserc.json"
   },

@@ -42,8 +42,12 @@ jobs:
             instalar || echo "npm ci falhou de novo; a conferencia abaixo decide."
             conferir
           fi
-      - name: Build and validate minified assets
-        run: npm run build:pwa
+      # Era `npm run build:pwa`, que REESCREVIA os .min dentro do runner: os testes abaixo
+      # passavam a rodar contra assets recem-construidos enquanto os COMMITADOS podiam estar
+      # velhos. Um passo que conserta em silencio o que deveria denunciar e indicador que mente,
+      # e foi assim que integration-center.min.css ficou dois meses defasado. Agora confere.
+      - name: Assets minificados em dia com a fonte
+        run: npm run check:pwa
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Start isolated public server
