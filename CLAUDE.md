@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**45 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**46 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -746,6 +746,48 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   removido o `config.php`, a suíte voltou a 45/45. **Ao ver teste enterprise falhar depois de
   subir o Hub localmente, confira `ls config/` antes de culpar o diff.**
 
+- **Instalação de PRODUÇÃO nascia apontando para o host de HOMOLOGAÇÃO da VSM.** O achado I-23,
+  encontrado ao exercitar pela primeira vez o caminho `ambiente=producao` / `app_env=production` do
+  instalador. `public/install.php` semeia `'{VSM_URL}' => 'https://conectavenda.homolog.vsm.com.br'`
+  como **constante**, qualquer que seja o ambiente escolhido, e `IntegrationConfig.php:15` repete o
+  MESMO host como fallback quando a coluna está vazia — então nem apagar o valor resolve. As
+  checagens existentes só exigiam URL não-vazia e bem formada (`AutoHomologationService`,
+  `SecurityAssistedTestService`, `ProductionGoLiveService`): **nenhuma comparava a URL com o
+  ambiente**. Medido numa instalação de produção real: `configuracoes_integracao.ambiente='producao'`
+  com `vsm_url` de homologação, e o go-live respondia apto. Corrigido com uma checagem nova no
+  `ProductionGoLiveService` — *Endpoints coerentes com o ambiente* —, que compara por **rótulo do
+  host**, nunca por substring na URL (armadilha do B-06): `conectavenda.homolog.vsm.com.br` acusa,
+  `vsm.com.br/homologacao/api` não, `homologvsm.com.br` não. Cobre VSM, Tiny V2 e Tiny V3. Medido
+  nos 5 cenários contra a instalação real: bloqueia só o caso certo. **A URL de produção da VSM não
+  foi inventada** — quem a conhece é o provedor; o que o Hub faz agora é recusar-se a liberar o
+  go-live enquanto ela não for informada. **Registrado e NÃO aplicado:** semear `{VSM_URL}` vazio
+  quando o ambiente é produção. Não resolveria sozinho (o fallback do `IntegrationConfig` devolve o
+  host de homologação de novo) e mexe em regra de negócio do instalador — é decisão de produto.
+
+- **Teste que lê a configuração VIVA muda de veredito conforme a máquina.** O achado I-24. Cinco
+  asserções afirmam sobre o **default que o pacote entrega** — política de idempotência, reparo de
+  schema desligado, allowlist do Tiny, lease da fila —, mas `hub_config_file()` **preferia**
+  `config/config.php` quando ele existia. Em CI não existe e o resultado saía certo por ausência;
+  num Hub instalado de verdade — toda hospedagem, e esta sessão depois de subir o Hub — quatro
+  suítes reprovavam medindo o arquivo errado. Por um instante pareceram regressão do meu diff no
+  instalador: **`ls config/` desfez o mal-entendido em dois segundos**. O helper agora se chama
+  `hub_config_default_file()` e aponta sempre para `config.example.php`, que é o arquivo versionado
+  e a base do instalador — o único sobre o qual "vem assim de fábrica" é afirmação verificável.
+  Medido nos dois estados: 46/46 com e sem `config/config.php` presente. **Correção do que eu
+  próprio escrevi antes:** eu disse que as asserções passavam sobre string vazia; não era isso —
+  `hub_read()` já caía no exemplo quando o arquivo faltava. O defeito era preferir o ativo, não ler
+  o vazio.
+
+- **Parâmetro declarado e nunca usado promete uma regra que não existe.** O achado I-25:
+  `validate_base_url(string $baseUrl, bool $production)` não mencionava `$production` em lugar
+  nenhum do corpo. Quem lia a assinatura — eu, inclusive — assumia produção mais estrita. Não é:
+  HTTPS é exigido de toda URL **absoluta** em qualquer modo, e caminho relativo é aceito também em
+  produção. Isso está **certo**, e foi conferido antes de remover o parâmetro: nada no Hub monta URL
+  externa a partir do `base_url` (o `DashboardController` só faz link interno; o `TinyV3TokenService`
+  só o usa como ingrediente de nome de lock; a Redirect URI do OAuth é configurada no app do Tiny).
+  Removido o parâmetro, com a única chamada mapeada. Medido depois: as 8 formas de base URL
+  respondem igual, e a instalação de produção completa continua indo ao fim.
+
 - **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
   sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
   da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
@@ -828,6 +870,11 @@ no PR #2:
 | **Portão 14 contra o I-21 reposto, sem `config/config.php`** | sessão local | **verde** — o ramo de banco não é alcançado; por isso o passo roda duas vezes |
 | **`public/install.php` executado**: instalação limpa, banco vazio, usuário MySQL exclusivo | sessão local, MariaDB 10.11 | quebrada (I-22) — zero tabelas; corrigida e remedida: 135 tabelas, 1.550 colunas, 558 índices |
 | **Primeiro acesso após a instalação real**: login → troca de senha obrigatória → dashboard | sessão local, MariaDB 10.11 | verde — 302 para `trocar-senha`, depois dashboard 200 |
+| **Instalação em modo PRODUÇÃO** (`ambiente=producao`, `app_env=production`, usuário MySQL exclusivo, base URL HTTPS) | sessão local, MariaDB 10.11 | verde — 135 tabelas, 1.550 colunas, 558 índices |
+| **5 guardas de produção do instalador** | sessão local, MariaDB 10.11 | verde — recusa `app_env` incoerente, senha MySQL em branco, base URL sem HTTPS, senha admin curta e sem número; zero tabelas em toda recusa |
+| **Higiene dos segredos gerados em produção** (`rotate-secrets.php --audit`) | sessão local | verde — 12 chaves ≥32 caracteres, todas distintas, nenhuma conhecida |
+| **Coerência ambiente × endpoint** (I-23), 5 cenários | sessão local, MariaDB 10.11 | bloqueia produção com host de homologação; não acusa homologação nem `homolog` no caminho |
+| **Suíte enterprise com e sem `config/config.php` presente** | sessão local | verde nos dois (antes: 4 suítes reprovavam com config real — I-24) |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

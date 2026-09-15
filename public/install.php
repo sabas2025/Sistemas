@@ -261,7 +261,16 @@ function validate_admin_name(string $name): string {
   if(strlen($name)<2||strlen($name)>120||preg_match('/[\x00-\x1F\x7F]/',$name))throw new FriendlyInstallException('Nome do administrador deve ter de 2 a 120 caracteres e não pode conter controles.');
   return $name;
 }
-function validate_base_url(string $baseUrl, bool $production): string {
+/**
+ * Achado I-25 (2026-09-15): o parâmetro `bool $production` era DECLARADO e nunca usado — o corpo
+ * inteiro não o mencionava. Quem lia a assinatura assumia uma regra mais dura em produção que não
+ * existia. Removido em vez de mantido como enfeite: o HTTPS já é exigido de toda URL ABSOLUTA, em
+ * qualquer modo, e caminho relativo continua aceito também em produção porque nada no Hub monta
+ * URL externa a partir do base_url (conferido: DashboardController só o usa para link interno e
+ * TinyV3TokenService só como ingrediente de nome de lock; a Redirect URI do OAuth é configurada no
+ * app do Tiny, não daqui).
+ */
+function validate_base_url(string $baseUrl): string {
   $baseUrl=trim(str_replace('\\','/',$baseUrl));
   if($baseUrl===''||strlen($baseUrl)>500||preg_match('/[\x00-\x1F\x7F]/',$baseUrl))throw new FriendlyInstallException('Base URL inválida.');
   if(str_starts_with($baseUrl,'/')){
@@ -694,7 +703,7 @@ if (!$locked && !$httpsBlocked && $installAuthorized && $requestMethod === 'POST
     $isBlankPasswordUser = is_blank_password_credential($data['db_pass']);
     $isProduction = (($data['app_env'] ?? 'production') === 'production');
     $isLocalConfirmed = (($data['app_env'] ?? '') === 'local') && is_loopback_host($data['db_host']) && (($_POST['confirm_local_insecure_mysql'] ?? '0') === '1');
-    $data['base_url']=validate_base_url($data['base_url'],$isProduction);
+    $data['base_url']=validate_base_url($data['base_url']);
     if ($isRootBlank && ($isProduction || !$isLocalConfirmed)) {
       throw new FriendlyInstallException(insecure_root_message());
     }

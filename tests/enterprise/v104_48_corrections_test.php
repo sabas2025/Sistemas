@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/_helpers.php';
-$checks=[];$queue=hub_read('app/Services/QueueService.php');$token=hub_read('app/Services/TinyV3TokenService.php');$controller=hub_read('app/Controllers/DashboardController.php');$api=hub_read('app/Controllers/ApiController.php');$install=hub_read('public/install.php');$view=hub_read('views/configuracoes.php');$sw=hub_read('public/sw.js');$cfg=require hub_config_file();
+$checks=[];$queue=hub_read('app/Services/QueueService.php');$token=hub_read('app/Services/TinyV3TokenService.php');$controller=hub_read('app/Controllers/DashboardController.php');$api=hub_read('app/Controllers/ApiController.php');$install=hub_read('public/install.php');$view=hub_read('views/configuracoes.php');$sw=hub_read('public/sw.js');$cfg=require hub_config_default_file();
 hub_check($checks,'Lease padrão configurável',isset($cfg['security']['queue_lease_minutes'])&&(int)$cfg['security']['queue_lease_minutes']===5&&str_contains($queue,'leaseMinutes(?string $type'));
 hub_check($checks,'Lease por tipo configurável',isset($cfg['security']['queue_lease_minutes_by_type'])&&str_contains($queue,'queue_lease_by_type_json'));
 hub_check($checks,'Instalador grava installation_id e lease',str_contains($install,"'installation_id'")&&str_contains($install,'queue_lease_minutes_by_type'));
