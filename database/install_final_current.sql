@@ -2279,6 +2279,10 @@ CREATE TABLE IF NOT EXISTS integration_events (
   INDEX idx_ie_status_created(status, created_at),
   INDEX idx_ie_entity(entity_type, entity_id),
   INDEX idx_ie_trace(trace_id),
+  -- Achado I-19 (2026-09-15): onQueueFinished() filtra esta tabela por fila_id duas vezes a cada
+  -- item de fila concluído, e sem este índice as duas viravam varredura completa. Medido com
+  -- 150 mil linhas: SELECT 43ms -> 9ms, UPDATE 87ms -> 9ms. O `id` no fim serve ao ORDER BY id DESC.
+  INDEX idx_ie_fila(fila_id, id),
   INDEX idx_ie_idempotency(idempotency_key),
   INDEX idx_ie_source_target(source_system, target_system)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

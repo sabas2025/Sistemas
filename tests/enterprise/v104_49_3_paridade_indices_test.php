@@ -94,4 +94,24 @@ hub_check($checks, 'O índice canônico continua declarado nos módulos',
 hub_check($checks, 'O duplicado NÃO foi levado para os módulos',
     !isset($modulos['fila_integracao']['idx_fila_ready']));
 
+// ------------------------------------------------- I-19: o único gargalo MEDIDO da auditoria
+// `IntegrationEventService::onQueueFinished()` filtra integration_events por fila_id duas vezes
+// (um UPDATE e um SELECT) e é chamada a CADA item de fila concluído. A coluna não tinha índice.
+// Medido com 150 mil linhas: SELECT 43ms -> 9ms, UPDATE 87ms -> 9ms, plano de varredura para ref.
+hub_check($checks, 'O índice de fila_id está nos MÓDULOS (senão a instalação nova nasce sem ele)',
+    ($modulos['integration_events']['idx_ie_fila'] ?? '') === 'fila_id,id');
+$mig = hub_read('database/migrations/20260916_016_indice_integration_events_fila.sql');
+hub_check($checks, 'A migration correspondente existe, é idempotente e guardada',
+    str_contains($mig, 'CREATE INDEX idx_ie_fila ON integration_events(fila_id, id)')
+    && str_contains($mig, "INDEX_NAME = 'idx_ie_fila'"));
+hub_check($checks, 'A migration registra o motivo medido, não a suspeita',
+    str_contains($mig, '43 ms -> 9 ms') && str_contains($mig, '87 ms -> 9 ms'));
+hub_check($checks, 'O consultante continua filtrando por fila_id (o índice segue justificado)',
+    str_contains(hub_read('app/Services/IntegrationEventService.php'), 'WHERE fila_id=?'));
+// O contra-exemplo: evento_correlacao varre igual, mas NENHUMA consulta do Hub a filtra por
+// fila_id — indexá-la seria custo de escrita sem leitura que justifique.
+hub_check($checks, 'evento_correlacao NÃO ganhou índice de fila_id (ninguém a consulta assim)',
+    !isset($modulos['evento_correlacao']['idx_evento_correlacao_fila'])
+    && !preg_match('/WHERE[^;\'"]*fila_id[^;\'"]*FROM evento_correlacao/i', hub_read('app/Services/IntegrationEventService.php')));
+
 hub_finish($checks);

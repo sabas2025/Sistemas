@@ -645,6 +645,36 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   "Ordem de implantação" abaixo diz exatamente isso. Não conclua que oito migrations "nunca rodam"
   — conclua que ninguém as roda sozinho.
 
+- **Evidência de gargalo se produz carregando o banco, não lendo código.** O achado I-19, e a
+  primeira vez nesta linha que a fase 10 saiu do "registrado, não aplicado". Carregado um MariaDB
+  real com o volume de UM DIA na meta de capacidade (500 pedidos/min = 720 mil/dia): 300 mil linhas
+  em `fila_integracao`, 500 mil em `auditoria_eventos`, 150 mil em `integration_events`, 150 mil em
+  `evento_correlacao`, 200 mil em `pedidos_integracao`. O `seq_1_to_N` do MariaDB carrega 300 mil
+  linhas em 4,5 s — não precisa de script.
+  **Quase tudo passou bem:** reservar o próximo item da fila leva **13 ms** usando
+  `idx_fila_status_proxima_prioridade` (o que confirma a decisão do I-18 — o índice canônico faz o
+  trabalho), as telas respondem em 9–11 ms, e a busca por Trace ID em 9 ms.
+  **Uma coisa destoava:** `IntegrationEventService::onQueueFinished()` filtra `integration_events`
+  por `fila_id` DUAS vezes — um `UPDATE` e um `SELECT`, ambos `ORDER BY id DESC LIMIT 1` — e é
+  chamada pelo `QueueService::marcarResultado()`, ou seja **a cada item de fila concluído**. A
+  coluna não tinha índice nenhum. Medido: `SELECT` **43 ms → 9 ms**, `UPDATE` **87 ms → 9 ms**,
+  plano de varredura do PRIMARY para `type=ref rows=1`. Na meta de 500 pedidos/min isso somava
+  ~65 segundos de banco por minuto de relógio — o ponto de saturação, e piorando sozinho.
+  O índice `idx_ie_fila(fila_id, id)` entrou **nos dois caminhos** (módulo + migration `016`),
+  pela lição do I-18; criá-lo custou 0,133 s e não pede janela.
+
+- **Consulta lenta que ninguém executa não é gargalo.** Na mesma medição,
+  `evento_correlacao.fila_id` também varre a tabela (**57 ms** em 150 mil linhas) — mas nenhuma
+  consulta do Hub filtra aquela tabela por `fila_id`. Indexá-la seria custo de escrita sem leitura
+  que justifique. O que separou as duas foi um `grep` pelo consultante real, não o tempo medido.
+  **Antes de indexar por causa de um `EXPLAIN` feio, prove que alguém roda aquela consulta.**
+
+- **Ao criar índice, crie nos DOIS caminhos no mesmo commit.** É a lição do I-18 aplicada em
+  sentido inverso: acrescentar só a migration faz a instalação nova nascer sem o índice;
+  acrescentar só ao módulo deixa a instalação existente sem ele. Módulo + migration + regenerar o
+  consolidado (`node scripts/ci/build-consolidated-schema.mjs`), e remedir a paridade: ficou em
+  **615 índices idênticos** nos dois lados.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -678,7 +708,8 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 
 **Ordem de implantação das migrations de capacidade:** backup verificado → `011` (índices) →
 `013` (logs + sessões) → `015` (remove o índice duplicado da fila; barata, sem janela) → agendar
-`worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
+`worker_retencao.php` no cron → `016` (índice de `integration_events`; 0,13 s, sem janela) →
+`012` (PK BIGINT, em janela).
 
 **O que já foi validado contra banco real, e o que não foi.** As auditorias da R6/R7 foram todas
 **estáticas** — não havia MySQL nem Docker no ambiente daquelas sessões. Isso mudou em 2026-09-15,
@@ -712,6 +743,8 @@ no PR #2:
 | **Busca por Trace ID** (fase 11), pelas duas formas | sessão local, MariaDB 10.11 | quebrada por `?trace_id=` (I-17); corrigida e remedida |
 | **Paridade instalação nova × atualização** (1.550 colunas, 613 índices) | sessão local, MariaDB 10.11 | um índice duplicado só na atualização (I-18); removido e remedido idêntico |
 | **Duplicatas de índice em todo o schema** | sessão local, MariaDB 10.11 | 3 encontradas; 1 corrigida, 2 registradas sem ação (tabelas frias) |
+| **Carga de um dia na meta (1,3 milhão de linhas), caminho quente** | sessão local, MariaDB 10.11 | verde — fila 13 ms, telas 9–11 ms, Trace ID 9 ms |
+| **`integration_events` por `fila_id`**, medido antes e depois do índice | sessão local, MariaDB 10.11 | gargalo real (I-19): 43→9 ms e 87→9 ms; índice nos dois caminhos |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
