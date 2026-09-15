@@ -64,6 +64,7 @@ return [
   'DeadLetterQueueService' => 'app/Services/DeadLetterQueueService.php',
   'DiagnosticoApiService' => 'app/Services/DiagnosticoApiService.php',
   'DivergenceMonitorController' => 'app/Controllers/DivergenceMonitorController.php',
+  'EmpresaCatalogService' => 'app/Services/EmpresaCatalogService.php',
   'EnterpriseAuditHashChainService' => 'app/Services/EnterpriseAuditHashChainService.php',
   'EnterpriseCoreController' => 'app/Controllers/EnterpriseCoreController.php',
   'EnterpriseIdempotencyGuardService' => 'app/Services/EnterpriseIdempotencyGuardService.php',

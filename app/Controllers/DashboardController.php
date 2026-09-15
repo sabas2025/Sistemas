@@ -1363,7 +1363,8 @@ class DashboardController {
 
   private function usuarios(): void {
     PermissionService::require('usuarios','gerenciar');
-    $usuarios = $this->db('usuarios')->query("SELECT id,nome,email,perfil,ativo,ultimo_login,deve_trocar_senha,tentativas_login,bloqueado_ate,two_factor_enabled,two_factor_secret,two_factor_created_at,two_factor_last_verified_at,criado_em FROM usuarios ORDER BY id DESC")->fetchAll();
+    $usuarios = $this->db('usuarios')->query("SELECT id,nome,email,perfil,ativo,ultimo_login,deve_trocar_senha,tentativas_login,bloqueado_ate,two_factor_enabled,two_factor_secret,two_factor_created_at,two_factor_last_verified_at,empresa_id,criado_em FROM usuarios ORDER BY id DESC")->fetchAll();
+    $empresas = EmpresaCatalogService::listar();
     $permissoes = $this->db('permissoes_perfil')->query("SELECT * FROM permissoes_perfil ORDER BY perfil,modulo,acao")->fetchAll();
     $senhaTemporaria=$_SESSION['senha_temporaria_ultima']??null;unset($_SESSION['senha_temporaria_ultima']);
     $pageTitle='Usuários e Permissões';
@@ -1383,6 +1384,9 @@ class DashboardController {
     $twoFactor=(int)($_POST['two_factor_enabled'] ?? 0);
     $twoSecretPlain=$twoFactor ? TwoFactorService::generateSecret() : null;
     $twoSecret=$twoSecretPlain ? TwoFactorService::encryptSecret($twoSecretPlain) : null;
+
+    $empresaId = EmpresaCatalogService::idDoFormulario($_POST['empresa_id'] ?? '');
+    if ($empresaId === false) { redirect('index.php?page=usuarios&erro=empresa'); }
 
     if($nome==='' || $email==='' || !filter_var($email,FILTER_VALIDATE_EMAIL)) {
       redirect('index.php?page=usuarios&erro=campos');
@@ -1404,23 +1408,23 @@ class DashboardController {
 
     if($id>0){
       if($senha !== ''){
-        $this->db('usuarios')->prepare('UPDATE usuarios SET nome=?,email=?,perfil=?,ativo=?,deve_trocar_senha=?,senha=?,session_version=COALESCE(session_version,0)+1,two_factor_enabled=?,two_factor_secret=COALESCE(?,two_factor_secret), two_factor_created_at=CASE WHEN ? IS NOT NULL THEN NOW() ELSE two_factor_created_at END, bloqueado_ate=NULL,tentativas_login=0 WHERE id=?')->execute([$nome,$email,$perfil,$ativo,$trocar,password_hash($senha,PASSWORD_DEFAULT),$twoFactor,$twoSecret,$twoSecret,$id]);
+        $this->db('usuarios')->prepare('UPDATE usuarios SET nome=?,email=?,perfil=?,ativo=?,deve_trocar_senha=?,empresa_id=?,senha=?,session_version=COALESCE(session_version,0)+1,two_factor_enabled=?,two_factor_secret=COALESCE(?,two_factor_secret), two_factor_created_at=CASE WHEN ? IS NOT NULL THEN NOW() ELSE two_factor_created_at END, bloqueado_ate=NULL,tentativas_login=0 WHERE id=?')->execute([$nome,$email,$perfil,$ativo,$trocar,$empresaId,password_hash($senha,PASSWORD_DEFAULT),$twoFactor,$twoSecret,$twoSecret,$id]);
         $msg='Usuário salvo com alteração de senha pelo administrador';
       } else {
         // P1-01 (reauditoria 2026-08-23): este UPDATE (sem troca de senha) não bumpava
         // session_version, então desativar o usuário, rebaixar o perfil ou desligar o
         // 2FA não revogava a sessão já aberta dele - continuava válida até expirar por
         // tempo. Agora qualquer alteração de segurança do usuário revoga a sessão atual.
-        $this->db('usuarios')->prepare("UPDATE usuarios SET nome=?,email=?,perfil=?,ativo=?,deve_trocar_senha=?,two_factor_enabled=?,two_factor_secret=CASE WHEN ?=1 AND (two_factor_secret IS NULL OR two_factor_secret='') THEN ? ELSE two_factor_secret END, two_factor_created_at=CASE WHEN ?=1 AND (two_factor_secret IS NULL OR two_factor_secret='') THEN NOW() ELSE two_factor_created_at END, session_version=COALESCE(session_version,0)+1 WHERE id=?")->execute([$nome,$email,$perfil,$ativo,$trocar,$twoFactor,$twoFactor,$twoSecret,$twoFactor,$id]);
+        $this->db('usuarios')->prepare("UPDATE usuarios SET nome=?,email=?,perfil=?,ativo=?,deve_trocar_senha=?,empresa_id=?,two_factor_enabled=?,two_factor_secret=CASE WHEN ?=1 AND (two_factor_secret IS NULL OR two_factor_secret='') THEN ? ELSE two_factor_secret END, two_factor_created_at=CASE WHEN ?=1 AND (two_factor_secret IS NULL OR two_factor_secret='') THEN NOW() ELSE two_factor_created_at END, session_version=COALESCE(session_version,0)+1 WHERE id=?")->execute([$nome,$email,$perfil,$ativo,$trocar,$empresaId,$twoFactor,$twoFactor,$twoSecret,$twoFactor,$id]);
         $msg='Usuário salvo';
       }
     } else {
       if($senha===''){ $senha=PasswordPolicyService::generateTemporary(); $_SESSION['senha_temporaria_ultima']=['email'=>$email,'senha'=>$senha]; }
-      $this->db('usuarios')->prepare('INSERT INTO usuarios(nome,email,perfil,ativo,deve_trocar_senha,senha,two_factor_enabled,two_factor_secret,two_factor_created_at) VALUES(?,?,?,?,?,?,?,?,CASE WHEN ?=1 THEN NOW() ELSE NULL END)')->execute([$nome,$email,$perfil,$ativo,1,password_hash($senha,PASSWORD_DEFAULT),$twoFactor,$twoSecret,$twoFactor]);
+      $this->db('usuarios')->prepare('INSERT INTO usuarios(nome,email,perfil,ativo,deve_trocar_senha,empresa_id,senha,two_factor_enabled,two_factor_secret,two_factor_created_at) VALUES(?,?,?,?,?,?,?,?,?,CASE WHEN ?=1 THEN NOW() ELSE NULL END)')->execute([$nome,$email,$perfil,$ativo,1,$empresaId,password_hash($senha,PASSWORD_DEFAULT),$twoFactor,$twoSecret,$twoFactor]);
       $id=(int)$this->pdo->lastInsertId();
       $msg='Usuário criado';
     }
-    Audit::event('usuarios.salvar','sucesso',['mensagem'=>$msg,'entidade'=>'usuarios','entidade_id'=>$id,'contexto'=>['perfil'=>$perfil,'ativo'=>$ativo,'senha_alterada'=>$senha!=='' || !empty($_SESSION['senha_temporaria_usuario_'.$email])]]);
+    Audit::event('usuarios.salvar','sucesso',['mensagem'=>$msg,'entidade'=>'usuarios','entidade_id'=>$id,'contexto'=>['perfil'=>$perfil,'ativo'=>$ativo,'empresa_id'=>$empresaId,'senha_alterada'=>$senha!=='' || !empty($_SESSION['senha_temporaria_usuario_'.$email])]]);
     redirect('index.php?page=usuarios&salvo=1');
   }
 
