@@ -842,6 +842,36 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   lá. O censo sem limite mostrou o conjunto real. **Ao comparar duas medições, confira antes se as
   duas viram o mesmo universo.**
 
+- **Zero controle abaixo de 44px, e o caminho até lá corrigiu duas atribuições minhas.**
+  O achado I-27, continuação do I-26. O censo **sem cota de amostra** nas 59 rotas encontrou cinco
+  famílias que ainda ficavam abaixo do piso, todas por `min-height:42px` (ou nenhum) em controle
+  real, e todas resolvidas apontando para `var(--tap)` — a mesma chave única do I-26:
+  `.menu-section` (24 ocorrências, **todas** as rotas), `.form-control/.form-select/.input-group-text`
+  (~13), `.integration-page .btn` (5), `.integration-section-nav a` (6), os dois campos de busca
+  (menu e paleta de comandos) e `.nav-link` (5, só na ficha Tiny V3). Medido depois: **nenhum
+  `<button>`, link-botão ou campo abaixo de 44px em nenhuma das 59 rotas**; paridade PWA × web
+  inalterada (a mesma e única `.app-shell`), E2E 23/23, 14 portões verdes.
+  **Duas coisas que eu havia afirmado e estavam erradas.** (a) Eu disse que `a.btn` a 42px vinha de
+  `.btn-sm{min-height:34px}`; não vinha — a cascata termina em `.btn{min-height:44px}`, e os 42px
+  saíam de `.integration-page .btn{min-height:42px}`. (b) Eu disse que esticar `.menu-section`
+  "mexe no ritmo visual da barra lateral inteira"; são **2 elementos por tela**, já `display:flex`,
+  e o custo real é **+8px** no menu. Nos dois casos eu havia estimado em vez de medir — o `grep`
+  achou um candidato plausível e eu parei ali. **Peça a lista de regras casadas ao navegador antes
+  de nomear a culpada, mesmo quando o grep dá uma resposta que parece boa.**
+  **O que continua abaixo do piso, e por que não é CSS:** os `input[type=checkbox]` (13,3px) — e
+  medido: **nenhum deles tem rótulo clicável** (`label[for=]` ou `<label>` envolvente). O alvo
+  efetivo é mesmo o quadradinho nativo. Esticá-lo por CSS deforma o controle; o certo é associar o
+  rótulo na **view**, e numa das telas são 137 caixas numa matriz de permissões, onde a resposta é
+  célula inteira clicável, não `min-height`. É alteração de markup e de layout, não de token —
+  decisão de produto. O link de trilha ("Início", 21,7px) é texto, não controle.
+
+- **O `button:21` que "apareceu" depois da correção não era regressão — era a cota outra vez.**
+  Segunda vez na mesma sessão. Com `div:40` e `a:42` corrigidos, a cota de 8 amostras por rota
+  liberou espaço e `button:21` entrou na lista; parecia defeito novo. O censo sem cota mostrou que
+  eram as abas `.nav-link` da ficha Tiny V3, que sempre estiveram em 21px — nenhuma das seis regras
+  que eu havia editado casa com `.nav-link`. **Quando um item novo surge logo depois de você
+  remover outros da mesma lista truncada, suspeite da cota antes de suspeitar do seu diff.**
+
 - **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
   sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
   da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
@@ -934,6 +964,8 @@ no PR #2:
 | **Estouro horizontal** em 354 combinações rota/viewport/modo | sessão local | verde — `scrollWidth` nunca excedeu `clientWidth` |
 | **Alvo de toque ≥ 44px nos botões** (I-26), censo sem limite de amostra | sessão local, 390px | verde depois da correção — zero `<button>` abaixo de 44 (antes: 3 da topbar + `.sidebar-close` a 42) |
 | **E2E 23 testes contra os assets alterados** | sessão local, MariaDB 10.11 | verde — inclui os specs responsivos de iphone/tablet/notebook/desktop |
+| **Censo de alvo de toque sem cota de amostra**, 59 rotas a 390px (I-27) | sessão local | verde — zero botão, link-botão ou campo abaixo de 44px (antes: 5 famílias, ~53 elementos) |
+| **Checkboxes: existe rótulo clicável?** | sessão local | **não** — alvo efetivo é o controle nativo de 13,3px; correção é de view, registrada sem aplicar |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

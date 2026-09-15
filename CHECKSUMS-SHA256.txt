@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-488859e3c66cc54d3a35b7b233b1462964a5711335b6640221cc5ef2804a4f2f  ./CLAUDE.md
+de04275b08c5893ac9c8ef0323d14f6923b74ef4a35c8abe63942f072220cd59  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -517,8 +517,8 @@ fec16d6a103e1ed9b9de65c9a486929013a9c730ac607f2e0685669ee667cfde  ./docs/testing
 9941e4764fc846fe09ea78ab74838ace25aca7ac81cfb80bc6d182e136a75f89  ./package-lock.json
 ec2f3e125c64d1613836f7c6fc27f4d535b4e6a6b9729f794be350a5c431b3f1  ./package.json
 af0665e6498d8348895a3f80a51f30cb0789470483529ffa52fe4eff621f9fab  ./public/.htaccess
-eb8799d7a7535eb0fb92718282b647d88e48118d32753b8a6cbaf5565e0eaa13  ./public/assets/app.css
-85b0612f88c36c1d9ff3a5dcc5827b851f9e3033edd1dd1fe66d9e8bb531e2b1  ./public/assets/app.min.css
+9c1f2498433b499e76856092bbdb195c6b960a2fff9781884151d6f055b202e5  ./public/assets/app.css
+5ae9bc324692e9a1c0e9d8f781ead39e4a282001d8ad641def7a5d693e875c87  ./public/assets/app.min.css
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 c9b8af221f03f2108b19c148bbb0a395abdb65b4d1401111bcc005ba82a3d7de  ./public/assets/bootstrap-login-lite.min.css
 069d10fccd7eb5acce9e62dcc8b96f4162165338675619d50d7784a622867daf  ./public/assets/futuristic-ui.js
@@ -540,12 +540,12 @@ fa58dae2e881a2020ce0981d506029d2237a2184af750f9ef6b7c3b5e272edd4  ./public/asset
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/assets/img/shortcut-homologacao-192.png
 1db764ab9d13fd6a64bad7d758841db741f6d34f2f0eeeab46287c3cd1546462  ./public/assets/img/shortcut-operacoes-192.png
-1d02a75d7d8ac0d5733c4db9c6082fab011ef4a3c8418e220f0802be2bc5cc35  ./public/assets/integration-center.css
-72e10df019b16a6fe7e6180104539b6c86e94e85425b766dadc5c03dc972cebd  ./public/assets/integration-center.min.css
+f1f93069b677b912242a79c4668249a95938978f95c50e1e52e8a91346e09b54  ./public/assets/integration-center.css
+5ddc69a42c5890c5bd0c09129b3c9a625a1c81ba74e3d206567c188a7e52aa8a  ./public/assets/integration-center.min.css
 7dc202bcf600d973a593346a1d402b2f79ab8157e593f3b349203f7454b3bc92  ./public/assets/login.css
 240b83a3ba21ac3460ed0ff9141083ea640006b6f0de5c18c02698ff2ece8b97  ./public/assets/login.min.css
-ae14f89198cee776f0ec7e4875973840e18587f7ff995984adf10b8cbedb9b64  ./public/assets/minimalist-enterprise.css
-11142800fcf8f60221296dbf00382c6af978678bcb78e7fdddcd68f8dfcfa8fe  ./public/assets/minimalist-enterprise.min.css
+8a05403a14fd82f19a34446c7bb28b54ec517bb4e16d9974f8a5be5e037d99a9  ./public/assets/minimalist-enterprise.css
+c17788dcbf819508f5a7cf33d2ff332d061b0c77aefeb3352caf12e65c4eb93c  ./public/assets/minimalist-enterprise.min.css
 a9aca923c993a7d97f92960b56684b797ff7f404d4245dd92536d9b805b168f2  ./public/assets/minimalist-ui.js
 8decc1426410446d8e90eae4c05fb764b751c9937f0d7ea57b0989fabef48587  ./public/assets/minimalist-ui.min.js
 e4fa91e7a69a5a760105c1224f28e93c41e631285e6f4ac044c23deeb51cfff0  ./public/assets/notifications.js
