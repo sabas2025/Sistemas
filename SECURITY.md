@@ -137,14 +137,39 @@ O isolamento de dados é aplicado por `TenantScopeService`, que filtra por `empr
 registradas em seu catálogo, e é verificado estaticamente por `scripts/ci/tenant-scope-check.php` —
 toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exceção justificada.
 
+> ### ⚠️ NÃO opere dois clientes na mesma instalação hoje
+>
+> A validação de runtime foi feita em **2026-09-15**, contra banco real com duas empresas, e
+> **reprovou**. Os passos 1 a 3 abaixo **não bastam**: eles ligam o bloqueio de rota e provam que
+> as consultas passam pelo `TenantScopeService`, mas **nada no aplicativo seleciona a empresa
+> ativa**. `TenantContextService::set()` não tem nenhum chamador, então
+> `$_SESSION['tenant_empresa_id']` nunca existe, `currentEmpresaId()` devolve `null` e
+> `TenantScopeService::where()` devolve predicado **vazio** — os 162 pontos que roteiam consultas
+> pelo serviço não filtram nada.
+>
+> Medido por HTTP, autenticado, com duas empresas povoadas: a tela de pedidos mostrou as linhas
+> **das duas**. Injetando a empresa na sessão, o filtro isola corretamente — o mecanismo está
+> certo, só nunca é ligado.
+>
+> Corrigir depende de definir o vínculo usuário↔empresa, que **não existe no schema** (`usuarios`
+> não tem `empresa_id` nem `filial_id`). É decisão de produto, não conserto pontual.
+
 **Antes de usar com mais de um cliente na mesma instalação:**
 
 1. Rode `php scripts/ci/tenant-scope-check.php` e confirme que passa sem exceções novas.
+   Atenção: este portão fica **verde** mesmo com o isolamento inerte — ele verifica que a consulta
+   passa pelo serviço, não que exista empresa ativa. Verde aqui não é prova de isolamento.
 2. Aplique a migration `20260914_010_tenant_isolation.sql` e confira o backfill.
 3. Ligue `commercial.tenant_scope_required`.
-4. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
-   outra. A validação de runtime desta entrega foi estática: não havia banco disponível no ambiente
-   em que ela foi feita.
+4. **Resolva a seleção de empresa ativa** (o aviso acima) — sem isso os passos 1 a 3 dão uma falsa
+   sensação de isolamento.
+5. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
+   outra. Dá para reproduzir sem Docker; a receita está no `CLAUDE.md`, na seção de validação
+   contra banco real.
+
+Lembre ainda que `where()` deixa passar linhas com `empresa_id IS NULL` — legado anterior à
+migration, visível a todas as empresas por decisão deliberada. Onde herdar esse histórico for
+errado, use `whereStrict()`.
 
 ## 6. Reportando uma vulnerabilidade
 

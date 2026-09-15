@@ -348,6 +348,15 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `Emulation.setEmulatedMedia` com a feature `display-mode` é ignorado), e compara-se o estilo
   computado contra uma aba comum.
 
+- **Portão estático verde não prova isolamento em runtime.** `tenant-scope-check.php` verifica que
+  toda consulta a tabela com escopo passa pelo `TenantScopeService` — e passa: são 162 pontos, e o
+  portão fica **verde**. Ele não verifica que existe empresa ativa. Como nada chama
+  `TenantContextService::set()`, `currentEmpresaId()` devolve `null`, `where()` devolve predicado
+  vazio, e os 162 pontos filtram nada (achado H-01). **Ao construir um portão, pergunte o que ele
+  NÃO prova** — e escreva isso ao lado dele, porque quem vê verde assume o resto. Para medir
+  isolamento de verdade: povoe duas empresas, entre por HTTP e olhe a tela; e confirme o mecanismo
+  injetando a empresa na sessão, para separar "filtro quebrado" de "filtro nunca ligado".
+
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
   15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é
@@ -359,8 +368,14 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
   hoje, horas depois. **Quanto antes rodar, mais barata.**
-- Validar o isolamento multiempresa **contra banco real com duas empresas** (seção 5 do `SECURITY.md`).
-  Agora é viável sem Docker — veja a receita no fim deste documento.
+- **H-01 — o isolamento multiempresa está INERTE em runtime.** Validado em 2026-09-15 contra banco
+  real com duas empresas (era a pendência aberta da seção 5 do `SECURITY.md`) e **reprovou**:
+  `TenantContextService::set()` não tem chamador nenhum, então `$_SESSION['tenant_empresa_id']`
+  nunca existe e `TenantScopeService::where()` devolve predicado vazio. Medido por HTTP: a tela de
+  pedidos mostrou as linhas das duas empresas. O mecanismo está certo — injetando a empresa, isola.
+  Corrigir depende de definir o vínculo usuário↔empresa, que **não existe no schema** (`usuarios`
+  não tem `empresa_id` nem `filial_id`): é decisão de produto. Até lá, **não opere dois clientes na
+  mesma instalação**.
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
@@ -382,10 +397,10 @@ no PR #2:
 | **E2E autenticado** (23 testes, Playwright) contra MariaDB | CI, `e2e-authenticated` | verde |
 | Login, sessão, rotas do painel, 404 de rota desconhecida | sessão local, MariaDB 10.11 | verde |
 | `pwa-static-and-e2e` (Lighthouse + PWA) | CI, workflow `pwa-quality.yml` | verde |
+| **Isolamento multiempresa, duas empresas** | sessão local, MariaDB 10.11 | **REPROVOU — ver H-01** |
 
-**Continua sem validação contra banco real:** o isolamento multiempresa com **duas empresas**
-(seção 5 do `SECURITY.md`), o ciclo OAuth Tiny V3 completo (depende de credenciais reais) e
-qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
+**Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
+credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
 validado": o verde cobre a tabela acima, não o resto.
 
 **Dá para reproduzir o E2E nesta sessão, sem Docker.** Foi assim que a causa raiz do PR #2
