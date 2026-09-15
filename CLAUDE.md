@@ -6,7 +6,9 @@
 > **O código do Hub vive neste repositório, na raiz** (desde 2026-09-14). Antes disso ele chegava
 > como zip a cada sessão. Consequência prática: `.github/workflows/hub-ci.yml` passou a rodar de
 > verdade em push e pull request para `main`/`develop` — inclusive a matriz de runtime
-> **MySQL 8 + MariaDB 11.4** e a suíte E2E, que até aqui nunca tinham sido executadas.
+> **MySQL 8 + MariaDB 11.4** e a suíte E2E, que até então nunca tinham sido executadas.
+> **Já foram.** O PR #2 levou nove execuções para ficar verde; o que cada uma ensinou está em
+> "Armadilhas já pagas caro", abaixo.
 
 ## Papel
 
@@ -275,6 +277,19 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   o que escreveu**; o ambiente representa um Hub já instalado. A regra vale inteira na instalação
   real.
 
+- **`package-lock.json` versionado pode apontar para um registro que só existe no ambiente de quem
+  o gerou.** O `npm ci` do job `pwa-static-and-e2e` rodava ~8 minutos e morria com
+  `npm error Exit handler never called!`, deixando `node_modules` incompleto. Os 348 `"resolved"`
+  do lock da **raiz** apontavam para um espelho interno inalcançável de fora; o lock de
+  `tests/e2e/` apontava para `registry.npmjs.org` — e por isso o `npm ci` *daquele* job sempre
+  funcionou. Reapontado para o registro público, com `integrity` intacto (mesmos tarballs):
+  `npm ci` na raiz passou de **travar mais de 10 minutos** para **6 s, exit 0, 347 pacotes**.
+  A lição de método dói mais que a correção: o 403 que eu via localmente e o crash do runner eram
+  **o mesmo defeito**, e eu tinha descartado o primeiro como "limitação do meu ambiente" em vez de
+  procurar o que os dois tinham em comum — o arquivo versionado. **Ao ver npm quebrar em dois
+  lugares diferentes, leia o lock antes de culpar o ambiente:**
+  `grep -o '"resolved": "https://[^/]*' package-lock.json | sort | uniq -c`.
+
 - **O rótulo do menu e o título da tela nem sempre são o mesmo texto.** O `authenticated-smoke`
   afirmava `/Teste Segurança Assistido/i`. A tela se chama **"Teste de Segurança Assistido"** — é
   assim no `<title>`, no `<h2>` de `views/security_assisted_test.php`, no `$pageTitle` do
@@ -305,7 +320,9 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
   hoje, horas depois. **Quanto antes rodar, mais barata.**
 - Validar o isolamento multiempresa **contra banco real com duas empresas** (seção 5 do `SECURITY.md`).
-- Marcar `Hub CI / gate` como *required* na proteção de branch.
+  Agora é viável sem Docker — veja a receita no fim deste documento.
+- Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
+  2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
@@ -314,11 +331,46 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 **Ordem de implantação das migrations de capacidade:** backup verificado → `011` (índices) →
 `013` (logs + sessões) → agendar `worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
 
-**Nunca validado contra banco real nesta linha de trabalho.** Todas as auditorias da R6/R7 foram
-**estáticas**: não havia MySQL nem Docker no ambiente da sessão. Os portões de runtime
-MySQL 8 / MariaDB 11.4 e o E2E rodam só na CI — e, com o Hub agora no repositório, **passam a rodar
-de fato**. Espere que a primeira execução possa ficar vermelha: esses jobs nunca foram exercitados.
-Vermelho ali é informação nova e legítima, não regressão do que foi auditado estaticamente.
+**O que já foi validado contra banco real, e o que não foi.** As auditorias da R6/R7 foram todas
+**estáticas** — não havia MySQL nem Docker no ambiente daquelas sessões. Isso mudou em 2026-09-15,
+no PR #2:
+
+| Validação | Onde | Resultado |
+|---|---|---|
+| Schema consolidado e modular em **MySQL 8.0** | CI, `mysql-runtime` | verde |
+| Schema consolidado e modular em **MariaDB 11.4** | CI, `mysql-runtime` | verde |
+| **E2E autenticado** (23 testes, Playwright) contra MariaDB | CI, `e2e-authenticated` | verde |
+| Login, sessão, rotas do painel, 404 de rota desconhecida | sessão local, MariaDB 10.11 | verde |
+| `pwa-static-and-e2e` (Lighthouse + PWA) | CI, workflow `pwa-quality.yml` | verde |
+
+**Continua sem validação contra banco real:** o isolamento multiempresa com **duas empresas**
+(seção 5 do `SECURITY.md`), o ciclo OAuth Tiny V3 completo (depende de credenciais reais) e
+qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
+validado": o verde cobre a tabela acima, não o resto.
+
+**Dá para reproduzir o E2E nesta sessão, sem Docker.** Foi assim que a causa raiz do PR #2
+apareceu, depois de quatro rodadas de palpite em cima de log de CI:
+
+```
+apt-get update && apt-get install -y --no-install-recommends mariadb-server
+mariadbd --user=mysql &                      # sem systemd no container
+mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('root'); \
+  CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY 'root'; \
+  GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+HUB_TEST_DB_HOST=127.0.0.1 HUB_TEST_DB_USER=root HUB_TEST_DB_PASS=root \
+  HUB_TEST_DB_NAME=hub_ci_e2e HUB_CI_E2E_CONFIRM=1 php scripts/ci/provision-e2e-environment.php
+php -S 127.0.0.1:8123 -t public &
+cd tests/e2e && npm ci && HUB_BASE_URL=http://127.0.0.1:8123/ \
+  HUB_USER=ci@example.invalid HUB_PASS=CI-only-password-2026 \
+  PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium-<build>/chrome-linux/chrome \
+  npx playwright test --reporter=list
+```
+
+Faça isso **numa cópia** (`cp -a . /tmp/hubrepro`): o provisionamento faz `DROP DATABASE`, escreve
+`config/config.php` e cria `storage/install.lock`. E note o `PLAYWRIGHT_CHROMIUM_PATH`: o Chromium
+pré-instalado em `/opt/pw-browsers` costuma ter um *build* diferente do que o `@playwright/test`
+do lock espera, e sem essa variável a suíte morre em `Executable doesn't exist`. **Não rode
+`npx playwright install`** — o `playwright.config.js` já lê essa variável justamente para isso.
 
 **O `config/config.php` não é versionado** (está no `.gitignore`): ele carrega host, usuário, senha
 e segredos, e é criado pelo instalador a partir do `config.example.php`. Ausência num checkout limpo
