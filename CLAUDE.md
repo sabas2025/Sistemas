@@ -357,6 +357,17 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   isolamento de verdade: povoe duas empresas, entre por HTTP e olhe a tela; e confirme o mecanismo
   injetando a empresa na sessão, para separar "filtro quebrado" de "filtro nunca ligado".
 
+- **O `DashboardController` está a poucas dezenas de bytes do teto que a CI impõe.**
+  `tests/enterprise/v104_48_1_architecture_test.php` exige que ele fique **abaixo de 160 KB**, para
+  impedir que o controller-deus volte a crescer. Ao acrescentar o campo *Empresa* na tela de
+  usuários (2026-09-15) o arquivo passou o teto por **1.089 bytes**, e o teste pegou. A resposta
+  certa não é levantar o limite — é o que a guarda pede: **lógica nova de domínio entra por
+  serviço**. Extraído para `EmpresaCatalogService` (listar, e ler+validar o `empresa_id` do
+  formulário numa chamada só), o controller ficou em 163.788 bytes. **Folga atual: 52 bytes**; na
+  `main` anterior eram 378. Ou seja: a próxima alteração naquele arquivo quebra o portão, e o
+  arquivo precisa mesmo é ser decomposto. Ao mexer nele, meça antes:
+  `wc -c app/Controllers/DashboardController.php` contra 163840.
+
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
   15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é
@@ -376,8 +387,10 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `applyToInsert()` devolve o SQL intacto e a linha nasce com `empresa_id` NULL — visível a todas
   as empresas, porque `where()` inclui NULL. É o caso de `ApiController.php:739`. Resolver exige
   decidir de onde a entrada tira a empresa (token de webhook por empresa? coluna na fila? empresa
-  por conexão Tiny/VSM?) — decisão de produto. **Também não há tela para atribuir empresa a
-  usuário**: hoje é `UPDATE usuarios SET empresa_id = …`.
+  por conexão Tiny/VSM?) — decisão de produto. A atribuição já tem tela: **Usuários e Permissões** ganhou o
+  campo *Empresa* e a coluna na lista (2026-09-15). O id vindo do POST é conferido contra
+  `empresas` antes de gravar, e trocar a empresa de alguém incrementa `session_version` —
+  revoga a sessão aberta dele.
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.

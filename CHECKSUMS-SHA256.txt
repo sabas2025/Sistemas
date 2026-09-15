@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-7019aa0ba01af123171054832f71e1185b2c713457423a67f1967508ff94c413  ./CLAUDE.md
+bc4c57ec653531e843e456e13c2d272c7e99b4908a57176d0e4bff59e670f821  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -109,7 +109,7 @@ d3513c071472d74fb1117792f5cc5874bbf37bf4321fb9cbb677d18fae138537  ./RELATORIO-V9
 ad72bf6d065e2478a4b85baa301d30f1fed3a51336aca2e9bbf13b2839b7f9b7  ./RELATORIO-V98-BLINDAGEM-OPERACIONAL-SEGURANCA.md
 1af9167dd5e414fb20ed7b397850591639bd29607e9e3f8a2d1bf907d3bd24bd  ./RELATORIO-V99-BLINDAGEM-FINAL-SEGURANCA.md
 fde2e1998fc2c724af5f5b1bf48955a64fc8e47a429e4277f07e0a7f4abc81a1  ./RELATORIO-VALIDACAO-E-MELHORIAS-2026-09-14.md
-3ea572fbc2c48948d5186338b4b7c6c1459ddc6d6ac1ed32b76b5d2aa5335d91  ./SECURITY.md
+61cea1f50d8db3fec13c8baff85986ad8c9cd4fb5013d0955dabaf3ca13c9029  ./SECURITY.md
 3a18df1c5f43a9cae596e0d686a13ba77bc59f9d542149e3ff4cf64b663db9e4  ./VALIDACAO-FINAL-HOTFIX-SCHEMA-R3.md
 b0f7ba50027acbde3546afd60663971c40a44e4927cd586712848c0e00dc6d2b  ./VALIDACAO-PACOTE-COMPLETO-V104.49.2.md
 d31ef66a851ae1e482d6ad32621e7ab0bba0250d474cf1d00ba93af90d892b62  ./VALIDACAO-V97.txt
@@ -138,7 +138,7 @@ e4cb1c89132195ebee92cddf406054e185bef657c6b78c2c05a4ed592a7f18c7  ./app/Controll
 3891c6324e7d997a174dcf6b3d498a1c937e0245fdf85ace840bae843a6e052a  ./app/Controllers/CommercialReadinessController.php
 a27da35662ba2eb701766aa3c4d9600b6ffdb36f0e67b50d8378ee7f5b6ea9e5  ./app/Controllers/ConfigDiagnosticController.php
 7dcd72fe3382247b269e5550524d087218b10463c6add453ecdc4c569d371091  ./app/Controllers/ConfiguracaoController.php
-0c48274398e4bb49068cd25ed39ed3af288e3998b2e8b59553c4f97bcb1c5671  ./app/Controllers/DashboardController.php
+71580722b0d7226d9759594179443afaa81ccabd60edd4e1d62da11ff34a5a30  ./app/Controllers/DashboardController.php
 0c1965348b80cefe051770aa12a608153230f961887d6ea6b9e5cd04020826ed  ./app/Controllers/DashboardHomeController.php
 44fba28ed05aee5494aff7a75d5f5c9f1fa6ea1fe549df568dfddfb1387e743a  ./app/Controllers/DatabaseMaintenanceController.php
 7bcd270834a787c6b2b11a53e26e9d59b8e61fe5e4e7a2c490fe160eda736cdb  ./app/Controllers/DivergenceMonitorController.php
@@ -211,6 +211,7 @@ b4975833c024a139e0be00a4d688dce817929a1be8ae90344dc2c2e98933873e  ./app/Services
 7f74d48d1bf883897e8d3548e184a476d26817f5a6db56ce672eb0e96f154ce5  ./app/Services/DatabaseValidationService.php
 cf7b846ec886ce2119fc8061bcf43d460605130b1d459892f898580e1cb51c17  ./app/Services/DeadLetterQueueService.php
 859d22bfa52bc838b6be431dbcb4e15fcaa7f535dc0933e2648e992d3d37d56c  ./app/Services/DiagnosticoApiService.php
+38f259e83698feab4b8e749739e91aad3258417e1c0f5aed12ac38d4da56fe7d  ./app/Services/EmpresaCatalogService.php
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
 662a3e18b75ba4ece57bc21a550eedde9c2e515c73ccba86d735f51e91ee2622  ./app/Services/EnterpriseIdempotencyGuardService.php
 429cd593a783d920bff9cc5c3677c6df12381c7af0bddb7dc7308c59aca9610b  ./app/Services/EnterpriseObservabilityService.php
@@ -604,7 +605,7 @@ afa54e346eccf0fa6dc37676637b37347a63446ab1580860ee9edc09b4c47b3a  ./scripts/rota
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/audit-signatures/index.html
 1581faf462f67052c23dee5420cf8c329d6159b54ac433b4eed97a74f3e9ab51  ./storage/backups/.htaccess
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/backups/index.html
-8a19a2bc13e48b439b84990fc4e8c4196416334c37281c58d2364cf162e9bfbb  ./storage/cache/classmap.php
+6935caaed8bada3de5cb3172773132bb51cf90c13ac3eff60e4d2ee31a7f6c69  ./storage/cache/classmap.php
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/index.html
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/logs/index.html
 1581faf462f67052c23dee5420cf8c329d6159b54ac433b4eed97a74f3e9ab51  ./storage/security-reports/.htaccess
@@ -779,7 +780,7 @@ deb2535a062748cae4315809deb35ac012bb9587bc2ef7c1213e09856adb41c7  ./views/tiny_a
 61bedf0c586ea9cefc4438299da33a6150aba404e84524b5a8475ecd94923b9f  ./views/tiny_webhooks.php
 71fbbd666786345c88794fa42445968a83a8f82475974a49e29be90f22d1c27e  ./views/trocar_senha.php
 558ece80427251b5ac927a0d9aab00cfdb2c748a84d13afe1ae2283c490a8c70  ./views/tutorial_sistema.php
-d6e943c17ab4c404a35dd2052534871267cf71be205c343ed38776f3397d5977  ./views/usuarios.php
+94fcfdb01c9b3cea19b351249f97811e5c8fb94a3fad2eb648ba06afb33d84d1  ./views/usuarios.php
 67c872fd1f5218c7a3615afed2a208f92d0805721056ee56104aabb3459217d2  ./views/validar_banco.php
 923b709da66dfc00b4d5cfd0f30904ac899c1e3a5157e31ab1927b962ef0df7d  ./views/vsm_campos.php
 85e4516c823a93890f4fe9eebfd3298e692d9593dc945fc27b69a4dd39ded2db  ./views/vsm_endpoints.php

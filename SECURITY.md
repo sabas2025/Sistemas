@@ -169,7 +169,10 @@ toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exc
 > (token do webhook por empresa? coluna na fila? empresa por conexão Tiny/VSM?) — decisão de
 > produto, como foi a do vínculo usuário↔empresa.
 >
-> Não há tela para atribuir empresa a usuário: hoje é `UPDATE usuarios SET empresa_id = …`.
+> A atribuição é feita na tela **Usuários e Permissões** (campo *Empresa*, com a coluna na lista).
+> Deixar em branco significa *sem empresa*, e o usuário vê os dados de todas — mantenha assim só
+> para administração geral. Trocar a empresa de alguém incrementa `session_version`, ou seja,
+> **revoga a sessão aberta dele**.
 
 **Antes de usar com mais de um cliente na mesma instalação:**
 
@@ -178,9 +181,9 @@ toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exc
    passa pelo serviço, não que exista empresa ativa. Verde aqui não é prova de isolamento.
 2. Aplique a migration `20260914_010_tenant_isolation.sql` e confira o backfill.
 3. Ligue `commercial.tenant_scope_required`.
-4. Atribua a empresa a cada usuário (`usuarios.empresa_id`) — sem isso ele vê tudo. E **resolva a
-   empresa no caminho de entrada** (o aviso acima), ou os pedidos que chegarem por webhook ficarão
-   visíveis a todas as empresas.
+4. Atribua a empresa a cada usuário na tela **Usuários e Permissões** — sem isso ele vê tudo. E
+   **resolva a empresa no caminho de entrada** (o aviso acima), ou os pedidos que chegarem por
+   webhook ficarão visíveis a todas as empresas.
 5. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
    outra. Dá para reproduzir sem Docker; a receita está no `CLAUDE.md`, na seção de validação
    contra banco real.

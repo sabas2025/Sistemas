@@ -41,6 +41,22 @@
     <div class="col-md-2"><label class="form-label small">Senha</label><input name="senha" id="usuario-senha" type="password" class="form-control" placeholder="Vazio mantém atual"></div>
     <div class="col-md-1"><label class="form-label small">Status</label><select name="ativo" id="usuario-ativo" class="form-select"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
     <div class="col-md-1 d-grid"><label class="form-label small">&nbsp;</label><button class="btn btn-primary">Salvar</button></div>
+    <div class="col-md-4">
+      <label class="form-label small">Empresa</label>
+      <select name="empresa_id" id="usuario-empresa" class="form-select">
+        <option value="">— Sem empresa (vê todas) —</option>
+        <?php foreach(($empresas ?? []) as $emp): ?>
+        <option value="<?= (int)$emp['id'] ?>"><?= e($emp['nome']) ?><?= empty($emp['ativo']) ? ' (inativa)' : '' ?></option>
+        <?php endforeach; ?>
+      </select>
+      <div class="form-text">
+        <?php if(empty($empresas)): ?>
+          Nenhuma empresa cadastrada. Sem empresa, o usuário enxerga os dados de todas.
+        <?php else: ?>
+          Define o que o usuário enxerga. <b>Sem empresa</b> ele vê os dados de todas — mantenha assim só para administração geral.
+        <?php endif; ?>
+      </div>
+    </div>
     <div class="col-12 d-flex flex-wrap gap-4 mt-2">
       <label class="small"><input type="checkbox" name="deve_trocar_senha" id="usuario-trocar" value="1" checked> Exigir troca de senha no próximo login</label>
       <label class="small"><input type="checkbox" name="two_factor_enabled" id="usuario-2fa" value="1"> Ativar 2FA/TOTP</label>
@@ -54,23 +70,30 @@
   <b>2FA/TOTP:</b> quando o 2FA for ativado para um usuário, o cadastro no Google Authenticator aparece no próximo login com QR Code local e chave manual. O segredo não é enviado para API externa de QR Code.
 </div>
 
-<div class="card pro-card mb-4"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Último login</th><th>Trocar senha</th><th>2FA</th><th>Ações</th></tr></thead><tbody>
+<div class="card pro-card mb-4"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Empresa</th><th>Status</th><th>Último login</th><th>Trocar senha</th><th>2FA</th><th>Ações</th></tr></thead><tbody>
 <?php foreach($usuarios as $u): ?>
 <tr>
   <td><?= e($u['id']) ?></td>
   <td><?= e($u['nome']) ?></td>
   <td><?= e($u['email']) ?></td>
   <td><span class="badge bg-secondary"><?= e($u['perfil']) ?></span></td>
+  <td><?php
+    $empNome = null;
+    foreach(($empresas ?? []) as $emp) { if((int)$emp['id'] === (int)($u['empresa_id'] ?? 0)) { $empNome = $emp['nome']; break; } }
+    if ($empNome !== null) { echo '<span class="badge bg-info text-dark">'.e($empNome).'</span>'; }
+    elseif (!empty($u['empresa_id'])) { echo '<span class="badge bg-warning text-dark">#'.(int)$u['empresa_id'].' (não encontrada)</span>'; }
+    else { echo '<span class="badge bg-secondary" title="Enxerga os dados de todas as empresas">todas</span>'; }
+  ?></td>
   <td><?= $u['ativo']?'<span class="badge bg-success">Ativo</span>':'<span class="badge bg-danger">Inativo</span>' ?></td>
   <td><?= e($u['ultimo_login'] ?: '—') ?></td>
   <td><?= $u['deve_trocar_senha']?'Sim':'Não' ?></td>
   <td><?= !empty($u['two_factor_enabled'])?'<span class="badge bg-success">Ativo</span>':'<span class="badge bg-secondary">Inativo</span>' ?><?php if(!empty($u['two_factor_last_verified_at'])): ?><br><small class="text-muted">verificado: <?= e($u['two_factor_last_verified_at']) ?></small><?php endif; ?></td>
   <td class="text-nowrap">
     <button type="button" class="btn btn-sm btn-outline-primary js-usuario-editar" data-user='<?=e(json_encode([
-      'id'=>(int)$u['id'], 'nome'=>$u['nome'], 'email'=>$u['email'], 'perfil'=>$u['perfil'], 'ativo'=>(int)$u['ativo'], 'trocar'=>(int)$u['deve_trocar_senha'], 'twofa'=>(int)$u['two_factor_enabled']
+      'id'=>(int)$u['id'], 'nome'=>$u['nome'], 'email'=>$u['email'], 'perfil'=>$u['perfil'], 'ativo'=>(int)$u['ativo'], 'trocar'=>(int)$u['deve_trocar_senha'], 'twofa'=>(int)$u['two_factor_enabled'], 'empresa'=>($u['empresa_id']===null?'':(int)$u['empresa_id'])
     ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES))?>'>Editar</button>
     <button type="button" class="btn btn-sm btn-outline-warning js-usuario-senha" data-user='<?=e(json_encode([
-      'id'=>(int)$u['id'], 'nome'=>$u['nome'], 'email'=>$u['email'], 'perfil'=>$u['perfil'], 'ativo'=>(int)$u['ativo'], 'trocar'=>1, 'twofa'=>(int)$u['two_factor_enabled']
+      'id'=>(int)$u['id'], 'nome'=>$u['nome'], 'email'=>$u['email'], 'perfil'=>$u['perfil'], 'ativo'=>(int)$u['ativo'], 'trocar'=>1, 'twofa'=>(int)$u['two_factor_enabled'], 'empresa'=>($u['empresa_id']===null?'':(int)$u['empresa_id'])
     ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES))?>'>Alterar senha</button>
     <?php if((int)($u['id']) !== (int)(Auth::user()['id'] ?? 0)): ?>
     <form method="post" action="index.php?page=usuario-excluir" class="d-inline js-usuario-excluir">
@@ -85,6 +108,7 @@
 <?php endforeach; ?>
 </tbody></table></div></div>
 
+<?php if((($_GET['erro'] ?? '')==='empresa')): ?><div class="alert alert-danger">Empresa inválida: selecione uma empresa cadastrada ou deixe em branco.</div><?php endif; ?>
 <?php if(isset($_GET['permissoes'])): ?><div class="alert alert-info">Matriz de permissões atualizada.</div><?php endif; ?>
 <div class="card pro-card"><div class="card-body"><h3 class="h6">Matriz de permissões editável</h3><p class="text-muted small">Admin sempre mantém acesso total para evitar bloqueio do sistema.</p><form method="post" action="index.php?page=permissoes-salvar"><?= Csrf::input() ?><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Perfil</th><th>Módulo</th><th>Ação</th><th>Permitido</th></tr></thead><tbody><?php foreach($permissoes as $p): ?><tr><td><?= e($p['perfil']) ?></td><td><?= e($p['modulo']) ?></td><td><?= e($p['acao']) ?></td><td><label class="form-check form-switch"><input class="form-check-input" type="checkbox" name="permissoes[<?= (int)$p['id'] ?>]" value="1" <?= $p['permitido']?'checked':'' ?> <?= $p['perfil']==='admin'?'disabled':'' ?>><span class="form-check-label"><?= $p['permitido']?'Sim':'Não' ?></span></label><?php if($p['perfil']==='admin'): ?><input type="hidden" name="permissoes[<?= (int)$p['id'] ?>]" value="1"><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div><button class="btn btn-primary"><i class="bi bi-save"></i> Salvar permissões</button></form></div></div>
 
@@ -96,6 +120,7 @@ function editarUsuario(u){
   document.getElementById('usuario-email').value=u.email || '';
   document.getElementById('usuario-perfil').value=u.perfil || 'operador';
   document.getElementById('usuario-ativo').value=String(u.ativo ?? 1);
+  document.getElementById('usuario-empresa').value=(u.empresa === undefined || u.empresa === null) ? '' : String(u.empresa);
   document.getElementById('usuario-trocar').checked=!!Number(u.trocar);
   document.getElementById('usuario-2fa').checked=!!Number(u.twofa);
   document.getElementById('usuario-senha').value='';
@@ -114,6 +139,7 @@ function limparUsuarioForm(){
   document.getElementById('usuario-id').value='';
   document.getElementById('usuario-form').reset();
   document.getElementById('usuario-ativo').value='1';
+  document.getElementById('usuario-empresa').value='';
   document.getElementById('usuario-trocar').checked=true;
 }
 function confirmarExclusaoUsuario(form){
