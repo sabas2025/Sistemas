@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**41 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**42 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -525,6 +525,47 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `local` em toda variável de função de harness**, e desconfie de resultado onde a coluna de
   identificação mudou de valor sozinha.
 
+- **Variável nunca atribuída dentro de `catch(Throwable)` apaga uma rotina inteira e reporta
+  sucesso.** O achado I-15: `RetentionService::limparOperacional()` usava `$pdo->prepare(...)` com
+  um `$pdo` que **nunca era definido**. As seis deleções morriam com
+  `Call to a member function prepare() on null`, o `catch` virava cada erro numa **string dentro do
+  array de resultado**, e logo abaixo `Audit::event(…,'sucesso',…)` registrava o conjunto como
+  sucesso — um evento verde carregando seis erros. Efeito: `logs_integracao`, `auditoria_eventos`,
+  `tiny_webhooks`, `metricas_api`, `diagnostico_api` e `selftest_relatorios` **nunca foram
+  expurgadas em instalação nenhuma**, e o `DataRetentionService` não as cobre (ele trata
+  `fila_integracao` e `sessoes`, achados C-04 e D-01) — os dois não se sobrepõem, então não havia
+  rede de segurança. Corrigido com o desenho do serviço que funciona: conexão **por tabela**
+  (módulos diferentes), guarda de `tableExists`/`columnExists`, `LIMIT 5000` por execução e status
+  de auditoria que segue o que aconteceu. Medido apagando linha antiga e mantendo a recente nos
+  três alvos exercitáveis. **Ao ler um `catch(Throwable)` que escreve o erro no resultado, confira
+  se o status reportado acima dele pode ser diferente de sucesso.**
+
+- **Resiliência de fila: medida, e está sólida.** Cinco cenários contra MariaDB: falha temporária
+  reagenda para o futuro e incrementa tentativas; o item **não** é reentregue antes da hora;
+  esgotar o limite (`RetryPolicyService::attempts()`, 3) manda para `falha_definitiva` **e** cria a
+  linha na fila morta já carimbada com a empresa; item preso por worker morto é solto por
+  `liberarTravados()`; e dois reprocessamentos seguidos **não duplicam**. O jitter também:
+  200 falhas no mesmo segundo caem em 30 instantes distintos (5 min) e 78 (15 min), e o menor
+  atraso observado em 300 sorteios é exatamente a base da política — **aditivo, nunca reduz** (G-03).
+
+- **Ao sondar um serviço, não invente o nome do método.** Escrevendo a sonda de fila eu chamei
+  `QueueService::liberarPresos()`; o nome real é `liberarTravados()`. O fatal da sonda parecia
+  defeito do Hub por um instante. Os nomes reais são `pegarProximo`, `marcarResultado`,
+  `heartbeat`, `liberarTravados` e `reprocessar` — e `marcarResultado()` só finaliza item que está
+  `processando` **e** com o mesmo `locked_by`, então uma sonda que insere direto com
+  `status='pendente'` não marca nada e parece defeito. Reserve pelo caminho real.
+
+- **OAuth Tiny V3: a parte que não depende de credencial foi medida, e passa.** Seis cenários de
+  recusa em `OAuthStateService::consume()` — sem cookie, cookie adulterado em 1 byte, expirado,
+  provedor diferente, state que não confere e state vazio —, aceite legítimo, e **replay do mesmo
+  state bloqueado** pela proteção anti-replay. PKCE confere: challenge é S256 do verifier, e o
+  verifier tem 86 caracteres (o mínimo da RFC 7636 é 43). O que continua sem prova é o ciclo
+  completo com o servidor OAuth real.
+
+- **`worker_consulta_estoque_vsm.php` sai com código 1 sem rede, e isso está CERTO.** A mensagem é
+  `Host VSM não pôde ser resolvido por DNS`. Num ambiente sem acesso à VSM esse é o comportamento
+  correto, não um defeito — não o trate como falha de auditoria.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -581,6 +622,10 @@ no PR #2:
 | **6 webhooks de entrada do Tiny**: sem segredo / segredo errado / correto | sessão local, MariaDB 10.11 | verde — 401, 401, aceito; zero erro fatal |
 | **Trava de CNPJ autorizado do Tiny** | sessão local, MariaDB 10.11 | verde — autorizado 200, outro 401, vazio 401 |
 | **Pedido Tiny ponta a ponta**: bloqueado (422) e aprovado (202), com reenvio | sessão local, MariaDB 10.11 | verde — 3 reenvios, 1 linha; `empresa_id` carimbado |
+| **13 workers executados** | sessão local, MariaDB 10.11 | verde — 12 limpos; o da VSM falha por DNS, que é o correto |
+| **Retenção operacional** (6 tabelas) | sessão local, MariaDB 10.11 | quebrada (I-15); corrigida e medida apagando antiga e mantendo recente |
+| **Resiliência de fila**: retry, backoff, DLQ, item preso, reprocessamento | sessão local, MariaDB 10.11 | verde nos 5 cenários |
+| **OAuth V3 sem credencial**: 6 recusas, aceite, replay, PKCE S256 | sessão local, MariaDB 10.11 | verde |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
