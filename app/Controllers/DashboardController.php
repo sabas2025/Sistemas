@@ -125,7 +125,7 @@ class DashboardController {
       case 'sobre': $this->sobre(); break;
       case 'notificacao-lida': $this->marcarNotificacaoLida(); break;
       case 'auditoria': $this->auditoria(); break;
-      case 'auditoria-detalhe': $this->auditoriaDetalhe(); break;
+      case 'auditoria-detalhe': (new AuditoriaController())->dispatch($page); break;
       case 'diagnostico': $this->diagnostico(); break;
       case 'dashboard-integridade': $this->dashboardIntegridade(); break;
       case 'producao-ready': $this->producaoReady(); break;
@@ -767,17 +767,6 @@ class DashboardController {
     $pageTitle = 'Auditoria';
     require __DIR__.'/../../views/auditoria.php';
   }
-
-  private function auditoriaDetalhe(): void {
-    PermissionService::require('auditoria','visualizar');
-    $id = (int)($_GET['id'] ?? 0);
-    $st=Database::forTable('auditoria_eventos')->prepare("SELECT * FROM auditoria_eventos WHERE id=? LIMIT 1"); $st->execute([$id]); $evento=$st->fetch();
-    if(!$evento){ http_response_code(404); echo 'Evento não encontrado'; return; }
-    $st=Database::forTable('auditoria_eventos')->prepare("SELECT * FROM auditoria_eventos WHERE trace_id=? ORDER BY id ASC"); $st->execute([$evento['trace_id']]); $timeline=$st->fetchAll();
-    $pageTitle = 'Detalhe da Auditoria';
-    require __DIR__.'/../../views/auditoria_detalhe.php';
-  }
-
 
   private function tinyWebhooks(): void {
     PermissionService::require('tiny_webhooks','visualizar');

@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**42 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**43 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -366,9 +366,10 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   serviço**. Extraído para `EmpresaCatalogService` (listar, e ler+validar o `empresa_id` do
   formulário numa chamada só), o controller ficou em 163.788 bytes, folga de 52. Em 2026-09-15 a
   correção do I-12 devolveu fôlego ao mover `filaMortaReprocessar()` para o `FilaController`, que o
-  `RouteModuleRegistry` já declarava como dono: **163.547 bytes, folga de 293**. O caminho para
-  ganhar espaço é esse — devolver handler ao controller que o registry aponta —, não levantar o
-  limite. O arquivo continua precisando ser decomposto. Ao mexer nele, meça antes:
+  `RouteModuleRegistry` já declarava como dono: 163.547 bytes, folga de 293. O I-17 repetiu a
+  receita com `auditoriaDetalhe()` → `AuditoriaController`: **162.893 bytes, folga de 947**. O
+  caminho para ganhar espaço é esse — devolver handler ao controller que o registry aponta —, não
+  levantar o limite. O arquivo continua precisando ser decomposto. Ao mexer nele, meça antes:
   `wc -c app/Controllers/DashboardController.php` contra 163840.
 
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
@@ -566,6 +567,37 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `Host VSM não pôde ser resolvido por DNS`. Num ambiente sem acesso à VSM esse é o comportamento
   correto, não um defeito — não o trate como falha de auditoria.
 
+- **O ambiente de E2E NÃO serve para medir força bruta.** O achado I-16:
+  `provision-e2e-environment.php` escreve limites de login ~100x acima dos padrões do código
+  (1000/500 contra 20/5 por IP e 10/3 por usuário), e tem de ser assim — a suíte faz dezenas de
+  logins seguidos do mesmo IP e se trancaria na quarta tentativa. Só que o bloco não dizia nada, e
+  eu medi doze senhas erradas seguidas passando sem bloqueio e quase registrei isso como defeito.
+  Repondo os padrões do código e repetindo: as três primeiras respondem "Login inválido", **da
+  quarta em diante entra o bloqueio, e a senha CORRETA também é recusada** enquanto ele durar — que
+  é o comportamento certo. O aviso agora está no próprio script, onde a próxima pessoa vai olhar.
+
+- **Mensagem genérica de login é proposital, e engana quem a lê como sinal de estado.** A resposta
+  é uma frase só: "Usuário ou senha inválidos, **ou** usuário temporariamente bloqueado por excesso
+  de tentativas" — não revela se o usuário existe nem quando o bloqueio entrou. Meu `grep` por
+  "bloqueado" casou com ela já na PRIMEIRA tentativa e pintou um bloqueio que não existia. Para
+  saber o estado real, leia `login_tentativas.mensagem` ou a trilha, nunca o texto da tela.
+
+- **Rota que existe e ainda assim devolve 404: confira qual PARÂMETRO ela lê.** O achado I-17:
+  `auditoria-detalhe` lia apenas `?id=`, mas `auditoriaAssinarTrace()` redireciona para ela com
+  `?trace_id=`. Resultado: **assinar um trace — ação forense — levava o operador a
+  "Evento não encontrado"**, sem confirmação de que a assinatura funcionou. A tela de Auditoria
+  linka com `?id=` e sempre funcionou, então o defeito só aparecia por aquele caminho. Agora aceita
+  as duas formas, e o handler mudou de casa: acrescentá-las no `DashboardController` estourava o
+  teto em **339 bytes**, e a resposta que a guarda pede é mover. Foi para o `AuditoriaController`,
+  que o `RouteModuleRegistry` já declarava como dono do módulo — **162.893 bytes, folga de 947**
+  (era 293). Segundo caso nesta sessão em que corrigir um defeito devolveu fôlego ao teto.
+
+- **Campo vazio na tela de auditoria não é campo que falta.** Ao conferir a promessa da fase 11 eu
+  vi "causa provável" e "ação recomendada" ausentes e quase anotei uma lacuna. O evento que eu
+  estava olhando era de **sucesso**, e sucesso não tem causa. Contra um evento de erro a view
+  renderiza os dois. Medido: buscar por Trace ID devolve origem, rota, usuário, IP, operação,
+  entidade, a linha do tempo inteira do trace e — quando existem — causa e ação recomendada.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -626,6 +658,10 @@ no PR #2:
 | **Retenção operacional** (6 tabelas) | sessão local, MariaDB 10.11 | quebrada (I-15); corrigida e medida apagando antiga e mantendo recente |
 | **Resiliência de fila**: retry, backoff, DLQ, item preso, reprocessamento | sessão local, MariaDB 10.11 | verde nos 5 cenários |
 | **OAuth V3 sem credencial**: 6 recusas, aceite, replay, PKCE S256 | sessão local, MariaDB 10.11 | verde |
+| **Fixação de sessão e flags de cookie** | sessão local, MariaDB 10.11 | verde — id regenerado no login; HttpOnly, SameSite=Strict, Secure condicional |
+| **Força bruta com os limites REAIS do código** | sessão local, MariaDB 10.11 | verde — bloqueia da 4ª tentativa e recusa até a senha correta |
+| **Revogação por `session_version` e `deve_trocar_senha`** | sessão local, MariaDB 10.11 | verde — 302 para login?expired=1 e para trocar-senha |
+| **Busca por Trace ID** (fase 11), pelas duas formas | sessão local, MariaDB 10.11 | quebrada por `?trace_id=` (I-17); corrigida e remedida |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

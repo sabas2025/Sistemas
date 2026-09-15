@@ -153,6 +153,17 @@ return [
     'trusted_proxies' => '',
     'session_idle_timeout_seconds' => 1800,
     'session_absolute_timeout_seconds' => 28800,
+    // ATENÇÃO (achado I-16, 2026-09-15): os limites de login abaixo estão RELAXADOS DE PROPÓSITO,
+    // cerca de 100x acima dos padrões do código (20/5 por IP, 10/3 por usuário). A suíte E2E faz
+    // dezenas de logins seguidos do mesmo IP e com o mesmo usuário; com os limites reais ela se
+    // trancaria sozinha a partir da quarta tentativa.
+    //
+    // Consequência que custou uma rodada de auditoria: **este ambiente não serve para medir
+    // proteção contra força bruta**. Doze senhas erradas seguidas passam sem bloqueio nenhum aqui,
+    // e quem medir contra ele conclui que o limitador não existe. Para exercitá-lo de verdade,
+    // reponha os padrões do código em config/config.php e repita — medido assim, as três primeiras
+    // tentativas respondem "Login inválido", da quarta em diante entra o bloqueio, e **a senha
+    // correta também é recusada** enquanto o bloqueio durar, que é o comportamento certo.
     'max_login_attempts' => 50,
     'password_min_length' => 10,
     'login_lock_minutes' => 1,
