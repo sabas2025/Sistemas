@@ -1,0 +1,13 @@
+PACOTE DE ATUALIZAÇÃO SEGURA
+
+Este pacote NÃO contém config/config.php.
+- Em atualização: o config.php existente será preservado.
+- Em instalação nova: abra public/install.php; ele criará config/config.php.
+- Não apague storage/install.lock em produção.
+- Faça backup antes de substituir arquivos.
+- Após a atualização, regenere a baseline FIM no painel de Segurança.
+
+HOTFIX R3 - DETECÇÃO DE SCHEMA CPANEL
+- Corrige falso negativo de tabelas após CREATE em hospedagem compartilhada.
+- Enterprise Core exibe banco selecionado/configurado e usuário MySQL.
+- Não substitua config/config.php nem a baseline FIM existente.

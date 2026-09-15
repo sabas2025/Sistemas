@@ -1,0 +1,16 @@
+V71 - Dashboard Executivo, Alertas e Centro de Operações
+
+Alterações aplicadas:
+- Card fixo no dashboard: Tiny V2 = Produção, Tiny V3 = Homologação e VSM = Produção.
+- Semáforo geral da operação: operacional, atenção ou crítico.
+- Painel de saúde dos workers: fiscal, estoque, consulta VSM e fila.
+- Dashboard executivo de estoque: sincronizados, divergências, pendentes e falhas.
+- Dashboard fiscal resumido: XML processados, erros e reenvios.
+- Nova tela Alertas Operacionais.
+- Nova tela Centro de Operações.
+- Menu atualizado com Centro de Operações e Alertas.
+- Perfis visuais atualizados para enxergar as novas telas.
+- Interface mantida limpa, sem build/changelog/versão visível.
+
+Opinião técnica:
+O HUB já tem muitos recursos. A melhoria mais importante agora é transformar os indicadores em operação diária: alertas claros, workers monitorados e separação de responsabilidades em controllers menores. A próxima etapa recomendada é gravar heartbeat real dos workers em banco para saber última execução, duração e quantidade processada, sem depender apenas da existência do arquivo.

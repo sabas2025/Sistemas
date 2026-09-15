@@ -1,0 +1,24 @@
+{
+  "php_files": 293,
+  "php_lines": 19634,
+  "services": 124,
+  "controllers": 30,
+  "views": 104,
+  "functions_methods": 1033,
+  "tables": 107,
+  "create_duplicates": 0,
+  "add_column_if_not_exists": 0,
+  "module_counts": {
+    "core": 33,
+    "pedidos": 12,
+    "produtos": 11,
+    "estoque": 16,
+    "fiscal": 7,
+    "fila": 7,
+    "observabilidade": 19,
+    "backups": 2
+  },
+  "pdo_execute": 351,
+  "pdo_exec": 93,
+  "curl_exec": 8
+}

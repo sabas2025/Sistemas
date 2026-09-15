@@ -1,0 +1,526 @@
+{
+  "generated_at": "2026-06-23T19:09:41.810255",
+  "total": 104,
+  "tables": {
+    "audit_exports": {
+      "status": "legado",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "auditoria_assinaturas": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "auditoria_detalhes": {
+      "status": "legado",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "auditoria_eventos": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "auditoria_hash_chain": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "auditoria_timeline": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "backups": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "backups_banco": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "categorias_mapeamento": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "circuit_breakers": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "configuracoes_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "configuracoes_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "dashboard_testes_execucoes": {
+      "status": "legado",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "diagnostico_api": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "empresas": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_alertas": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_auditoria_sku": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_configuracoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_consulta_vsm_execucoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_consulta_vsm_resultados": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_divergencias": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_eventos_sincronizacao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_movimentos": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_reconciliacao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_reconciliacao_agendada": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "estoque_saldos_cache": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "evento_correlacao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "eventos_processados": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fila_analytics_snapshots": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fila_estoque": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fila_fiscal": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fila_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fila_morta": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "filiais": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fiscal_configuracoes_cache": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "fiscal_reconciliacao_snapshots": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "homologacao_automatica_relatorios": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "homologacao_checklist": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "hosting_checks": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "instalacao_prechecks": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "integracao_execucoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "ips_bloqueados": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "login_tentativas": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "logs_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "mapper_versions": {
+      "status": "legado",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "metricas_api": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "module_health_snapshots": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "nfe_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "nfe_status_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "nfe_xml": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "notas_fiscais": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "notas_fiscais_eventos": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "notificacoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "notificacoes_config": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "orquestracao_fluxos_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "payload_snapshots": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_hub": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_nfe_xml": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_payloads": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_status_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_validacao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "pedidos_validacao_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "permissoes_perfil": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "post_install_tests": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "production_go_live_checks": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "production_readiness_v50": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produto_pendencias": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_aprovacao_historico": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_mapeamento": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_pendentes_integracao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_tiny": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_vsm": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "produtos_vsm_eventos": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "rate_limit_hits": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "reconciliacao_execucoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "reconciliacao_itens": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "schema_classificacao": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "schema_inventory": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "schema_migrations": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "security_audit": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "security_events": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "security_hardening_checks": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "selftest_relatorios": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "system_build_info": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_error_catalogo": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_testes_reais": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v2_endpoint_logs": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v2_homologacao_testes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v2_retry_policies": {
+      "status": "legado",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v3_endpoint_logs": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v3_homologacao_testes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_v3_tokens": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_validacoes_execucoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "tiny_webhooks": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "upgrade_snapshots": {
+      "status": "futuro",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "usuarios": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_campos_mapeamento": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_endpoint_catalogo": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_endpoint_logs": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_endpoint_metricas": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_endpoints": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "vsm_payload_catalogo": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    },
+    "webhook_requisicoes": {
+      "status": "em_uso",
+      "modulo": "auto",
+      "observacao": "Classificação inicial V99; confirmar com uso real em produção."
+    }
+  }
+}

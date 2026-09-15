@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="assets/offline.min.css?v=104.49.3">
+  <title>Offline - Hub de Integração</title>
+</head>
+<body>
+  <main class="card">
+    <div class="brand"><img class="logo" src="assets/img/hub-integracao-logo.svg" alt=""><div><div class="eyebrow">PWA Enterprise</div><div class="brand-name">Hub de Integração</div></div></div>
+    <h1>Sem conexão</h1>
+    <p class="muted">O Hub está temporariamente offline. Por segurança, nenhum pedido, estoque, XML/NF-e, token, dado de cliente, auditoria ou backup é armazenado neste dispositivo.</p>
+    <div class="status-line"><span class="status-dot" aria-hidden="true"></span><span id="networkStatus">Verificando conexão</span></div>
+    <div class="warn">Última tentativa: <strong id="now"></strong><br>A verificação testa a internet e a disponibilidade real do Hub antes de reabrir.</div>
+    <div class="actions"><button id="reloadBtn" type="button">Tentar novamente</button><a id="openHub" class="button" href="./index.php" hidden>Abrir o Hub</a></div>
+    <div class="footer">Versão PWA 104.49.3 • Cache somente de recursos visuais</div>
+  </main>
+  <script src="assets/offline.min.js?v=104.49.3" defer></script>
+</body>
+</html>

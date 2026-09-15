@@ -1,0 +1,90 @@
+HUB Tiny/VSM V104.49.3-R5 — atualização auditada
+Data da release: 22/08/2026
+
+OBJETIVO
+
+Corrigir a instalação que podia concluir sem as 24 colunas exigidas pelo
+catálogo VSM, incluindo:
+
+- vsm_endpoints.modo_teste_seguro, origem, contract_verified,
+  contract_source, contract_checked_at e is_template;
+- os demais campos críticos de configuracoes_integracao,
+  schema_migrations, vsm_campos_mapeamento e vsm_endpoint_logs.
+
+ATUALIZAÇÃO DE UMA INSTALAÇÃO EXISTENTE
+
+1. Gere e valide um backup completo dos arquivos e bancos.
+2. Preserve config/config.php, storage/install.lock e o manifesto FIM atual.
+3. Substitua os arquivos da aplicação pelos desta release, sem copiar cache,
+   logs, autorizações temporárias ou config de outro servidor.
+4. Entre em Central Técnica > Banco > Enterprise Core.
+5. Execute primeiro Simular; confira banco selecionado, banco configurado e
+   itens pendentes.
+6. Execute Aplicar Enterprise Core e aguarde a verificação final.
+7. Confirme que o Quality Gate não apresenta bloqueio de schema.
+8. Reabra Mapeamento de Endpoints VSM, Campos VSM, Logs e Saúde VSM.
+
+Se o painel não puder executar DDL e a instalação usar banco único, aplique no
+phpMyAdmin, nesta ordem:
+
+1. database/migrations/20260712_001_queue_oauth_concurrency.sql
+2. database/migrations/20260712_002_schema_runtime_vsm_contract.sql
+3. database/migrations/20260712_003_missing_core_tables.sql
+4. database/migrations/20260712_004_vsm_security_selftest_recovery.sql
+5. database/migrations/20260713_007_enterprise_map_recovery.sql
+
+Em modo modular, prefira o Enterprise Core: ele resolve o banco oficial de cada
+tabela. database/repair_current.sql é um fallback conservador somente para banco
+único e deve ser aplicado após backup. Esse arquivo contém DDL estrutural e seeds
+idempotentes de catálogo/permissões/migrations; não é um arquivo "somente DDL".
+O AutoRepair operacional ignora todo DML e executa apenas CREATE TABLE IF NOT
+EXISTS e ALTER TABLE ... ADD.
+
+NOVA INSTALAÇÃO
+
+1. Garanta HTTPS e permissões temporárias de escrita em config/ e storage/.
+2. No terminal da raiz, execute:
+
+   php scripts/create-install-authorization.php
+
+3. Abra public/install.php, informe o código de uso único e conclua o formulário.
+4. O instalador aceita somente banco novo: se encontrar qualquer tabela do Hub,
+   ele bloqueia antes do DDL dos módulos e orienta o fluxo de atualização. Só
+   depois desse preflight testa privilégios com tabela aleatória, removida apenas
+   quando a própria conexão comprova que a criou.
+5. O instalador só publica config, FIM e install.lock após validar todas as
+   tabelas, colunas, tipos, nulabilidade, defaults, índices, engine, charset e
+   collation explicitamente declarada pelos oito módulos.
+6. Se a publicação final falhar, config, FIM e lock anteriores são restaurados.
+   DDL MySQL não é transacional; uma falha depois do início da criação pode deixar
+   estrutura parcial no banco, que deve ser revisada antes de nova tentativa.
+
+Em proxy reverso, X-Forwarded-Proto só é aceito quando REMOTE_ADDR consta na
+variável de ambiente HUB_INSTALL_TRUSTED_PROXIES (lista exata de IPs separada por
+vírgulas). Sem essa configuração, o instalador exige HTTPS direto.
+
+Não execute install.sql ou install_final_current.sql sem renderizar todos os
+placeholders. O instalador web é o caminho oficial.
+
+GOVERNANÇA VSM
+
+- Leituras VSM não executam DDL nem seeds.
+- Endpoints e campos novos ficam inativos até confirmação explícita.
+- A confirmação nunca é herdada durante uma edição.
+- Referências openapi:arquivo.json são carregadas apenas de contracts/vsm/ e
+  comparadas com o método e caminho informados.
+- Nenhum contrato oficial VSM foi fabricado ou incluído nesta release.
+- A tela comum executa somente sonda segura; métodos mutáveis viram GET e não
+  comprovam a prontidão do método original.
+- O corpo de respostas VSM nunca é persistido: logs guardam apenas HTTP, tempo,
+  tamanho, content-type, hash SHA-256 e código diagnóstico.
+- URLs de contrato rejeitam credenciais, query e fragmento; referências HTTPS
+  persistidas conservam apenas o host e um hash da origem.
+
+VALIDAÇÃO DA RELEASE
+
+O pacote inclui gates estáticos e workflows para PHP 8.2, MySQL 8.0 e MariaDB
+11.4. Neste ambiente de montagem não havia PHP CLI nem servidor MySQL/MariaDB;
+por isso a execução real deve ocorrer no workflow CI antes da promoção.
+
+Confira CHECKSUMS-SHA256.txt depois de extrair o pacote.

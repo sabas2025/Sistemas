@@ -1,0 +1,203 @@
+name: Hub CI
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+jobs:
+  static-enterprise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, curl, mbstring, openssl, zip
+      - name: PHP lint
+        run: bash scripts/ci/php-lint.sh
+      - name: Enterprise regression
+        run: bash scripts/ci/enterprise-tests.sh
+      - name: Operational schema policy
+        run: php scripts/ci/schema-runtime-ddl-check.php
+      - name: Controller routes
+        run: php scripts/ci/controller-route-check.php
+      - name: VSM OpenAPI contract
+        run: php scripts/ci/vsm-openapi-check.php
+      - name: Classmap em dia
+        run: php scripts/build-classmap.php --check
+      - name: Isolamento multiempresa (melhoria 1 da seção 8)
+        run: php scripts/ci/tenant-scope-check.php
+      - name: Força e reuso de segredos (config de exemplo não pode ter valor real)
+        run: php scripts/ci/secret-hygiene-check.php
+      - name: SQL inventory and static contracts
+        run: |
+          node scripts/ci/build-consolidated-schema.mjs --check
+          php scripts/ci/sql-inventory-check.php
+          php scripts/ci/mysql-schema-static-check.php
+      - name: Modular/consolidated schema parity
+        run: php scripts/ci/mysql-module-parity-check.php
+
+  mysql-runtime:
+    name: Runtime ${{ matrix.engine }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - engine: MySQL 8.0
+            image: mysql:8.0
+          - engine: MariaDB 11.4
+            image: mariadb:11.4
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: hub_ci_bootstrap
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping -h 127.0.0.1 -proot || mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql
+      - name: Consolidated schema runtime
+        env:
+          HUB_TEST_DB_HOST: 127.0.0.1
+          HUB_TEST_DB_PORT: 3306
+          HUB_TEST_DB_USER: root
+          HUB_TEST_DB_PASS: root
+          HUB_TEST_DB_NAME: hub_ci_consolidated
+          HUB_TEST_SCHEMA_SOURCE: consolidated
+        run: php scripts/ci/mysql-runtime-regression.php
+      - name: Modular installer schema runtime
+        env:
+          HUB_TEST_DB_HOST: 127.0.0.1
+          HUB_TEST_DB_PORT: 3306
+          HUB_TEST_DB_USER: root
+          HUB_TEST_DB_PASS: root
+          HUB_TEST_DB_NAME: hub_ci_modules
+        run: php scripts/ci/mysql-modular-runtime-regression.php
+  # Reauditoria 2026-09-14 (achado A-03): o job não subia servidor nem banco, não definia
+  # HUB_BASE_URL (o default do playwright.config.js apontava para um host REMOTO de produção),
+  # usava "@playwright/test": latest sem lockfile e deixava os testes autenticados serem pulados
+  # em silêncio quando HUB_USER/HUB_PASS não existiam - o gate podia passar sem validar nada
+  # autenticado. Agora o ambiente é provisionado no próprio job e skips obrigatórios reprovam.
+  e2e-authenticated:
+    runs-on: ubuntu-latest
+    services:
+      database:
+        image: mariadb:11.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: hub_ci_e2e
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping -h 127.0.0.1 -proot || mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, curl, mbstring, openssl, zip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Provisionar schema e administrador de teste
+        env:
+          HUB_TEST_DB_HOST: 127.0.0.1
+          HUB_TEST_DB_PORT: 3306
+          HUB_TEST_DB_USER: root
+          HUB_TEST_DB_PASS: root
+          HUB_TEST_DB_NAME: hub_ci_e2e
+          # B-05: confirmação explícita exigida pelo script, que é destrutivo por natureza.
+          HUB_CI_E2E_CONFIRM: '1'
+        run: php scripts/ci/provision-e2e-environment.php
+      # Auditoria da primeira execucao real da CI (PR #2): a suite E2E rodava contra o caminho
+      # errado e 20 de 23 testes falhavam com "element(s) not found". A causa era a URL, nao o Hub.
+      # Com document root na raiz e HUB_BASE_URL terminando em /public, as DUAS formas de navegar
+      # usadas pelos specs erravam o alvo:
+      #   page.goto('/index.php?...')      -> barra inicial resolve contra a ORIGEM e descarta
+      #                                       /public  => http://127.0.0.1:8000/index.php  = 404
+      #   page.goto(baseURL+'index.php...') -> baseURL sem barra final concatena grudado
+      #                                       => .../publicindex.php                        = 404
+      # Servir a partir de public/ com baseURL terminando em barra acerta as duas. Tambem e o que
+      # o LEIA-ME-INSTALACAO-E-ATUALIZACAO.md recomenda como document root.
+      - name: Subir servidor local isolado
+        run: |
+          php -S 127.0.0.1:8000 -t public > /tmp/php-server.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:8000/index.php?page=login" > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          echo "Servidor local não respondeu a tempo:"; cat /tmp/php-server.log; exit 1
+      - name: Install Playwright deps
+        working-directory: tests/e2e
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: tests/e2e
+        run: npx playwright install --with-deps chromium
+      - name: Run Playwright suite
+        working-directory: tests/e2e
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-result.json
+          HUB_BASE_URL: http://127.0.0.1:8000/
+          HUB_USER: ci@example.invalid
+          HUB_PASS: CI-only-password-2026
+        run: |
+          npx playwright test --reporter=list,json
+          node -e "
+            const r = require('./playwright-result.json');
+            const stats = r.stats || {};
+            const total = (stats.expected||0) + (stats.unexpected||0) + (stats.skipped||0);
+            if (total === 0) {
+              console.error('Nenhum teste Playwright foi coletado/executado - falhando o job.');
+              process.exit(1);
+            }
+            if ((stats.unexpected||0) > 0) {
+              console.error(stats.unexpected + ' teste(s) falharam.');
+              process.exit(1);
+            }
+            // A-03: um skip aqui significa ambiente mal provisionado, não teste opcional.
+            if ((stats.skipped||0) > 0) {
+              console.error(stats.skipped + ' teste(s) foram PULADOS. Com o ambiente provisionado, skip é falha de gate.');
+              process.exit(1);
+            }
+            console.log('E2E autenticado OK: ' + (stats.expected||0) + ' teste(s).');
+          "
+
+  # Melhoria 3 da seção 8 (relatório V104.49.3-R6): os quatro defeitos de portabilidade da R6 (um
+  # deles impedia a instalação) só apareceram em MariaDB real, e os jobs da matriz já existiam —
+  # faltava torná-los obrigatórios. Proteção de branch não aceita bem um job de matriz (o nome do
+  # check muda com cada entrada), então este agregador existe para ser O ÚNICO check obrigatório:
+  # ele só fica verde se TODOS os anteriores ficarem. Marque "Hub CI / gate" como required em
+  # Settings > Branches e a matriz inteira passa a bloquear o merge.
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    needs: [static-enterprise, mysql-runtime, e2e-authenticated]
+    if: always()
+    steps:
+      - name: Conferir resultado de todos os jobs
+        run: |
+          echo "static-enterprise: ${{ needs.static-enterprise.result }}"
+          echo "mysql-runtime (matriz MySQL 8 + MariaDB 11.4): ${{ needs.mysql-runtime.result }}"
+          echo "e2e-authenticated: ${{ needs.e2e-authenticated.result }}"
+          if [ "${{ needs.static-enterprise.result }}" != "success" ] \
+          || [ "${{ needs.mysql-runtime.result }}" != "success" ] \
+          || [ "${{ needs.e2e-authenticated.result }}" != "success" ]; then
+            echo "::error::Um ou mais jobs obrigatórios não passaram. O merge deve ser bloqueado."
+            exit 1
+          fi
+          echo "Todos os jobs obrigatórios passaram."

@@ -1,0 +1,26 @@
+{
+  "version": "V104.14",
+  "feature": "Teste de Segurança Assistido",
+  "routes": [
+    {
+      "route": "security-assisted-test",
+      "method": "GET",
+      "controller": "SecurityAssistedTestController",
+      "permission": "seguranca.visualizar"
+    },
+    {
+      "route": "security-assisted-test-run",
+      "method": "POST",
+      "controller": "SecurityAssistedTestController",
+      "permission": "seguranca.visualizar",
+      "csrf": true
+    },
+    {
+      "route": "security-assisted-test-download",
+      "method": "GET",
+      "controller": "SecurityAssistedTestController",
+      "permission": "seguranca.visualizar"
+    }
+  ],
+  "created_at": "2026-06-30 02:46:23"
+}

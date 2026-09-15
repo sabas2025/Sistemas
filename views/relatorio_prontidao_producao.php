@@ -1,0 +1,4 @@
+<?php require __DIR__.'/layout_top.php'; ?>
+<div class="panel mb-4"><div class="panel-header"><div><h2>Relatório de Prontidão para Produção</h2><span class="text-muted">Rota corrigida na V43 para evitar erro fatal.</span></div></div></div>
+<div class="panel"><div class="panel-header"><h2>Checks</h2></div><div class="table-responsive"><table class="table"><thead><tr><th>Item</th><th>Status</th><th>Detalhe</th></tr></thead><tbody><?php foreach(($checks ?? []) as $c): ?><tr><td><?=e($c['item'] ?? $c['titulo'] ?? '-')?></td><td><?=!empty($c['ok'])?'<span class="badge-status status-sucesso">OK</span>':'<span class="badge-status status-alerta">Atenção</span>'?></td><td><?=e($c['detalhe'] ?? $c['mensagem'] ?? '')?></td></tr><?php endforeach; ?><?php if(empty($checks)): ?><tr><td colspan="3">Serviço de prontidão indisponível ou sem checks.</td></tr><?php endif; ?></tbody></table></div></div>
+<?php require __DIR__.'/layout_bottom.php'; ?>

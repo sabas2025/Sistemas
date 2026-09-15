@@ -1,0 +1,4 @@
+<?php require __DIR__.'/layout_top.php'; ?>
+<div class="panel mb-4"><div class="panel-header"><div><h2>🟢 Saúde XML/NF-e</h2><span class="text-muted">Verificação das tabelas, fila XML/NF-e, XML e auditoria.</span></div><a class="btn btn-sm btn-outline-primary" href="index.php?page=fiscal">Voltar XML/NF-e</a></div></div>
+<div class="panel"><div class="table-responsive"><table class="table"><thead><tr><th>Componente</th><th>Status</th><th>Mensagem</th></tr></thead><tbody><?php foreach(($checks??[]) as $nome=>$c): ?><tr><td><?=e($nome)?></td><td><?=$c['ok']?'<span class="badge-status status-sucesso">OK</span>':'<span class="badge-status status-erro">ERRO</span>'?></td><td><?=e($c['msg']??'')?></td></tr><?php endforeach; ?></tbody></table></div></div>
+<?php require __DIR__.'/layout_bottom.php'; ?>

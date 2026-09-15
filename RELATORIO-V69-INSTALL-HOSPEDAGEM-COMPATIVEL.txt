@@ -1,0 +1,23 @@
+V69 - Correção de Instalação em Hospedagem Compartilhada/cPanel
+
+Problema corrigido:
+- Erro 1044 Access denied ao tentar criar/acessar bancos modulares como ctbatop1_hub_core.
+- Causa: usuários MySQL de hospedagem/cPanel normalmente não podem criar bancos pelo PHP e só acessam bancos criados previamente no painel.
+
+Melhorias aplicadas:
+- Instalador agora usa banco único por padrão.
+- Opção de banco modular continua disponível apenas para ambientes com permissão.
+- Se o usuário marcar banco modular e o MySQL negar acesso, o instalador faz fallback automático para banco único.
+- Se o banco já existir, o instalador testa acesso e segue sem tentar depender de CREATE DATABASE.
+- Mensagens do instalador explicam uso recomendado em hospedagem compartilhada.
+
+Recomendação para sua hospedagem:
+- Criar no painel/cPanel o banco: ctbatop1_hub
+- Vincular o usuário: ctbatop1_hub
+- Dar permissões ALL PRIVILEGES para esse banco.
+- No install.php, usar Banco MySQL: ctbatop1_hub
+- Deixar desmarcada a opção de bancos separados por módulo.
+
+Resultado:
+- O HUB instala todos os módulos no mesmo banco quando estiver em hospedagem compartilhada.
+- O sistema mantém a lógica modular no código, mas fisicamente usa um banco único para evitar erro de permissão.

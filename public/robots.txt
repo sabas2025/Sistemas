@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+Noindex: /
+
+# Hub de Integração: painel administrativo privado.

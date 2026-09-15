@@ -1,0 +1,17 @@
+RELATÓRIO V70 - VALIDAÇÃO ANALÍTICA DA BASE DE DADOS
+
+Correção aplicada:
+- Removido valor duplicado 'vsm' do ENUM da coluna produtos_pendentes_integracao.origem.
+- Corrigido em database/install.sql.
+- Corrigido em database/modules/produtos.sql.
+- Corrigido em database/update_v45_produto_novo_vsm_governanca.sql.
+- Criado update manual database/update_v70_fix_enum_produtos_pendentes.sql.
+
+Validações executadas:
+- Varredura de ENUM duplicado em todos os SQL.
+- Varredura de sintaxe PHP.
+- Conferência de scripts de instalação banco único e modular.
+
+Recomendação:
+- Para instalação nova em cPanel, usar banco único.
+- Se a instalação anterior falhou no meio, limpar as tabelas criadas parcialmente ou recriar o banco antes de executar novamente o install.php.

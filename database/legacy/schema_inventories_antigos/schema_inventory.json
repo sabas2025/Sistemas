@@ -1,0 +1,10 @@
+{
+  "versao": "v97",
+  "gerado_em": "2026-06-23",
+  "classificacao": {
+    "EM_USO": ["usuarios","configuracoes_integracao","pedidos_integracao","produtos_mapeamento","fila_integracao","estoque_movimentos","logs_integracao","auditoria_eventos","login_tentativas","permissoes_perfil","backups_banco","webhook_requisicoes","tiny_webhooks","fila_morta","payload_snapshots","metricas_api","circuit_breakers","security_audit","tiny_v3_tokens","tiny_v3_endpoint_logs","tiny_v2_endpoint_logs","homologacao_checklist","homologacao_automatica_relatorios","production_go_live_checks","production_readiness_v50","tiny_testes_reais","tiny_v2_homologacao_testes","tiny_v3_homologacao_testes","auditoria_hash_chain","schema_migrations"],
+    "LEGADO": ["audit_exports","auditoria_detalhes","dashboard_testes_execucoes","mapper_versions","module_health_snapshots","tiny_v2_retry_policies"],
+    "FUTURO": ["empresas","filiais","estoque_reconciliacao_agendada","fiscal_reconciliacao_snapshots","instalacao_prechecks","produtos_vsm","reconciliacao_itens","system_build_info"],
+    "OBSERVACAO": "Classificação estática: revisar com dados reais antes de remover tabelas. Tabelas LEGADO/FUTURO foram mantidas para compatibilidade."
+  }
+}

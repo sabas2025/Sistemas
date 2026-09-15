@@ -1,0 +1,5220 @@
+{
+  "generated_at": "2026-06-25T02:28:19.490194",
+  "total_tables": 101,
+  "tables": {
+    "backups_banco": {
+      "module": "backups",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "arquivo",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "tamanho_bytes",
+          "type": "BIGINT DEFAULT 0"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('sucesso','erro') DEFAULT 'sucesso'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "backups": {
+      "module": "backups",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "arquivo",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "tamanho",
+          "type": "BIGINT DEFAULT 0"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(40) DEFAULT 'gerado'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 5
+    },
+    "usuarios": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(160) NOT NULL UNIQUE"
+        },
+        {
+          "name": "senha",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "perfil",
+          "type": "ENUM('admin','gerente','operador') DEFAULT 'admin'"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "ultimo_login",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "deve_trocar_senha",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "two_factor_enabled",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "two_factor_secret",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "two_factor_created_at",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "two_factor_last_verified_at",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "tentativas_login",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "bloqueado_ate",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "session_version",
+          "type": "INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 16
+    },
+    "empresas": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "cnpj",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 5
+    },
+    "filiais": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "empresa_id",
+          "type": "INT NOT NULL"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "cnpj",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "cidade",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "configuracoes_integracao": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "ambiente",
+          "type": "ENUM('homologacao','producao') DEFAULT 'homologacao'"
+        },
+        {
+          "name": "tiny_versao",
+          "type": "ENUM('v2','v3') DEFAULT 'v2'"
+        },
+        {
+          "name": "tiny_v2_url",
+          "type": "VARCHAR(255) DEFAULT 'https://api.tiny.com.br/api2'"
+        },
+        {
+          "name": "tiny_v2_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_v3_ambiente",
+          "type": "ENUM('homologacao','producao') DEFAULT 'homologacao'"
+        },
+        {
+          "name": "tiny_v3_url",
+          "type": "VARCHAR(255) DEFAULT 'https://api.tiny.com.br/public-api/v3'"
+        },
+        {
+          "name": "tiny_v3_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_v3_auth_url",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_token_url",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_client_id",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_client_secret",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_v3_redirect_uri",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_scopes",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_v3_produtos_listar",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_produtos_obter",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_produtos_criar",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_produtos_alterar",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_produtos_preco",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_estoque_consultar",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_estoque_atualizar",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_pedidos_obter",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_pedidos_lancar_estoque",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_notas_obter",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "tiny_v3_manual_access_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_v3_manual_refresh_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "vsm_url",
+          "type": "VARCHAR(255) DEFAULT 'https://conectavenda.homolog.vsm.com.br'"
+        },
+        {
+          "name": "vsm_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "vsm_endpoint_baixa_estoque",
+          "type": "VARCHAR(255) DEFAULT '/api/estoque/baixa'"
+        },
+        {
+          "name": "vsm_endpoint_produto_novo",
+          "type": "VARCHAR(255) DEFAULT '/api/produtos'"
+        },
+        {
+          "name": "vsm_endpoint_consulta_estoque",
+          "type": "VARCHAR(255) DEFAULT '/api/estoque/consulta'"
+        },
+        {
+          "name": "fluxo_tiny_vsm_estoque",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_vsm_tiny_produto",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_vsm_tiny_pedido",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "webhook_secret",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_webhook_secret",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_webhook_cnpj_autorizados",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tiny_webhook_exigir_secret",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "tiny_webhook_rate_limit",
+          "type": "INT DEFAULT 60"
+        },
+        {
+          "name": "tiny_webhook_max_bytes",
+          "type": "INT DEFAULT 1048576"
+        },
+        {
+          "name": "bloquear_inativo_com_estoque",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_criar_produto_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_produto_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_estoque_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_status_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_preco_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_descricao_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_categoria_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_atualizar_marca_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_criar_produto_se_nao_existir",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "sync_bloquear_estoque_negativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_receber_pedidos_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_enviar_pedido_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_vsm_enviar_estoque_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_vsm_status_produto_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_bloquear_produto_novo_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_permitir_produto_novo_vsm_manual",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "sync_tiny_enviar_nota_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_tiny_enviar_pedido_vsm",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "sync_tiny_enviar_estoque_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_tiny_status_produto_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_tiny_bloquear_produto_novo_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_mapeamento_sku",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_aprovacao_manual_produto_novo_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_categoria_mapeada_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_permitir_atualizar_produto_existente_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_permitir_estoque_vsm_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_permitir_status_vsm_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_nfe_autorizada",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_ordem_envio",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "fluxo_pedido_vsm_receber",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_pedido_vsm_enviar_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_pedido_tiny_enviar_vsm",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "fluxo_nfe_tiny_enviar_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_estoque_tiny_enviar_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_estoque_vsm_enviar_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_produto_status_tiny_enviar_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_produto_status_vsm_enviar_tiny",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_produto_novo_vsm_bloquear",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fluxo_produto_novo_tiny_bloquear",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_ean_produto_novo_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_ncm_produto_novo_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_exigir_confirmacao_forte_produto_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "sync_bloquear_duplicidade_produto_vsm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "produto_novo_aprovacao_modo",
+          "type": "VARCHAR(20) DEFAULT 'manual'"
+        },
+        {
+          "name": "produto_novo_auto_fallback_manual",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "produto_novo_auto_exigir_ean",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "produto_novo_auto_exigir_ncm",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "produto_novo_auto_exigir_categoria",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "produto_novo_auto_bloquear_duplicidade",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_validacao_obrigatoria",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_aprovacao_manual",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_auto_enviar_validos",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "pedido_tiny_vsm_exigir_sku_mapeado",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_exigir_cliente_documento",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_exigir_endereco",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_tiny_vsm_status_permitidos",
+          "type": "VARCHAR(255) DEFAULT 'aprovado,pago,faturado,pronto para envio'"
+        },
+        {
+          "name": "vsm_endpoint_pedido",
+          "type": "VARCHAR(255) DEFAULT '/api/pedidos'"
+        },
+        {
+          "name": "pedido_ciclo_vida_obrigatorio",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_xml_validacao_obrigatoria",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_xml_auto_enviar_tiny",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "pedido_retorno_vsm_exigir_chave_nfe",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "pedido_retorno_vsm_exigir_xml",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "tiny_endpoint_xml_nfe",
+          "type": "VARCHAR(255) DEFAULT 'nota.incluir.xml.php'"
+        },
+        {
+          "name": "tiny_endpoint_status_pedido",
+          "type": "VARCHAR(255) DEFAULT 'pedido.alterar.situacao.php'"
+        },
+        {
+          "name": "tiny_v3_operacional",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 108
+    },
+    "configuracoes_historico": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "campo",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "valor_antigo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "valor_novo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "login_tentativas": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(160) NULL"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(45) NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "mensagem",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "permissoes_perfil": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "perfil",
+          "type": "ENUM('admin','gerente','operador') NOT NULL"
+        },
+        {
+          "name": "modulo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "permitido",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "tiny_v3_tokens": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "ambiente",
+          "type": "ENUM('homologacao','producao') DEFAULT 'homologacao'"
+        },
+        {
+          "name": "access_token",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "refresh_token",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "expires_at",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "scope",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(30) DEFAULT 'manual'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "DATETIME NULL"
+        }
+      ],
+      "column_count": 9
+    },
+    "mapper_versions": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "versao",
+          "type": "VARCHAR(30) NOT NULL"
+        },
+        {
+          "name": "descricao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "schema_exemplo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "selftest_relatorios": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','atencao','erro') DEFAULT 'atencao'"
+        },
+        {
+          "name": "resumo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "tiny_testes_reais": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "modo_tiny",
+          "type": "VARCHAR(40) NULL"
+        },
+        {
+          "name": "versao_efetiva",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "payload_vsm",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_tiny",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "tiny_error_catalogo": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "versao",
+          "type": "ENUM('v2','v3') NOT NULL"
+        },
+        {
+          "name": "codigo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "titulo",
+          "type": "VARCHAR(180) NOT NULL"
+        },
+        {
+          "name": "causa",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "retry_policy",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        }
+      ],
+      "column_count": 8
+    },
+    "homologacao_checklist": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "chave",
+          "type": "VARCHAR(80) NOT NULL UNIQUE"
+        },
+        {
+          "name": "titulo",
+          "type": "VARCHAR(180) NOT NULL"
+        },
+        {
+          "name": "descricao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','ok','falha','nao_aplicavel') DEFAULT 'pendente'"
+        },
+        {
+          "name": "resultado",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "homologacao_automatica_relatorios": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "aprovado",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "liberado_tiny_v3",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "ambiente",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "tiny_v3_ambiente",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "resumo_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "relatorio_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "instalacao_prechecks": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "item",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','falha','atencao') DEFAULT 'atencao'"
+        },
+        {
+          "name": "detalhe",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "upgrade_snapshots": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "versao",
+          "type": "VARCHAR(30) NOT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "ENUM('pre_upgrade','post_upgrade','manual') DEFAULT 'pre_upgrade'"
+        },
+        {
+          "name": "snapshot_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "post_install_tests": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "score",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "resultado_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 5
+    },
+    "tiny_v2_retry_policies": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "codigo",
+          "type": "VARCHAR(80) NOT NULL UNIQUE"
+        },
+        {
+          "name": "retry",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "atrasos_minutos",
+          "type": "VARCHAR(120) DEFAULT '1,5,15'"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "schema_migrations": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "migration",
+          "type": "VARCHAR(180) NOT NULL UNIQUE"
+        },
+        {
+          "name": "checksum",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aplicada','falha') DEFAULT 'aplicada'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "aplicada_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "tiny_validacoes_execucoes": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "versao",
+          "type": "VARCHAR(10) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(30) NOT NULL DEFAULT 'pendente'"
+        },
+        {
+          "name": "score",
+          "type": "INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "ambiente",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "sku_teste",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "resumo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "resultado_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "production_readiness_v50": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(30) NOT NULL"
+        },
+        {
+          "name": "score",
+          "type": "INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "resultado_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "vsm_endpoints": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "chave",
+          "type": "VARCHAR(100) NOT NULL UNIQUE"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "categoria",
+          "type": "VARCHAR(60) NOT NULL DEFAULT 'geral'"
+        },
+        {
+          "name": "metodo_http",
+          "type": "VARCHAR(10) NOT NULL DEFAULT 'GET'"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "timeout_segundos",
+          "type": "INT NOT NULL DEFAULT 30"
+        },
+        {
+          "name": "retry_maximo",
+          "type": "INT NOT NULL DEFAULT 3"
+        },
+        {
+          "name": "ordem_execucao",
+          "type": "INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "descricao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "ultimo_status_http",
+          "type": "INT NULL"
+        },
+        {
+          "name": "ultimo_tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "ultimo_erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "ultima_resposta",
+          "type": "MEDIUMTEXT NULL"
+        },
+        {
+          "name": "ultima_execucao_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 18
+    },
+    "vsm_campos_mapeamento": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "categoria",
+          "type": "VARCHAR(60) NOT NULL DEFAULT 'produto'"
+        },
+        {
+          "name": "campo_vsm",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "campo_hub",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "transformacao",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "obrigatorio",
+          "type": "TINYINT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "observacao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "token_vault": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "provider",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "ambiente",
+          "type": "VARCHAR(30) NOT NULL DEFAULT 'homologacao'"
+        },
+        {
+          "name": "token_type",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "token_hash",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "ciphertext",
+          "type": "LONGTEXT NOT NULL"
+        },
+        {
+          "name": "version",
+          "type": "INT NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "expires_at",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "rotated_at",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "active",
+          "type": "TINYINT(1) NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "security_events": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "severidade",
+          "type": "ENUM('baixo','medio','alto','critico') NOT NULL DEFAULT 'medio'"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(64) NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "rota",
+          "type": "VARCHAR(190) NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(12) NULL"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "detalhe",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "contexto",
+          "type": "JSON NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "ips_bloqueados": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(64) NOT NULL UNIQUE"
+        },
+        {
+          "name": "motivo",
+          "type": "VARCHAR(190) NOT NULL"
+        },
+        {
+          "name": "severidade",
+          "type": "ENUM('medio','alto','critico') NOT NULL DEFAULT 'alto'"
+        },
+        {
+          "name": "bloqueado_ate",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT(1) NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "DATETIME NULL"
+        }
+      ],
+      "column_count": 8
+    },
+    "rate_limit_hits": {
+      "module": "core",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(64) NOT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "rota",
+          "type": "VARCHAR(190) NOT NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(12) NOT NULL"
+        },
+        {
+          "name": "janela_inicio",
+          "type": "DATETIME NOT NULL"
+        },
+        {
+          "name": "hits",
+          "type": "INT NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "updated_at",
+          "type": "DATETIME NULL"
+        }
+      ],
+      "column_count": 8
+    },
+    "estoque_movimentos": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "quantidade",
+          "type": "DECIMAL(12,3) NOT NULL"
+        },
+        {
+          "name": "tipo_movimento",
+          "type": "ENUM('baixa','entrada','ajuste') DEFAULT 'baixa'"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(50) DEFAULT 'pendente'"
+        },
+        {
+          "name": "payload_origem",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_vsm",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "estoque_divergencias": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "estoque_vsm",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "estoque_tiny",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "diferenca",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) DEFAULT 'reconciliacao'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aberto','corrigido','ignorado') DEFAULT 'aberto'"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "estoque_reconciliacao": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "estoque_tiny",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "estoque_vsm",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "diferenca",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','divergente','erro') DEFAULT 'ok'"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(60) DEFAULT 'manual'"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "reconciliacao_execucoes": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(60) DEFAULT 'estoque'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','executando','concluido','erro') DEFAULT 'pendente'"
+        },
+        {
+          "name": "total_itens",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "divergencias",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "iniciado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "finalizado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "reconciliacao_itens": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "execucao_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "estoque_tiny",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "estoque_vsm",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "diferenca",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','divergente','erro') DEFAULT 'ok'"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "payload_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "estoque_configuracoes": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "chave",
+          "type": "VARCHAR(120) PRIMARY KEY"
+        },
+        {
+          "name": "valor",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 3
+    },
+    "fila_estoque": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "quantidade",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','processando','sucesso','erro','falha_definitiva','cancelado') DEFAULT 'pendente'"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "proxima_tentativa",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "ultimo_erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 14
+    },
+    "estoque_alertas": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "severidade",
+          "type": "ENUM('info','alerta','erro','critico') DEFAULT 'alerta'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "contexto_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aberto','resolvido','ignorado') DEFAULT 'aberto'"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "resolvido_em",
+          "type": "DATETIME NULL"
+        }
+      ],
+      "column_count": 10
+    },
+    "estoque_saldos_cache": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) PRIMARY KEY"
+        },
+        {
+          "name": "saldo_tiny",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "saldo_vsm",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "diferenca",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "produto_mapeado",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "produto_ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        }
+      ],
+      "column_count": 8
+    },
+    "estoque_auditoria_sku": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "evento",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "status_anterior",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "status_novo",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "saldo_anterior",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "saldo_novo",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "contexto_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 13
+    },
+    "estoque_reconciliacao_agendada": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(120) DEFAULT 'Reconciliação automática'"
+        },
+        {
+          "name": "frequencia",
+          "type": "VARCHAR(40) DEFAULT 'diaria'"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "ultima_execucao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "proxima_execucao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "parametros_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "estoque_eventos_sincronizacao": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "hash_evento",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "tipo_movimento",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "estoque_consulta_vsm_execucoes": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "modo",
+          "type": "ENUM('automatico','manual') DEFAULT 'automatico'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('executando','concluido','parcial','erro','cancelado') DEFAULT 'executando'"
+        },
+        {
+          "name": "intervalo_minutos",
+          "type": "INT DEFAULT 60"
+        },
+        {
+          "name": "limite_produtos",
+          "type": "INT DEFAULT 100"
+        },
+        {
+          "name": "total_produtos",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_sucesso",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_erro",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_alterados",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_enfileirados_tiny",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "iniciado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "finalizado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 15
+    },
+    "estoque_consulta_vsm_resultados": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "execucao_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('sucesso','erro') DEFAULT 'sucesso'"
+        },
+        {
+          "name": "saldo_vsm",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "saldo_anterior",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "alterou",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "retorno_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "estoque_consulta_tiny_execucoes": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "modo",
+          "type": "ENUM('automatico','manual') DEFAULT 'manual'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('executando','concluido','parcial','erro','cancelado') DEFAULT 'executando'"
+        },
+        {
+          "name": "limite_produtos",
+          "type": "INT DEFAULT 100"
+        },
+        {
+          "name": "total_produtos",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_sucesso",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_erro",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "total_alterados",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "iniciado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "finalizado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 13
+    },
+    "estoque_consulta_tiny_resultados": {
+      "module": "estoque",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "execucao_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('sucesso','erro') DEFAULT 'sucesso'"
+        },
+        {
+          "name": "saldo_tiny",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "saldo_anterior",
+          "type": "DECIMAL(15,4) NULL"
+        },
+        {
+          "name": "alterou",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "retorno_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "fila_integracao": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "prioridade",
+          "type": "ENUM('critica','alta','normal','baixa') DEFAULT 'normal'"
+        },
+        {
+          "name": "categoria",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','processando','sucesso','erro','falha_definitiva') DEFAULT 'pendente'"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "proxima_tentativa",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "processando_desde",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "processado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 15
+    },
+    "fila_morta": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(160) NULL"
+        },
+        {
+          "name": "payload_original",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "ultimo_retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "motivo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aberto','reprocessado','ignorado','resolvido') DEFAULT 'aberto'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 13
+    },
+    "payload_snapshots": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(160) NULL"
+        },
+        {
+          "name": "etapa",
+          "type": "ENUM('original','transformado','enviado','resposta','erro') DEFAULT 'original'"
+        },
+        {
+          "name": "conteudo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "hash_conteudo",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "circuit_breakers": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sistema",
+          "type": "VARCHAR(40) NOT NULL UNIQUE"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('fechado','aberto','meio_aberto') DEFAULT 'fechado'"
+        },
+        {
+          "name": "falhas_consecutivas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "aberto_ate",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "ultima_falha",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "ultimo_sucesso_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "fila_analytics_snapshots": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "snapshot_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 4
+    },
+    "fila_fiscal": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nota_fiscal_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "nfe_integracao_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "ENUM('validar_xml','enviar_tiny','enviar_vsm','reprocessar','consultar_status') DEFAULT 'reprocessar'"
+        },
+        {
+          "name": "prioridade",
+          "type": "ENUM('critica','alta','normal','baixa') DEFAULT 'normal'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','processando','sucesso','erro','falha_definitiva') DEFAULT 'pendente'"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "proxima_tentativa",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "ultimo_erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 14
+    },
+    "integration_replay_guard": {
+      "module": "fila",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "rota",
+          "type": "VARCHAR(180) NULL"
+        },
+        {
+          "name": "request_hash",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "request_time",
+          "type": "DATETIME NOT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aceito','bloqueado') DEFAULT 'aceito'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "notas_fiscais": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NOT NULL DEFAULT 'tiny'"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(40) NOT NULL DEFAULT 'vsm'"
+        },
+        {
+          "name": "pedido_origem_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "pedido_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "nota_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "numero",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "serie",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "chave_acesso",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "modelo",
+          "type": "VARCHAR(10) DEFAULT '55'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('rascunho','autorizada','cancelada','denegada','erro','enviada_vsm','pendente_envio') DEFAULT 'pendente_envio'"
+        },
+        {
+          "name": "valor_total",
+          "type": "DECIMAL(12,2) DEFAULT 0"
+        },
+        {
+          "name": "emitente_documento",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "destinatario_documento",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "data_emissao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "data_autorizacao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "xml_path",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "danfe_path",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "payload_tiny",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_vsm",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 24
+    },
+    "notas_fiscais_eventos": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nota_fiscal_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "ENUM('recebida_tiny','autorizada','cancelada','xml_salvo','enviada_vsm','erro_envio_vsm','ignorada','reprocessada') NOT "
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "nfe_integracao": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nota_fiscal_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) DEFAULT 'tiny'"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(40) DEFAULT 'vsm'"
+        },
+        {
+          "name": "acao",
+          "type": "ENUM('enviar_xml','enviar_status','consultar_status','cancelar','reprocessar') DEFAULT 'enviar_xml'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','processando','sucesso','erro','ignorado') DEFAULT 'pendente'"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "proxima_tentativa",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "ultimo_erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 16
+    },
+    "nfe_xml": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nota_fiscal_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "ENUM('procNFe','cancelamento','carta_correcao','danfe_pdf','outro') DEFAULT 'procNFe'"
+        },
+        {
+          "name": "conteudo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "hash_sha256",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) DEFAULT 'tiny'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "nfe_status_historico": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nota_fiscal_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "status_anterior",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "status_novo",
+          "type": "VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "motivo",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) DEFAULT 'sistema'"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "fiscal_reconciliacao_snapshots": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "resumo_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "divergencias_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 5
+    },
+    "fiscal_configuracoes_cache": {
+      "module": "fiscal",
+      "columns": [
+        {
+          "name": "chave",
+          "type": "VARCHAR(120) PRIMARY KEY"
+        },
+        {
+          "name": "valor",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "expira_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 4
+    },
+    "logs_integracao": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "nivel",
+          "type": "ENUM('info','alerta','erro','critico') DEFAULT 'info'"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(45) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "auditoria_eventos": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "entidade",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "entidade_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('sucesso','erro','alerta','info') DEFAULT 'info'"
+        },
+        {
+          "name": "nivel",
+          "type": "ENUM('info','alerta','erro','critico') DEFAULT 'info'"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "causa_provavel",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "contexto",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(45) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 17
+    },
+    "notificacoes": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo",
+          "type": "ENUM('pedido_novo','pedido_integrado','erro_integracao','fila','estoque','baixa_estoque','produto_novo','integracao_suce"
+        },
+        {
+          "name": "titulo",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "severidade",
+          "type": "ENUM('info','sucesso','alerta','erro','critico') DEFAULT 'info'"
+        },
+        {
+          "name": "entidade",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "entidade_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "link",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "lida",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "lida_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criada_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 13
+    },
+    "notificacoes_config": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "painel",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "som",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "browser_push",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "email",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "whatsapp",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "pedido_novo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "erro_integracao",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "fila_parada",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "estoque_alerta",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "diagnostico_api": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sistema",
+          "type": "VARCHAR(30) NOT NULL"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('online','atencao','erro') DEFAULT 'atencao'"
+        },
+        {
+          "name": "http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "tiny_v3_endpoint_logs": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(180) NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(10) NULL"
+        },
+        {
+          "name": "http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "request_body",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "response_body",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "metricas_api": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sistema",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(10) DEFAULT 'POST'"
+        },
+        {
+          "name": "http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "codigo_erro",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "security_audit": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "evento",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "nivel",
+          "type": "ENUM('info','alerta','erro','critico') DEFAULT 'info'"
+        },
+        {
+          "name": "ip",
+          "type": "VARCHAR(45) NULL"
+        },
+        {
+          "name": "user_agent",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "session_id",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "auditoria_timeline": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "fase",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('info','sucesso','alerta','erro','critico') DEFAULT 'info'"
+        },
+        {
+          "name": "entidade",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "entidade_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "auditoria_detalhes": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "entidade",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "entidade_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "antes_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "depois_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "diff_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "tiny_v2_endpoint_logs": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(10) DEFAULT 'POST'"
+        },
+        {
+          "name": "http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "request_body",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "response_body",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "auditoria_assinaturas": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "auditoria_evento_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "hash_sha256",
+          "type": "VARCHAR(128) NOT NULL"
+        },
+        {
+          "name": "hash_anterior",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "hash_canonico",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "cadeia_valida",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "algoritmo",
+          "type": "VARCHAR(30) DEFAULT 'sha256-chain'"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "audit_exports": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "formato",
+          "type": "ENUM('html_pdf','csv','json') DEFAULT 'json'"
+        },
+        {
+          "name": "filtros",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "total_registros",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "auditoria_hash_chain": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "auditoria_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "hash_anterior",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "hash_atual",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "base_assinatura",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 7
+    },
+    "hosting_checks": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "provedor",
+          "type": "VARCHAR(80) DEFAULT 'infinityfree'"
+        },
+        {
+          "name": "score",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "resultado_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 5
+    },
+    "dashboard_testes_execucoes": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(60) NOT NULL DEFAULT 'dashboard'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','erro','atencao') DEFAULT 'ok'"
+        },
+        {
+          "name": "total",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "erros",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "module_health_snapshots": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "modulo",
+          "type": "VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ok','erro','atencao') DEFAULT 'ok'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 6
+    },
+    "vsm_endpoint_logs": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "endpoint_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "chave",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "metodo_http",
+          "type": "VARCHAR(10) NOT NULL"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR(600) NOT NULL"
+        },
+        {
+          "name": "status_http",
+          "type": "INT NULL"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "sucesso",
+          "type": "TINYINT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "resposta",
+          "type": "MEDIUMTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "audit_daily_signatures": {
+      "module": "observabilidade",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "audit_date",
+          "type": "DATE NOT NULL UNIQUE"
+        },
+        {
+          "name": "first_audit_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "last_audit_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "event_count",
+          "type": "INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "sha256",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "hmac",
+          "type": "CHAR(64) NOT NULL"
+        },
+        {
+          "name": "signature_file",
+          "type": "VARCHAR(180) NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "pedidos_integracao": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "pedido_origem_id",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "pedido_tiny_id",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "empresa_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "filial_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "cliente_nome",
+          "type": "VARCHAR(180) NULL"
+        },
+        {
+          "name": "cliente_documento",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "valor_total",
+          "type": "DECIMAL(12,2) DEFAULT 0"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(50) DEFAULT 'recebido'"
+        },
+        {
+          "name": "payload_origem",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_tiny",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_tiny",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "tentativas",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 18
+    },
+    "integracao_execucoes": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('iniciado','sucesso','erro') DEFAULT 'iniciado'"
+        },
+        {
+          "name": "iniciado_em",
+          "type": "DATETIME NOT NULL"
+        },
+        {
+          "name": "finalizado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "duracao_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "erro_codigo",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "erro_mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 13
+    },
+    "webhook_requisicoes": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "origem_ip",
+          "type": "VARCHAR(45) NULL"
+        },
+        {
+          "name": "assinatura",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "timestamp_cliente",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "nonce",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "payload_hash",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "headers",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aceito','bloqueado','erro') DEFAULT 'aceito'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "eventos_processados": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "hash_payload",
+          "type": "VARCHAR(128) NOT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "tiny_webhooks": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo",
+          "type": "ENUM('estoque','produto','nota_fiscal','situacao_pedido','generico') DEFAULT 'generico'"
+        },
+        {
+          "name": "cnpj",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "id_ecommerce",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "referencia",
+          "type": "VARCHAR(180) NULL"
+        },
+        {
+          "name": "hash_payload",
+          "type": "VARCHAR(128) NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('recebido','enfileirado','respondido','registrado','ignorado','duplicado','erro') DEFAULT 'recebido'"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "headers",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "recebido_repetido",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "ultima_repeticao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "processado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 16
+    },
+    "evento_correlacao": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "pedido_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "produto_sku",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "nf_chave",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "webhook_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "detalhes",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "pedidos_validacao": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(30) NOT NULL DEFAULT 'tiny'"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(30) NOT NULL DEFAULT 'vsm'"
+        },
+        {
+          "name": "pedido_origem_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "numero_pedido",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "cliente_nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "cliente_documento",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "valor_total",
+          "type": "DECIMAL(15,2) DEFAULT 0"
+        },
+        {
+          "name": "quantidade_itens",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "status_tiny",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status_validacao",
+          "type": "VARCHAR(40) NOT NULL DEFAULT 'recebido'"
+        },
+        {
+          "name": "erros_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "avisos_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_vsm_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "pedido_hub_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "status_hub",
+          "type": "VARCHAR(50) NULL"
+        },
+        {
+          "name": "recebido_vsm_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "enviado_tiny_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "xml_nfe_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "aprovado_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "aprovado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "enviado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "retorno_vsm_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 28
+    },
+    "pedidos_validacao_historico": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "pedido_validacao_id",
+          "type": "INT NOT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "resultado",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "contexto_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "pedidos_hub": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "pedido_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "pedido_vsm_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "numero_pedido",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status_hub",
+          "type": "VARCHAR(50) NOT NULL DEFAULT 'recebido_tiny'"
+        },
+        {
+          "name": "status_tiny",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status_vsm",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "cliente_nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "cliente_documento",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "valor_total",
+          "type": "DECIMAL(15,2) DEFAULT 0"
+        },
+        {
+          "name": "data_recebido_tiny",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "data_enviado_vsm",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "data_recebido_vsm",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "data_enviado_tiny",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "ultimo_erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 18
+    },
+    "pedidos_payloads": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "pedido_hub_id",
+          "type": "INT NOT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NOT NULL"
+        },
+        {
+          "name": "destino",
+          "type": "VARCHAR(40) NULL"
+        },
+        {
+          "name": "tipo_payload",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "payload_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "hash_payload",
+          "type": "CHAR(64) NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    },
+    "pedidos_status_historico": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "pedido_hub_id",
+          "type": "INT NOT NULL"
+        },
+        {
+          "name": "status_anterior",
+          "type": "VARCHAR(50) NULL"
+        },
+        {
+          "name": "status_novo",
+          "type": "VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "origem",
+          "type": "VARCHAR(40) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "contexto_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "pedidos_nfe_xml": {
+      "module": "pedidos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "pedido_hub_id",
+          "type": "INT NOT NULL"
+        },
+        {
+          "name": "chave_nfe",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "numero_nfe",
+          "type": "VARCHAR(50) NULL"
+        },
+        {
+          "name": "serie",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "xml_original",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "xml_hash",
+          "type": "CHAR(64) NULL"
+        },
+        {
+          "name": "status_xml",
+          "type": "VARCHAR(40) NOT NULL DEFAULT 'recebido'"
+        },
+        {
+          "name": "validado",
+          "type": "TINYINT DEFAULT 0"
+        },
+        {
+          "name": "erro_validacao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "retorno_tiny_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "enviado_tiny_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 14
+    },
+    "produtos_mapeamento": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku_tiny",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "sku_vsm",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "produto_tiny_id",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "produto_vsm_id",
+          "type": "VARCHAR(100) NULL"
+        },
+        {
+          "name": "descricao",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "estoque_atual",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "status_tiny",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "ultima_sincronizacao",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 11
+    },
+    "produtos_vsm_eventos": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "ENUM('produto_novo','produto_cadastro_atualizado','produto_estoque_atualizado','produto_status_atualizado') NOT NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "produto_vsm_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "produto_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "status_vsm",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "estoque_vsm",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "status_tiny_anterior",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "status_tiny_novo",
+          "type": "VARCHAR(30) NULL"
+        },
+        {
+          "name": "estoque_tiny_anterior",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "estoque_tiny_novo",
+          "type": "DECIMAL(12,3) NULL"
+        },
+        {
+          "name": "status_processamento",
+          "type": "ENUM('recebido','enfileirado','processado','erro','ignorado') DEFAULT 'recebido'"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 18
+    },
+    "produto_pendencias": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "motivo",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_tiny",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('aberto','resolvido','ignorado') DEFAULT 'aberto'"
+        },
+        {
+          "name": "resolucao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "resolvido_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "resolvido_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 15
+    },
+    "vsm_endpoint_catalogo": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "ENUM('produto','estoque','status','baixa','consulta','webhook','outro') DEFAULT 'outro'"
+        },
+        {
+          "name": "metodo",
+          "type": "ENUM('GET','POST','PUT','PATCH','DELETE') DEFAULT 'POST'"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "ambiente",
+          "type": "ENUM('homologacao','producao') DEFAULT 'homologacao'"
+        },
+        {
+          "name": "versao",
+          "type": "VARCHAR(40) DEFAULT 'v1'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','online','erro','desativado') DEFAULT 'pendente'"
+        },
+        {
+          "name": "ultimo_http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "tempo_medio_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "ultima_falha",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "ultimo_teste_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "payload_exemplo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "retorno_exemplo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 16
+    },
+    "vsm_payload_catalogo": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "tipo_evento",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "versao",
+          "type": "VARCHAR(40) DEFAULT 'v1'"
+        },
+        {
+          "name": "origem",
+          "type": "ENUM('exemplo','homologacao','producao') DEFAULT 'exemplo'"
+        },
+        {
+          "name": "payload_exemplo",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_real",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "hash_payload",
+          "type": "VARCHAR(128) NULL"
+        },
+        {
+          "name": "observacao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "vsm_endpoint_metricas": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "endpoint",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "metodo",
+          "type": "VARCHAR(10) DEFAULT 'POST'"
+        },
+        {
+          "name": "ambiente",
+          "type": "ENUM('homologacao','producao') DEFAULT 'homologacao'"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('online','atencao','erro') DEFAULT 'atencao'"
+        },
+        {
+          "name": "http_code",
+          "type": "INT NULL"
+        },
+        {
+          "name": "tempo_ms",
+          "type": "INT NULL"
+        },
+        {
+          "name": "erro",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 10
+    },
+    "categorias_mapeamento": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "id_categoria_vsm",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "nome_categoria_vsm",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "id_categoria_tiny",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "nome_categoria_tiny",
+          "type": "VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "ativo",
+          "type": "TINYINT DEFAULT 1"
+        },
+        {
+          "name": "prioridade",
+          "type": "INT DEFAULT 0"
+        },
+        {
+          "name": "observacao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "criado_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "atualizado_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 12
+    },
+    "produtos_pendentes_integracao": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "origem",
+          "type": "ENUM('vsm','tiny','hub') DEFAULT 'vsm'"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "ean",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "categoria_vsm_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "categoria_vsm_nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "categoria_tiny_id_sugerida",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "categoria_tiny_nome_sugerida",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "payload_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "payload_hash",
+          "type": "VARCHAR(128) NOT NULL"
+        },
+        {
+          "name": "acao_recomendada",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('pendente','aprovado','rejeitado','vinculado','erro') DEFAULT 'pendente'"
+        },
+        {
+          "name": "motivo",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "fila_id",
+          "type": "BIGINT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "aprovado_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "aprovado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "rejeitado_por",
+          "type": "INT NULL"
+        },
+        {
+          "name": "rejeitado_em",
+          "type": "DATETIME NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 23
+    },
+    "produtos_tiny": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "produto_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "codigo",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "ean",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "gtin",
+          "type": "VARCHAR(60) NULL"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "descricao",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "categoria_tiny_id",
+          "type": "VARCHAR(120) NULL"
+        },
+        {
+          "name": "categoria_tiny_nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "ncm",
+          "type": "VARCHAR(20) NULL"
+        },
+        {
+          "name": "estoque_atual",
+          "type": "DECIMAL(15,4) DEFAULT 0"
+        },
+        {
+          "name": "status_tiny",
+          "type": "VARCHAR(50) NULL"
+        },
+        {
+          "name": "payload_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 16
+    },
+    "produtos_vsm": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "nome",
+          "type": "VARCHAR(255) NULL"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(40) DEFAULT 'ativo'"
+        },
+        {
+          "name": "payload",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "atualizado_em",
+          "type": "TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 8
+    },
+    "produtos_aprovacao_historico": {
+      "module": "produtos",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "produto_pendente_id",
+          "type": "BIGINT NOT NULL"
+        },
+        {
+          "name": "acao",
+          "type": "VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "resultado",
+          "type": "ENUM('sucesso','bloqueado','erro','info') DEFAULT 'info'"
+        },
+        {
+          "name": "mensagem",
+          "type": "TEXT NULL"
+        },
+        {
+          "name": "contexto_json",
+          "type": "LONGTEXT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "INT NULL"
+        },
+        {
+          "name": "trace_id",
+          "type": "VARCHAR(80) NULL"
+        },
+        {
+          "name": "criado_em",
+          "type": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "column_count": 9
+    }
+  }
+}

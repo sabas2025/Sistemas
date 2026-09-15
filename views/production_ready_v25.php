@@ -1,0 +1,6 @@
+<?php require __DIR__.'/layout_top.php'; ?>
+<div class="panel mb-3"><div class="panel-header"><h2>Production Ready V25</h2><span class="text-muted">Readiness, pós-instalação e integridade de auditoria</span></div><div class="p-3">
+  <div class="row g-3 mb-3"><div class="col-md-3"><div class="kpi"><small>Score readiness</small><b><?=e((string)($scores['geral'] ?? $scores['score'] ?? 0))?>%</b><span>Produção</span></div></div><div class="col-md-3"><div class="kpi"><small>Pós-instalação</small><b><?=e((string)($postScore ?? 0))?>%</b><span>Testes automáticos</span></div></div><div class="col-md-3"><div class="kpi"><small>Trace</small><b><?=e(substr((string)($trace ?? ''),0,12))?></b><span>Integridade</span></div></div><div class="col-md-3"><div class="kpi"><small>Hash-chain</small><b><?=!empty($integridade['integro'])?'Íntegra':'Atenção'?></b><span><?=e($integridade['mensagem'] ?? '')?></span></div></div></div>
+  <h5>Checklist</h5><pre class="json-box"><?=e(json_encode($checklist ?? [], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES))?></pre>
+  <h5>Testes pós-instalação</h5><pre class="json-box"><?=e(json_encode($postTests ?? [], JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES))?></pre>
+</div></div><?php require __DIR__.'/layout_bottom.php'; ?>
