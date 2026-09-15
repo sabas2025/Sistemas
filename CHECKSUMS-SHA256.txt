@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-6c9db6e4ec49771b12c0cf48a8bfa06bef9d42de77cb9472745a948c192965a1  ./CLAUDE.md
+488859e3c66cc54d3a35b7b233b1462964a5711335b6640221cc5ef2804a4f2f  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -517,8 +517,8 @@ fec16d6a103e1ed9b9de65c9a486929013a9c730ac607f2e0685669ee667cfde  ./docs/testing
 9941e4764fc846fe09ea78ab74838ace25aca7ac81cfb80bc6d182e136a75f89  ./package-lock.json
 ec2f3e125c64d1613836f7c6fc27f4d535b4e6a6b9729f794be350a5c431b3f1  ./package.json
 af0665e6498d8348895a3f80a51f30cb0789470483529ffa52fe4eff621f9fab  ./public/.htaccess
-69a6feb7d11a23bcbf83d7d8e3a00215779a419ac7d7a7120e7bb3790fa0655d  ./public/assets/app.css
-5ddb77596853e16480d6b197d9a7f5f5ef7c0ab046b8c58fe833d8b9fc4fa045  ./public/assets/app.min.css
+eb8799d7a7535eb0fb92718282b647d88e48118d32753b8a6cbaf5565e0eaa13  ./public/assets/app.css
+85b0612f88c36c1d9ff3a5dcc5827b851f9e3033edd1dd1fe66d9e8bb531e2b1  ./public/assets/app.min.css
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 c9b8af221f03f2108b19c148bbb0a395abdb65b4d1401111bcc005ba82a3d7de  ./public/assets/bootstrap-login-lite.min.css
 069d10fccd7eb5acce9e62dcc8b96f4162165338675619d50d7784a622867daf  ./public/assets/futuristic-ui.js
@@ -556,8 +556,8 @@ ffed9ed3fc4d99bfb4d4ae8283ce9c90c7d06d2887f78f84c37325e4cd7ee25a  ./public/asset
 77db2672b1ebe3000b40d109706e908a06e1c14efe4e356735752733883f55f6  ./public/assets/offline.min.js
 79ee6b3b61e407419098a70f9a86f154250524f3bc703e467ee0477fbe6d8bb4  ./public/assets/pwa.js
 af540c99713b2a7384c70b60f75b60c0c0b4967704bd082478b750ca8b8407b8  ./public/assets/pwa.min.js
-f4b854fd030b96edad8fa063ba706b6d1cfc1857c618e4f521272f30aabc820a  ./public/assets/responsive-enterprise.css
-09bd7aaf5ffc2914f29a7c76ed8455e3e290061fb857c0c6ce261d355fb67813  ./public/assets/responsive-enterprise.min.css
+cbf3edc7a437251ce2be54ea5ecf7dad6df237c50fb3d3947281c1248af18d44  ./public/assets/responsive-enterprise.css
+9cafdcf37f974dd9673401bd9f1d6e032abbfb1a28a0428d8c48d61bcc46d88a  ./public/assets/responsive-enterprise.min.css
 75960d30e345a47bdd3c298d11ebec889b34e56f15c7aec3a189527d4e5bd137  ./public/assets/screenshots/dashboard-desktop.png
 55ebfb1be7f23f63f8298f6164da0acf80fd64ce4b9c2726bbb0552a13a85455  ./public/assets/screenshots/dashboard-mobile.png
 042ff80351c86fc71ceecb6660e80ff5f5f1e41bb4cb15a4b4fdb2b4b8acbf55  ./public/assets/scroll-enterprise.css

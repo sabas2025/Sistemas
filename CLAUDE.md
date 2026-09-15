@@ -788,6 +788,60 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   Removido o parâmetro, com a única chamada mapeada. Medido depois: as 8 formas de base URL
   respondem igual, e a instalação de produção completa continua indo ao fim.
 
+- **Alvo de toque: a regra que DECIDIA era um `!important` que derrubava o `--tap` do próprio Hub.**
+  O achado I-26, medido em 59 rotas × 3 viewports × 2 modos. Três botões da topbar
+  (`#sidebarToggle`, `#notifToggle`, `.topbar-more-btn`) nasciam 42×42 no celular, e o `.sidebar-close`
+  do drawer também. O `app.css` já declara `:root{--tap:44px}` e aplica `min-height:var(--tap)` a
+  esses seletores — **a intenção do código sempre foi 44**. Quem a derrubava era
+  `responsive-enterprise.css`, dentro do bloco mobile:
+  `.notif-btn,.topbar-more-btn,.sidebar-toggle{height:42px!important;min-height:42px!important}`.
+  Não descobri isso por `grep`: pedi ao navegador a lista de regras casadas
+  (`CSS.getMatchedStylesForNode` via CDP), que devolve a ordem de precedência com `!important` e
+  media query — a lição do alinhamento da `.topbar`, aplicada de novo. Corrigido trocando os
+  literais por `var(--tap)` nos dois arquivos, para a intenção morar num lugar só. Medido depois,
+  **sem limite de amostra**: zero `<button>` abaixo de 44px, ícones `☰`/`⋮` ainda renderizando,
+  `scrollWidth` 380 < `clientWidth` 390 (nenhum estouro novo com os +6px), E2E 23/23 e a paridade
+  PWA × web inalterada.
+  **Ficaram de fora, de propósito:** `.menu-section` (40px) é o cabeçalho de grupo do menu, que o
+  `minimalist-ui.js` promove a `role="button"` — é alvo real, mas esticá-lo mexe no ritmo visual da
+  barra lateral inteira; `a.btn` a 42px vem da variante compacta `.btn-sm{min-height:34px}`, e
+  forçá-la a 44 muda todo botão pequeno do produto; e link de texto a 22px é texto, não controle.
+  Os três são decisão de produto, não nudge de 2px.
+
+- **Controles de formulário ficavam em Arial porque o "Bootstrap" do pacote não é Bootstrap.**
+  Mesma medição: `<input>`, `<button>`, `.btn` computavam `font-family: Arial` enquanto o resto da
+  tela usava a pilha do Hub. Nenhum CSS declara Arial — é o **default do navegador para controle de
+  formulário**, que não herda a fonte do `body`. O reboot do Bootstrap normalmente resolve isso com
+  `font-family:inherit`, e aqui não resolve: `public/assets/vendor/bootstrap/bootstrap.min.css` tem
+  **5,8 KB** (o Bootstrap 5 real tem ~230 KB) e **zero** ocorrência de `font-family:inherit` — é um
+  subconjunto local feito à mão, coerente com a regra de não usar CDN, mas com o nome de outra
+  coisa. O `bootstrap.bundle.min.js` tem 878 bytes pelo mesmo motivo. Corrigido com a regra que
+  faltava, e só ela: `button,input,select,textarea,optgroup{font-family:inherit}` — sem tocar em
+  `font-size` nem `line-height`, que mexeriam em layout.
+  **Cuidado ao mexer nisso:** os ícones são **caracteres Unicode**, não fonte de ícone
+  (`bootstrap-icons.css` é `.bi-list::before{content:"☰"}`), então eles herdam a família do botão —
+  trocar a fonte do controle troca o desenho do ícone. Conferido depois da mudança que `☰` e `⋮`
+  continuam renderizando com métrica sã.
+
+- **O painel tem DUAS pilhas de fonte, e a que vale no `body` não é a do `app.css`.**
+  Descoberto ao conferir o efeito da correção acima. `app.css:1` declara
+  `Inter,Segoe UI,Arial,sans-serif`, mas `minimalist-enterprise.css:15` declara
+  `body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}` — e essa
+  folha é carregada **depois** no `layout_top.php`. As duas convivem: a do `app.css` ganha nos
+  seletores que ela nomeia, a do `minimalist` ganha no `body`. **Correção do que eu mesmo relatei
+  antes:** eu disse que o painel usava a pilha do `Inter`; a pilha efetiva do `body` é a
+  `system-ui`. Unificar é decisão de produto — muda a tipografia do produto inteiro.
+  E o Hub **não carrega webfont nenhuma**: `document.fonts.size === 0` e não há `<link>` de fonte,
+  então a tipografia depende do que o sistema do usuário tem instalado. Isso é legítimo em
+  hospedagem compartilhada (zero rede), mas significa que o Hub não é pixel-idêntico entre Windows,
+  macOS e Linux — e **não** é divergência PWA × web, porque as duas janelas rodam na mesma máquina.
+
+- **Amostra truncada torna contagens de antes e depois incomparáveis.** Na primeira varredura eu
+  limitava a 8 alvos por rota; os `<button>` de 42px enchiam a cota e escondiam os `<a>`. Depois da
+  correção os `<a>` "apareceram" — e eu quase os anotei como regressão. Não eram: sempre estiveram
+  lá. O censo sem limite mostrou o conjunto real. **Ao comparar duas medições, confira antes se as
+  duas viram o mesmo universo.**
+
 - **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
   sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
   da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
@@ -875,6 +929,11 @@ no PR #2:
 | **Higiene dos segredos gerados em produção** (`rotate-secrets.php --audit`) | sessão local | verde — 12 chaves ≥32 caracteres, todas distintas, nenhuma conhecida |
 | **Coerência ambiente × endpoint** (I-23), 5 cenários | sessão local, MariaDB 10.11 | bloqueia produção com host de homologação; não acusa homologação nem `homolog` no caminho |
 | **Suíte enterprise com e sem `config/config.php` presente** | sessão local | verde nos dois (antes: 4 suítes reprovavam com config real — I-24) |
+| **Paridade PWA × web**: 59 rotas × 3 viewports × 2 modos, 60.120 campos de estilo | sessão local, Chromium `--app` + aba | verde — 1 diferença só, `.app-shell` background, conferida inócua (html/body/.main/.content já são a mesma cor) |
+| **Páginas públicas** (login, trocar-senha, 404) × 3 viewports × 2 modos | sessão local | verde — 990 campos, zero divergência |
+| **Estouro horizontal** em 354 combinações rota/viewport/modo | sessão local | verde — `scrollWidth` nunca excedeu `clientWidth` |
+| **Alvo de toque ≥ 44px nos botões** (I-26), censo sem limite de amostra | sessão local, 390px | verde depois da correção — zero `<button>` abaixo de 44 (antes: 3 da topbar + `.sidebar-close` a 42) |
+| **E2E 23 testes contra os assets alterados** | sessão local, MariaDB 10.11 | verde — inclui os specs responsivos de iphone/tablet/notebook/desktop |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
