@@ -125,8 +125,13 @@ um anônimo não consegue inundar o log.
 
 ## 5. Isolamento multiempresa — leia antes de ativar
 
-`security.tenant_scope_required` **bloqueia** acesso a rotas operacionais sem empresa selecionada.
+`commercial.tenant_scope_required` **bloqueia** acesso a rotas operacionais sem empresa selecionada.
 Isso não é isolamento de dados por si só.
+
+> A chave vive em `commercial`, não em `security` — é assim que `TenantContextService::strictEnabled()`
+> a lê, e é onde `config.example.php` e o `install.php` a declaram. Até 2026-09-15 este documento
+> dizia `security.tenant_scope_required`, que **não existe**: quem seguisse o passo 3 abaixo ligava
+> uma chave inerte e podia concluir que o bloqueio estava ativo.
 
 O isolamento de dados é aplicado por `TenantScopeService`, que filtra por `empresa_id` nas tabelas
 registradas em seu catálogo, e é verificado estaticamente por `scripts/ci/tenant-scope-check.php` —
@@ -136,7 +141,7 @@ toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exc
 
 1. Rode `php scripts/ci/tenant-scope-check.php` e confirme que passa sem exceções novas.
 2. Aplique a migration `20260914_010_tenant_isolation.sql` e confira o backfill.
-3. Ligue `security.tenant_scope_required`.
+3. Ligue `commercial.tenant_scope_required`.
 4. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
    outra. A validação de runtime desta entrega foi estática: não havia banco disponível no ambiente
    em que ela foi feita.
