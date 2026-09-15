@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**38 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**39 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -413,6 +413,38 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   eventos `sistema.erro_fatal` gravados quando a Fila caiu. A trilha fez o trabalho dela. Varredura
   por texto de erro tem falso positivo justamente na tela que existe para mostrar erro.
 
+- **`SHOW ... LIKE ?` é INVÁLIDO no Hub, e o erro se disfarça de "tabela ausente".** O achado I-10.
+  Toda conexão abre com `PDO::ATTR_EMULATE_PREPARES => false` (`app/Core/Database.php`), e com
+  prepares **nativos** o servidor recusa placeholder em `SHOW`: `SHOW TABLES LIKE ?` e
+  `SHOW COLUMNS FROM t LIKE ?` morrem com `near '?'`. Medido nas duas configurações contra
+  MariaDB 10.11: falha com nativos, passa com emulados — por isso o padrão parece correto para quem
+  o testa fora do Hub. Eram **13 ocorrências**, quase todas dentro de `catch(Throwable)` devolvendo
+  `false`, ou seja, **"a tabela não existe"**. Medido em runtime: `QueueV24AnalyticsService`,
+  `TinyV2ObservabilityService`, `AuditIntegrityService` e `VsmFichaTecnicaService` declaravam
+  **AUSENTE** tabela que existia, e o `PostInstallTestService` reprovava as **cinco tabelas
+  centrais de qualquer instalação**. Em `SafeSqlUpgradeService::addColumnIfMissing()` não havia nem
+  `catch`: a atualização assistida de schema morria antes do `ALTER`. Use sempre
+  `Database::tableExists()` / `columnExists()` (ou as variantes `...On($pdo, …)`), que existem para
+  isso e não usam placeholder. **`LIMIT ?` foi medido e está correto** — não confunda as duas
+  coisas. Travado por `tests/enterprise/v104_49_3_sql_portability_test.php`.
+
+- **O escopo não pode grudar `WHERE` em sentença que não é consulta de dados.** O achado I-09:
+  `applyToSelect()` acrescentava o predicado a qualquer coisa que não fosse `INSERT`, então
+  `SHOW COLUMNS FROM fila_integracao LIKE 'status'` virava
+  `SHOW COLUMNS ... LIKE 'status' WHERE (empresa_id = ? OR empresa_id IS NULL)` — SQL inválido. As
+  telas *Testes de Regressão Enterprise* e *Production Ready V25* exibiam o erro de sintaxe, e **só
+  para quem tem empresa atribuída**, porque sem empresa o predicado nem entra. Agora há lista de
+  **permissão** (`SELECT`/`UPDATE`/`DELETE`/`WITH`, tolerando espaços, parênteses e comentários à
+  frente): sentença desconhecida sai intacta. Conferido que a checagem voltou a **funcionar**, não
+  apenas a calar — ela lê o ENUM e responde OK.
+
+- **Varrer rota por STATUS não basta; varrer por TEXTO tem falso positivo.** Ao estender a auditoria
+  às 178 rotas alcançáveis por GET, nenhuma devolvia 5xx — e mesmo assim duas exibiam erro de banco
+  no corpo, com HTTP 200, porque o `catch` da tela mostra a mensagem em vez de derrubar a resposta
+  (I-09). As duas medições se complementam: **status** pega tela derrubada, **texto** pega erro
+  capturado e exibido. E o texto acusa de graça a tela de Auditoria, que existe justamente para
+  mostrar erro — confira o caso antes de chamá-lo de defeito.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -462,6 +494,8 @@ no PR #2:
 | **Escrita de ENTRADA isolada** (webhook VSM real, HMAC v2, HTTP 200) | sessão local, MariaDB 10.11 | verde — `empresa_id` NULL antes, 1 depois, mesmo banco |
 | **Tela Fila / Fiscal com usuário COM empresa atribuída** | sessão local, MariaDB 10.11 | quebradas (I-06, I-08); corrigidas e remedidas verdes |
 | **12 rotas do painel por STATUS HTTP**, usuário da empresa 1 | sessão local, MariaDB 10.11 | verde (antes: `fila` em 500) |
+| **178 rotas alcançáveis por GET**, status + texto de erro, usuário da empresa 1 | sessão local, MariaDB 10.11 | verde (antes: 2 telas com erro de SQL em HTTP 200 — I-09) |
+| **Helpers de existência de tabela** (4 serviços) contra a verdade do banco | sessão local, MariaDB 10.11 | verde (antes: os 4 diziam AUSENTE — I-10) |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

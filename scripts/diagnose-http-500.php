@@ -22,7 +22,7 @@ if (is_array($cfg) && extension_loaded('pdo_mysql')) {
     $pdo=new PDO('mysql:host='.($db['host']??'').';dbname='.($db['name']??'').';charset='.($db['charset']??'utf8mb4'),(string)($db['user']??''),(string)($db['pass']??''),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
     $add('Conexão MySQL', true, (string)($db['host']??'').' / '.(string)($db['name']??''));
     foreach(['usuarios','security_events','ips_bloqueados','rate_limit_hits','schema_migrations'] as $table){
-      $st=$pdo->prepare('SHOW TABLES LIKE ?');$st->execute([$table]);$add('Tabela '.$table,(bool)$st->fetchColumn());
+      $add('Tabela '.$table, Database::tableExistsOn($pdo, $table)); // I-10: SHOW ... LIKE ? é inválido com prepares nativos
     }
   } catch(Throwable $e) { $add('Conexão MySQL', false, get_class($e).': '.$e->getMessage()); }
 }

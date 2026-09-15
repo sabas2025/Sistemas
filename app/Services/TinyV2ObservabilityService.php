@@ -19,5 +19,6 @@ class TinyV2ObservabilityService {
     if(str_contains($codigo,'TIMEOUT') || str_contains($codigo,'500') || str_contains($codigo,'503')) return ['retry'=>true,'atrasos_minutos'=>[1,5,15,30],'acao'=>'Tentar novamente com backoff.'];
     return ['retry'=>true,'atrasos_minutos'=>[1,5,15],'acao'=>'Analisar retorno Tiny e reprocessar se seguro.'];
   }
-  private static function tableExists(string $table): bool { try { $st=Database::forTable('tiny_v2_endpoint_logs')->prepare('SHOW TABLES LIKE ?'); $st->execute([$table]); return (bool)$st->fetch(); } catch(Throwable $e){ return false; } }
+  /* Achado I-10: `SHOW ... LIKE ?` é INVÁLIDO com prepares nativos (o Hub usa EMULATE_PREPARES=false): o servidor recusa com "near '?'". O catch rebaixava isso a "tabela ausente", e a tabela existia. Use sempre o helper central. */
+  private static function tableExists(string $table): bool { return Database::tableExists($table); }
 }

@@ -193,8 +193,9 @@ class AutoHomologationService {
     } catch(Throwable $e){ return $this->item('Auditoria/Trace ID','falha',$e->getMessage(),'Verificar tabela auditoria_eventos.'); }
   }
 
+  /* Achado I-10: `SHOW ... LIKE ?` é INVÁLIDO com prepares nativos (o Hub usa EMULATE_PREPARES=false): o servidor recusa com "near '?'". O catch rebaixava isso a "tabela ausente", e a tabela existia. Use sempre o helper central. */
   private function tabelaExiste(string $t): bool {
-    try { $st=$this->pdo->prepare('SHOW TABLES LIKE ?'); $st->execute([$t]); return (bool)$st->fetchColumn(); }
+    try { return Database::tableExistsOn($this->pdo, $t); }
     catch(Throwable $e){ return false; }
   }
 

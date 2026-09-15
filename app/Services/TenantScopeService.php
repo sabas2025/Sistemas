@@ -243,6 +243,31 @@ class TenantScopeService {
   }
 
   /**
+   * A sentença opera sobre LINHAS de dados, e portanto admite um predicado de empresa?
+   *
+   * Achado I-09 (2026-09-15): `applyToSelect()` acrescentava o predicado a qualquer coisa que não
+   * fosse INSERT. `EnterpriseRegressionTestService` passa
+   * `SHOW COLUMNS FROM fila_integracao LIKE 'status'` pelo serviço — introspecção de schema, que
+   * não tem dono — e o resultado era
+   * `SHOW COLUMNS ... LIKE 'status' WHERE (empresa_id = ? OR empresa_id IS NULL)`: **SQL inválido**.
+   * As telas *Testes de Regressão Enterprise* e *Production Ready V25* exibiam o erro de sintaxe,
+   * e só para quem tem empresa atribuída — sem empresa o predicado nem entra.
+   *
+   * Lista de PERMISSÃO, não de recusa: é mais seguro não tocar numa sentença desconhecida do que
+   * grudar um WHERE nela. `SHOW`, `DESCRIBE`, `EXPLAIN` e DDL saem intactos.
+   */
+  private static function ehConsultaDeDados(string $sql): bool {
+    // Pula espaços, parênteses de abertura e comentários antes do verbo.
+    $limpo = $sql;
+    do {
+      $antes = $limpo;
+      $limpo = ltrim($limpo, " \t\r\n(");
+      $limpo = (string)preg_replace('/^(?:\/\*.*?\*\/|--[^\n]*\n|#[^\n]*\n)/s', '', $limpo, 1);
+    } while ($limpo !== $antes);
+    return (bool)preg_match('/^(SELECT|UPDATE|DELETE|WITH)\b/i', $limpo);
+  }
+
+  /**
    * Acrescenta o predicado de empresa a um SELECT/UPDATE/DELETE, inserindo o parâmetro na posição
    * correta. Consulta sem WHERE ganha um.
    *
@@ -250,6 +275,7 @@ class TenantScopeService {
    * @return array{0:string,1:list<mixed>}
    */
   public static function applyToSelect(string $table, string $sql, array $params = [], string $alias = ''): array {
+    if (!self::ehConsultaDeDados($sql)) return [$sql, $params];
     $escopo = self::where($table, $alias);
     if ($escopo['sql'] === '') return [$sql, $params];
 

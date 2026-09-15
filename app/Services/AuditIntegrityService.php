@@ -67,5 +67,6 @@ class AuditIntegrityService {
     SchemaRuntimePolicyService::requireColumns('auditoria_assinaturas', ['hash_anterior','hash_canonico','cadeia_valida'], 'cadeia de integridade da auditoria');
   }
 
-  private static function tableExists(string $table): bool { try { $st=Database::forTable($table)->prepare('SHOW TABLES LIKE ?'); $st->execute([$table]); return (bool)$st->fetch(); } catch(Throwable $e){ return false; } }
+  /* Achado I-10: `SHOW ... LIKE ?` é INVÁLIDO com prepares nativos (o Hub usa EMULATE_PREPARES=false): o servidor recusa com "near '?'". O catch rebaixava isso a "tabela ausente", e a tabela existia. Use sempre o helper central. */
+  private static function tableExists(string $table): bool { return Database::tableExists($table); }
 }
