@@ -181,7 +181,7 @@ class DashboardController {
       case 'tiny-v3-testar-modulo': $this->tinyV3TestarModulo(); break;
       case 'tiny-v3-endpoints-salvar': $this->tinyV3EndpointsSalvar(); break;
       case 'fila-morta': $this->filaMorta(); break;
-      case 'fila-morta-reprocessar': $this->filaMortaReprocessar(); break;
+      case 'fila-morta-reprocessar': (new FilaController())->dispatch($page); break;
       case 'laboratorio': $this->laboratorio(); break;
       case 'laboratorio-executar': $this->laboratorioExecutar(); break;
       case 'reconciliacao': $this->reconciliacao(); break;
@@ -1851,12 +1851,6 @@ class DashboardController {
     require __DIR__.'/../../views/fila_morta.php';
   }
 
-  private function filaMortaReprocessar(): void {
-    PermissionService::require('fila_morta','reprocessar'); Csrf::validate();
-    DeadLetterQueueService::reprocessar((int)($_POST['id'] ?? 0));
-    redirect('index.php?page=fila-morta&reprocessado=1');
-  }
-
   private function laboratorio(): void {
     PermissionService::require('laboratorio','visualizar');
     $pageTitle='Laboratório de Integração';
@@ -2293,7 +2287,7 @@ class DashboardController {
   private function atualizadorSeguroExecutar(): void {
     PermissionService::require('database','validar');
     Csrf::validate();
-    $relatorio = (new UniversalUpgradeService($this->pdo))->executarTodos();
+    $relatorio = (new UniversalUpgradeService(dirname(__DIR__,2)))->run();
     $_SESSION['upgrade_report_v32'] = $relatorio;
     redirect('index.php?page=atualizador-seguro&executado=1');
   }

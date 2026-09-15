@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**39 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**40 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -364,9 +364,11 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   usuários (2026-09-15) o arquivo passou o teto por **1.089 bytes**, e o teste pegou. A resposta
   certa não é levantar o limite — é o que a guarda pede: **lógica nova de domínio entra por
   serviço**. Extraído para `EmpresaCatalogService` (listar, e ler+validar o `empresa_id` do
-  formulário numa chamada só), o controller ficou em 163.788 bytes. **Folga atual: 52 bytes**; na
-  `main` anterior eram 378. Ou seja: a próxima alteração naquele arquivo quebra o portão, e o
-  arquivo precisa mesmo é ser decomposto. Ao mexer nele, meça antes:
+  formulário numa chamada só), o controller ficou em 163.788 bytes, folga de 52. Em 2026-09-15 a
+  correção do I-12 devolveu fôlego ao mover `filaMortaReprocessar()` para o `FilaController`, que o
+  `RouteModuleRegistry` já declarava como dono: **163.547 bytes, folga de 293**. O caminho para
+  ganhar espaço é esse — devolver handler ao controller que o registry aponta —, não levantar o
+  limite. O arquivo continua precisando ser decomposto. Ao mexer nele, meça antes:
   `wc -c app/Controllers/DashboardController.php` contra 163840.
 
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
@@ -445,6 +447,44 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   capturado e exibido. E o texto acusa de graça a tela de Auditoria, que existe justamente para
   mostrar erro — confira o caso antes de chamá-lo de defeito.
 
+- **Chamada a método de serviço que não existe passa por todos os portões.** O achado I-11:
+  `(new UniversalUpgradeService($this->pdo))->executarTodos()` tinha DOIS erros na mesma linha — o
+  construtor declara `string $root` e recebia um `PDO`, e `executarTodos()` **nunca existiu** (a
+  classe só tem `run()`). O botão *Executar todos os updates com segurança* devolvia **500 desde
+  sempre**. O `controller-route-check.php` confere método ausente apenas para as rotas de
+  `FastRouteDispatcherService::$directActions`; chamada a serviço escapa dele. A tela era a terceira
+  camada desalinhada: lia `$r['ok']` e `$r['ignorados']`, chaves que o serviço nunca devolveu, e
+  passava `$r['erros']` (array) para `e()`. **Ao mexer numa tela antiga, confira as três camadas** —
+  controller, serviço e view derivam em silêncio. Travado por
+  `tests/enterprise/v104_49_3_service_call_test.php`, que **não prova tipo de argumento**: isso só
+  aparece exercitando a rota.
+
+- **Exceção de regra de negócio virando 500 suja o canal de alarme.** O achado I-12:
+  `fila-morta-reprocessar` passava o id direto ao serviço, que **lança** quando o registro não
+  existe. Aba antiga, duplo clique ou item já expurgado davam 500, tela de Recuperação e um
+  `sistema.erro_fatal` na trilha — que é justamente o canal usado para detectar defeito real. O
+  irmão `fila-reprocessar` já guardava o id (`if($id>0)`); só este não. Mora agora no
+  `FilaController`, que o `RouteModuleRegistry` **sempre declarou** como dono da rota — o que de
+  quebra tirou o handler do `DashboardController` e devolveu folga ao teto (43 → **293 bytes**).
+  A tela da Fila Morta também não lia o `?reprocessado=1` para o qual era redirecionada: o operador
+  clicava e nada mudava. As três respostas agora aparecem.
+
+- **A empresa se perdia na ida para a fila morta e na volta.** O achado I-13, descoberto ao medir o
+  efeito da correção do I-12: o reprocessamento criava a linha nova com `empresa_id` NULL, desfazendo
+  o isolamento de entrada recém-aplicado. Eram dois saltos — `enviar()` não copiava a empresa do
+  item que falhou, e `reprocessar()` não a devolvia. O dono nunca precisou ser adivinhado: a própria
+  linha sabe de quem é. Medido na cadeia inteira contra MariaDB: `fila_integracao` 1 → `fila_morta`
+  1 → `fila_integracao` 1. **Ao consertar um fluxo, meça o dado que ele grava, não só o código HTTP.**
+
+- **Rota de mutação não se audita por GET.** As 78 rotas que recebem POST das views precisam de
+  CSRF — que no Hub é **por sessão e estável** (`Csrf::token()`), então um token serve para a
+  sessão inteira. O sinal confiável não é o texto da tela (que esconde a exceção de propósito) nem
+  só o status: é contar os eventos `sistema.erro_fatal` gravados na trilha entre o antes e o depois
+  de cada POST. Foi assim que I-11 e I-12 apareceram. Rodar isso exige banco descartável: seis das
+  rotas são destrutivas (`backup-excluir`, `backup-restaurar`, `backup-importar`,
+  `ambiente-demo-reset`, `usuario-excluir`, `trocar-senha`) — todas se comportaram bem, mas
+  `trocar-senha` deve ficar por último, porque invalida o login das seguintes.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -496,6 +536,8 @@ no PR #2:
 | **12 rotas do painel por STATUS HTTP**, usuário da empresa 1 | sessão local, MariaDB 10.11 | verde (antes: `fila` em 500) |
 | **178 rotas alcançáveis por GET**, status + texto de erro, usuário da empresa 1 | sessão local, MariaDB 10.11 | verde (antes: 2 telas com erro de SQL em HTTP 200 — I-09) |
 | **Helpers de existência de tabela** (4 serviços) contra a verdade do banco | sessão local, MariaDB 10.11 | verde (antes: os 4 diziam AUSENTE — I-10) |
+| **78 rotas de MUTAÇÃO** (POST + CSRF), status + `sistema.erro_fatal` na trilha | sessão local, MariaDB 10.11 | verde (antes: 2 em 500 — I-11, I-12) |
+| **Cadeia fila → fila morta → reprocessamento**, empresa em cada salto | sessão local, MariaDB 10.11 | verde (antes: a volta nascia NULL — I-13) |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
