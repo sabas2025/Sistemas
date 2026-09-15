@@ -5,7 +5,12 @@ import { minify } from 'terser';
 
 const root = path.resolve(new URL('../..', import.meta.url).pathname);
 const assetDir = path.join(root, 'public', 'assets');
-const cssFiles = ['app.css','responsive-enterprise.css','scroll-enterprise.css','minimalist-enterprise.css','login.css','bootstrap-login-lite.css','offline.css'];
+// integration-center.css entrou em 2026-09-15: views/layout_top.php:50 carrega o .min.css dela,
+// mas a folha estava FORA desta lista. O minificado servido era de 13/07 e podia divergir da
+// fonte sem nada acusar — editar o .css não chegava na tela. Conferido que minificar a fonte
+// reproduz o .min.css commitado (só normalizações do clean-css: `0%`->`0`, aspas em
+// [data-hub-theme=dark], ordem de seletores), então incluí-la não muda o CSS servido.
+const cssFiles = ['app.css','responsive-enterprise.css','scroll-enterprise.css','minimalist-enterprise.css','integration-center.css','login.css','bootstrap-login-lite.css','offline.css'];
 const jsFiles = ['pwa.js','notifications.js','futuristic-ui.js','minimalist-ui.js','offline.js'];
 
 for (const file of cssFiles) {

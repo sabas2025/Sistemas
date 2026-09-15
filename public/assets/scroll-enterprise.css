@@ -71,7 +71,6 @@ main,section,.page-content,.dashboard-content,.content-wrapper{
 @media (display-mode:standalone){
   html,body{height:auto!important;min-height:100dvh!important;overflow-y:auto!important;}
   .app-shell,.main{height:auto!important;min-height:100dvh!important;max-height:none!important;}
-  .content{padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))!important;}
 }
 /* Scrollbar discreta em desktop. */
 @media (hover:hover) and (pointer:fine){

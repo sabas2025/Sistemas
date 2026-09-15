@@ -308,6 +308,39 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   mesmo form, que já declarava `type="button"`. **Ao escrever seletor de E2E, lembre que o padrão
   implícito do HTML não aparece no DOM como atributo.**
 
+- **Folha de estilo que a tela carrega mas o build NÃO regenera.** `views/layout_top.php:50` carrega
+  `integration-center.min.css`, e `scripts/pwa/build-assets.mjs` não listava
+  `integration-center.css` em `cssFiles`. O minificado servido era de julho e podia divergir da
+  fonte sem nada acusar: **editar o `.css` não chegava na tela**. Descoberto ao corrigir a
+  divergência PWA↔web — a edição simplesmente não teve efeito. Conferido antes de incluir a folha
+  no build que minificar a fonte reproduz o `.min.css` commitado (só normalizações do clean-css:
+  `0%`→`0`, aspas em `[data-hub-theme=dark]`, ordem de seletores), então a inclusão não muda o CSS
+  servido. **Ao mexer em qualquer `.css`/`.js` de `public/assets/`, confira antes se ele está na
+  lista do build** — a varredura que encontra órfãs compara os `*.min.*` referenciados nas views
+  com `cssFiles`/`jsFiles`. Hoje não há nenhuma órfã; nada na CI garante que continue assim.
+
+- **`grep` não encontra a regra que decide, quando ela vive num `padding` abreviado.** Ao alinhar a
+  `.topbar` do PWA com a web eu troquei a base de 8px para 12px com base no que o grep achou — e
+  **inverti a divergência no mobile** (web 8px, PWA 12px), porque existe
+  `.topbar{padding:calc(8px + var(--hub-safe-top)) … !important}` num bloco `max-width:991.98px`,
+  que o grep por `padding-top` nunca casaria e que **já soma o recorte**. A regra standalone era
+  redundante no mobile. Quem resolveu foi perguntar ao navegador, não ao grep:
+  `CSS.getMatchedStylesForNode` via CDP lista todas as regras que casam, na ordem de precedência,
+  com `!important` e media query. **Antes de afirmar qual valor a web usa, meça o computado e peça
+  a lista de regras casadas** — em folha com cascata de 5 arquivos e `!important` espalhado, ler
+  CSS de cabeça erra.
+
+- **PWA e web são idênticos por medição, não por promessa.** Em 2026-09-15 as cinco divergências
+  reais foram eliminadas e o resultado é **zero diferença de CSS em 20 combinações tela/rota**
+  (10 rotas × 2 tamanhos). O que sobra no diff e **não** é divergência: as alturas
+  (`scrollHeight`/`clientHeight`/`height`), porque a janela do app não tem barra de endereço
+  (761→848 no desktop, 705→792 no celular), e `.app-shell` ganhar `#f8fafc` no standalone, que é
+  inócuo — `html`, `body`, `.main` e `.content` já são essa cor nos dois modos. Para repetir a
+  medição: Chromium com `launchPersistentContext` e `--app=<url>` dá `display-mode: standalone`
+  de verdade (`chromium.launch({args:['--app=…']})` **não** dá, e
+  `Emulation.setEmulatedMedia` com a feature `display-mode` é ignorado), e compara-se o estilo
+  computado contra uma aba comum.
+
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
   **reduziria** o atraso, e isso é pior que não ter jitter — a política de `rate_limit` recua
   15/30/45 min justamente para parar de bater no provedor que já nos limitou. A fórmula é

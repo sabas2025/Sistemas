@@ -131,7 +131,6 @@ pre,code,.codebox,.jsonbox,.json-box{max-width:100%;white-space:pre-wrap;overflo
 }
 
 @media (display-mode:standalone){
-  .topbar{padding-top:calc(8px + var(--hub-safe-top))!important;}
   .content{padding-bottom:calc(22px + var(--hub-safe-bottom));}
 }
 
