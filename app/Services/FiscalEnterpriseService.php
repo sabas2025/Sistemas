@@ -37,8 +37,8 @@ class FiscalEnterpriseService {
 
   public static function reconciliacao(): array {
     $dados=['nf_sem_xml'=>0,'xml_sem_envio'=>0,'erro_integracao'=>0,'divergencias'=>[]];
-    try { $dados['nf_sem_xml']=(int)(TenantScopeService::run('notas_fiscais', 'SELECT COUNT(*) c FROM notas_fiscais n LEFT JOIN nfe_xml x ON x.nota_fiscal_id=n.id WHERE x.id IS NULL')->fetch()['c'] ?? 0); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
-    try { $dados['xml_sem_envio']=(int)(TenantScopeService::run('nfe_xml', "SELECT COUNT(*) c FROM nfe_xml x LEFT JOIN nfe_integracao i ON i.nota_fiscal_id=x.nota_fiscal_id WHERE i.id IS NULL")->fetch()['c'] ?? 0); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $dados['nf_sem_xml']=(int)(TenantScopeService::run('notas_fiscais', 'SELECT COUNT(*) c FROM notas_fiscais n LEFT JOIN nfe_xml x ON x.nota_fiscal_id=n.id WHERE x.id IS NULL', [], 'n')->fetch()['c'] ?? 0); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $dados['xml_sem_envio']=(int)(TenantScopeService::run('nfe_xml', "SELECT COUNT(*) c FROM nfe_xml x LEFT JOIN nfe_integracao i ON i.nota_fiscal_id=x.nota_fiscal_id WHERE i.id IS NULL", [], 'x')->fetch()['c'] ?? 0); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
     try { $dados['erro_integracao']=(int)(TenantScopeService::run('nfe_integracao', "SELECT COUNT(*) c FROM nfe_integracao WHERE status='erro'")->fetch()['c'] ?? 0); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
     if($dados['nf_sem_xml']>0) $dados['divergencias'][]='NF-e registrada sem XML vinculado.';
     if($dados['xml_sem_envio']>0) $dados['divergencias'][]='XML salvo sem registro de envio/reenvio fiscal.';

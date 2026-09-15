@@ -2320,7 +2320,7 @@ class DashboardController {
     $resumoFiscal = class_exists('FiscalIntegrationService') ? FiscalIntegrationService::resumo() : [];
     $notas = [];
     try { $notas = FiscalIntegrationService::listar($_GET['status'] ?? '', 100); } catch(Throwable $e) { $erroFiscal = $e->getMessage(); }
-    $nfeIntegracoes=[]; try { $nfeIntegracoes = TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50')->fetchAll(); } catch(Throwable $e) { $erroFiscal = ($erroFiscal ?? '').' '.$e->getMessage(); }
+    $nfeIntegracoes=[]; try { $nfeIntegracoes = TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50', [], 'i')->fetchAll(); } catch(Throwable $e) { $erroFiscal = ($erroFiscal ?? '').' '.$e->getMessage(); }
     $pageTitle = 'XML / NF-e';
     require __DIR__.'/../../views/fiscal.php';
   }

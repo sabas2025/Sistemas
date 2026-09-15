@@ -90,6 +90,25 @@ class TenantScopeService {
   }
 
   /**
+   * Empresa a CARIMBAR numa gravação. Deliberadamente diferente de `currentEmpresaId()`.
+   *
+   * A leitura continua valendo só pela sessão: alargar `where()` para a empresa única poderia
+   * ESCONDER linhas já carimbadas com outra empresa, e tela que perde dado sem aviso é pior do que
+   * a lacuna que se quer fechar. A gravação é o contrário — sem resposta a linha nasce NULL, ou
+   * seja, visível a todo mundo. Por isso o recurso à empresa única vive só deste lado.
+   *
+   * Ordem: sessão primeiro (um usuário operando pelo painel decide pela empresa dele); sem sessão
+   * — webhook do Tiny, item de fila, worker, cron —, a única empresa cadastrada, quando é uma só.
+   */
+  public static function empresaParaGravar(): ?int {
+    $daSessao = self::currentEmpresaId();
+    if ($daSessao !== null) return $daSessao;
+    if (!class_exists('EmpresaCatalogService')) return null;
+    try { return EmpresaCatalogService::empresaUnicaId(); }
+    catch (Throwable $e) { return null; }
+  }
+
+  /**
    * Predicado de isolamento para acrescentar a um WHERE já existente.
    *
    * @param string $alias prefixo da tabela na consulta ('p' vira 'p.empresa_id')
@@ -130,7 +149,7 @@ class TenantScopeService {
    */
   public static function stamp(string $table, array $data): array {
     if (!self::isScoped($table)) return $data;
-    $empresa = self::currentEmpresaId();
+    $empresa = self::empresaParaGravar();
     if ($empresa === null) return $data;
     $data[self::COLUMN] = $empresa;
     return $data;
@@ -266,9 +285,10 @@ class TenantScopeService {
    * @return array{0:string,1:list<mixed>}
    */
   public static function applyToInsert(string $table, string $sql, array $params = []): array {
-    $escopo = self::where($table);
-    if ($escopo['sql'] === '') return [$sql, $params];
-    $empresa = self::currentEmpresaId();
+    // Antes isto perguntava a where(), que responde pela SESSÃO: fora dela o predicado vinha vazio
+    // e o INSERT saía intacto — era assim que webhook e fila gravavam empresa_id NULL (H-01).
+    if (!self::isScoped($table)) return [$sql, $params];
+    $empresa = self::empresaParaGravar();
     if ($empresa === null) return [$sql, $params];
     if (preg_match('/\b'.preg_quote(self::COLUMN, '/').'\b/i', $sql)) return [$sql, $params];
 

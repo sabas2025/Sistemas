@@ -19,7 +19,14 @@ for (const size of sizes) {
    await page.fill('input[name="senha"], input[name="password"]', password);
    await page.click('button[type="submit"]');
    for (const route of routes) {
-    await page.goto('/index.php?page='+route, {waitUntil:'domcontentloaded'});
+    const resposta = await page.goto('/index.php?page='+route, {waitUntil:'domcontentloaded'});
+    // Achado I-07 (2026-09-15): só a asserção de texto abaixo NÃO enxerga uma tela quebrada.
+    // Medido: `page=fila` devolvia 500 — SELECT de uma coluna inexistente — e a suíte ficava
+    // verde, porque o Hub esconde a exceção atrás da tela de Recuperação, que é o comportamento
+    // correto (nunca devolver stack trace ao usuário). O acerto de segurança cegava o teste.
+    // Conferir o STATUS separa as duas coisas: a tela é alcançada E não vaza detalhe técnico.
+    expect(resposta, `rota ${route} não respondeu`).toBeTruthy();
+    expect(resposta.status(), `rota ${route} respondeu ${resposta.status()}`).toBeLessThan(400);
     await expect(page.locator('body')).not.toContainText(/Fatal error|Uncaught|PDOException|SQLSTATE\[/i);
     const metrics = await page.evaluate(() => ({scrollWidth:document.documentElement.scrollWidth, clientWidth:document.documentElement.clientWidth, scrollHeight:document.documentElement.scrollHeight, clientHeight:document.documentElement.clientHeight}));
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 2);

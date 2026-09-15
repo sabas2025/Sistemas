@@ -19,6 +19,12 @@ class TenantContextService {
     public static ?int $empresa = null;
     public static function currentEmpresaId(): ?int { return self::$empresa; }
 }
+// Catálogo de empresas controlado pelo teste.null = nenhuma empresa única resolvida, que é o
+// estado em que o comportamento antigo (INSERT intacto sem sessão) tem de continuar valendo.
+class EmpresaCatalogService {
+    public static ?int $unica = null;
+    public static function empresaUnicaId(): ?int { return self::$unica; }
+}
 require_once hub_root().'/app/Services/TenantScopeService.php';
 
 $comEmpresa = static function (int $id, callable $fn) {
@@ -142,5 +148,82 @@ hub_check($checks,'Backfill só roda com UMA empresa cadastrada (não chuta com 
 hub_check($checks,'Verificador estático de escopo está presente na CI',
     is_file(hub_root().'/scripts/ci/tenant-scope-check.php')
     && str_contains(hub_read('.github/workflows/hub-ci.yml'),'tenant-scope-check.php'));
+
+// ------------------------------- empresa única na ESCRITA de entrada (metade aberta do H-01)
+// Webhook, fila, worker e cron rodam sem sessão: TenantContextService devolve null e a linha
+// nascia com empresa_id NULL, ou seja, visível a todas as empresas. Numa instalação de empresa
+// única não há dúvida de dono, então a gravação — e só ela — recorre à empresa única.
+$comEmpresaUnica = static function (?int $id, callable $fn) {
+    EmpresaCatalogService::$unica = $id;
+    try { return $fn(); } finally { EmpresaCatalogService::$unica = null; }
+};
+
+$comEmpresaUnica(3, static function () use (&$checks) {
+    hub_check($checks,'Sem sessão, a gravação resolve a empresa única', TenantScopeService::empresaParaGravar() === 3);
+    [$sql,$p] = TenantScopeService::applyToInsert('fila_integracao','INSERT INTO fila_integracao(tipo,referencia) VALUES(?,?)',['a','b']);
+    hub_check($checks,'INSERT de entrada nasce carimbado com a empresa única',
+        $sql === 'INSERT INTO fila_integracao(tipo,referencia,empresa_id) VALUES(?,?,?)' && $p === ['a','b',3]);
+    hub_check($checks,'stamp carimba a empresa única fora da sessão',
+        TenantScopeService::stamp('fila_integracao',['tipo'=>'x']) === ['tipo'=>'x','empresa_id'=>3]);
+    // A LEITURA continua valendo só pela sessão: alargar where() poderia ESCONDER linha já
+    // carimbada com outra empresa, e tela que perde dado sem aviso é pior que a lacuna.
+    [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao WHERE status=?',['pendente']);
+    hub_check($checks,'A leitura NÃO recorre à empresa única (sem regressão de tela)',
+        $sql === 'SELECT * FROM fila_integracao WHERE status=?' && $p === ['pendente']);
+    hub_check($checks,'where() segue vazio sem sessão', TenantScopeService::where('fila_integracao')['sql'] === '');
+});
+
+// A sessão vence a empresa única: quem opera pelo painel decide pela empresa dele.
+EmpresaCatalogService::$unica = 3;
+$comEmpresa(7, static function () use (&$checks) {
+    hub_check($checks,'A empresa da sessão vence a empresa única', TenantScopeService::empresaParaGravar() === 7);
+    [$sql,$p] = TenantScopeService::applyToInsert('fila_integracao','INSERT INTO fila_integracao(tipo) VALUES(?)',['x']);
+    hub_check($checks,'INSERT do painel carimba a empresa da sessão, não a única', $p === ['x',7]);
+});
+EmpresaCatalogService::$unica = null;
+
+// Com DUAS OU MAIS empresas o serviço devolve null e o comportamento anterior fica inteiro.
+$comEmpresaUnica(null, static function () use (&$checks) {
+    hub_check($checks,'Com 0 ou 2+ empresas a gravação não chuta', TenantScopeService::empresaParaGravar() === null);
+    [$sql,$p] = TenantScopeService::applyToInsert('fila_integracao','INSERT INTO fila_integracao(tipo) VALUES(?)',['x']);
+    hub_check($checks,'Sem empresa resolvida o INSERT segue intacto',
+        $sql === 'INSERT INTO fila_integracao(tipo) VALUES(?)' && $p === ['x']);
+});
+
+// Tabela fora do catálogo não é carimbada nem com empresa única resolvida.
+$comEmpresaUnica(3, static function () use (&$checks) {
+    [$sql,$p] = TenantScopeService::applyToInsert('usuarios','INSERT INTO usuarios(nome) VALUES(?)',['a']);
+    hub_check($checks,'Tabela global não é carimbada pela empresa única',
+        $sql === 'INSERT INTO usuarios(nome) VALUES(?)' && $p === ['a']);
+});
+
+// O portão precisa cobrar a GRAVAÇÃO na própria sentença (achado I-02): a janela de ±6 linhas
+// alcançava outro método em arquivo denso e dava por coberta uma gravação crua.
+$portao = hub_read('scripts/ci/tenant-scope-check.php');
+hub_check($checks,'Portão tem régua estrita para gravação',
+    str_contains($portao,'$violacoesEscrita') && str_contains($portao,'REPLACE\\s+INTO'));
+hub_check($checks,'Gravações cruas corrigidas continuam corrigidas',
+    !str_contains(hub_read('app/Controllers/FilaController.php'),"$pdo->prepare('INSERT INTO fila_integracao")
+    && str_contains(hub_read('app/Services/EstoqueVsmSchedulerService.php'),"TenantScopeService::run('estoque_saldos_cache'"));
+
+// Achado I-08: JOIN sem alias faz o predicado virar `empresa_id = ?` puro, e o banco recusa a
+// consulta inteira quando a outra tabela do JOIN também tem a coluna. Eram QUATRO consultas.
+hub_check($checks,'Portão cobra alias em consulta com JOIN',
+    str_contains($portao,'$violacoesJoin') && str_contains($portao,'in WHERE is ambiguous'));
+foreach ([
+    'app/Controllers/FiscalController.php'        => "LIMIT 50', [], 'i')",
+    'app/Controllers/DashboardController.php'     => "LIMIT 50', [], 'i')",
+    'app/Services/FiscalEnterpriseService.php'    => "WHERE x.id IS NULL', [], 'n')",
+] as $arquivo => $trecho) {
+    hub_check($checks,"Alias aplicado em {$arquivo}", str_contains(hub_read($arquivo), $trecho));
+}
+
+// Achado I-06: a tela Fila pedia uma coluna que fila_integracao não tem e devolvia 500.
+hub_check($checks,'Tela Fila não pede coluna inexistente',
+    !preg_match('/SELECT[^\']*atualizado_em[^\']*FROM fila_integracao/i', hub_read('app/Controllers/FilaController.php')));
+
+// Achado I-07: a asserção de texto não enxerga um 500, porque o Hub esconde a exceção de propósito.
+hub_check($checks,'E2E confere o STATUS da rota, não só o texto da tela',
+    str_contains(hub_read('tests/e2e/specs/visual-responsive.spec.js'),'resposta.status()'));
 
 hub_finish($checks);

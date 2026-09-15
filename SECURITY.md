@@ -197,3 +197,27 @@ errado, use `whereStrict()`.
 Relate ao responsável técnico da instalação. Inclua versão (`VERSAO.txt`), rota afetada e
 `trace_id` quando houver — toda resposta de erro carrega um, e ele localiza o evento na auditoria.
 Não abra issue pública com detalhe explorável.
+
+## Isolamento multiempresa — estado medido em 2026-09-15
+
+Decisão de produto desta data: **a instalação opera com empresa única**. O que isso muda, e o que
+não muda:
+
+- **Leitura** isola pela empresa da **sessão** (`TenantScopeService::where()`), e mantém visíveis as
+  linhas legadas com `empresa_id` NULL. A leitura **não** recorre à empresa única: alargá-la poderia
+  esconder linha já carimbada com outra empresa, e tela que perde dado sem aviso é pior do que a
+  lacuna que se quer fechar.
+- **Gravação** carimba a empresa da sessão ou, fora dela — webhook, fila, worker, cron —, a única
+  empresa cadastrada (`TenantScopeService::empresaParaGravar()`). Regra idêntica à das migrations
+  `20260914_010` e `20260915_014`: `COUNT(*) = 1` então `MIN(id)`.
+- **Com duas ou mais empresas a entrada sem sessão continua sem resposta** e a linha nasce com
+  `empresa_id` NULL, visível a todas. Isto é deliberado: atribuir a uma delas seria adivinhar. Antes
+  de operar vários clientes reais é preciso decidir de onde a entrada tira a empresa — e note que o
+  payload da VSM não carrega identificador de empresa.
+
+Medido contra MariaDB 10.11, por HTTP, com webhook VSM assinado (HMAC v2): a linha de entrada
+nascia com `empresa_id` NULL antes da correção e com `1` depois, no mesmo banco. Pela tela, um
+usuário da empresa 2 deixou de enxergar a linha gravada para a empresa 1.
+
+Não se conclui daqui que o Hub está pronto para multicliente: o que foi medido é a instalação de
+empresa única.

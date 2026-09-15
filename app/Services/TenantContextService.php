@@ -6,10 +6,10 @@
 class TenantContextService {
   public static function currentEmpresaId(): ?int {
     // P0-02 (reauditoria 2026-08-23): $_GET nunca é uma fonte confiável para "qual
-    // empresa está ativa" - qualquer link/bookmark podia forjar o valor. Também é
-    // importante registrar aqui, com honestidade: nenhuma query do projeto hoje usa
-    // appendWhereIfColumns() para filtrar dados por empresa/filial (ver método abaixo).
-    // Isto é só o seletor de contexto de sessão; não é isolamento de dados por tenant.
+    // empresa está ativa" - qualquer link/bookmark podia forjar o valor.
+    // Esta classe é o SELETOR de contexto de sessão. Quem isola dado é o TenantScopeService,
+    // desde a R6 - e ele chama este método para saber qual empresa está ativa. O legado
+    // appendWhereIfColumns() abaixo continua sem uso; não confunda um com o outro.
     $id = $_SESSION['tenant_empresa_id'] ?? null;
     $id = is_numeric($id) ? (int)$id : 0;
     return $id > 0 ? $id : null;

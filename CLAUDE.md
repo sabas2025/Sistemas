@@ -176,6 +176,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `SecretStrengthService` | Força, reuso e valores conhecidos de segredo |
 | `ClassmapBuilderService` | Geração do classmap |
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
+| `EmpresaCatalogService` | Catálogo de `empresas`: listar, validar id de formulário e **`empresaUnicaId()`** — a empresa única da instalação, que é de onde a gravação sem sessão tira o `empresa_id` |
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
@@ -375,22 +376,67 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `RetryPolicyService::jitterSegundos()`. Medido: 500 itens que falham no mesmo segundo passam de
   **1** para **31 segundos distintos** (atraso de 5 min) e **91** (15 min).
 
+- **Janela de contexto em portão estático cobre por acidente.** O achado I-02: o
+  `tenant-scope-check.php` aceitava a evidência de escopo em qualquer lugar de ±6 linhas. Em
+  arquivo denso — `FilaController` tem métodos inteiros numa linha só — a janela alcança OUTRO
+  método. Medido: `FilaController.php:7` gravava em `fila_integracao` com `$pdo->prepare()` cru e
+  passava, porque a linha 5 (outro método, outra consulta) cita `TenantScopeService`; e
+  `EstoqueVsmSchedulerService.php:210` passava pela linha 216, que trata de outra tabela. Duas
+  linhas nasciam sem empresa com o portão **verde**. A gravação agora tem régua própria: evidência
+  na própria sentença ou nas 4 linhas **seguintes**, citando a **mesma tabela** — para trás não
+  vale, que é de onde vinha o falso negativo. Conferido lado a lado: o portão antigo diz `[OK]`
+  sobre a árvore com os dois defeitos, o novo pega os dois.
+
+- **`TenantScopeService::run()` com JOIN e SEM alias quebra a tela.** O achado I-08: `where()` monta
+  o predicado com o prefixo que recebe em `$alias`; sem alias injeta `empresa_id = ?` puro, e se o
+  JOIN traz outra tabela que também tem a coluna o banco recusa a consulta inteira —
+  `Column 'empresa_id' in WHERE is ambiguous`. **Só aparece para quem tem empresa atribuída**, porque
+  sem empresa na sessão o predicado nem entra: por isso sobreviveu à validação do H-01, feita com
+  usuário sem empresa. Medido por HTTP: a tela **Fiscal** quebrava. E o achado apontava um ponto —
+  **havia quatro** (`FiscalController`, `DashboardController`, e duas em `FiscalEnterpriseService`).
+  Terceira vez que isso acontece nesta linha; ao corrigir escopo, varra a classe inteira.
+
+- **Tela pedindo coluna que não existe derruba a rota, e o acerto de segurança esconde.**
+  O achado I-06: `FilaController::index()` fazia `SELECT ... atualizado_em FROM fila_integracao`, e
+  essa coluna **não existe** nessa tabela (só em `fila_estoque`, `fila_fiscal` e `fila_morta`). A
+  tela Fila devolvia **500** para todo mundo — e a view nunca usou o campo. O que o mascarava é o
+  achado I-07: a suíte E2E afirmava `body` sem `/Fatal error|Uncaught|PDOException|SQLSTATE\[/`, e o
+  Hub esconde a exceção atrás da tela de Recuperação, **que é o comportamento correto** (nunca
+  devolver stack trace ao usuário). O acerto de segurança cegava o teste: 23 de 23 verdes com uma
+  das 10 rotas listadas completamente quebrada. A suíte agora confere também o **status HTTP**.
+  Conferido nos dois sentidos: com o defeito reposto, a asserção de status falha nos 5 viewports.
+  **Ao afirmar que uma tela "não tem erro", olhe o código HTTP — o texto da tela foi projetado para
+  não contar.**
+
+- **Auditoria mostrando `SQLSTATE[` na tela não é tela quebrada.** Perseguindo o I-06 eu marquei a
+  rota `auditoria` como defeituosa numa varredura por texto. Ela estava **certa**: exibia os
+  eventos `sistema.erro_fatal` gravados quando a Fila caiu. A trilha fez o trabalho dela. Varredura
+  por texto de erro tem falso positivo justamente na tela que existe para mostrar erro.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
   hoje, horas depois. **Quanto antes rodar, mais barata.**
-- **H-01 — leitura isolada; a ESCRITA DE ENTRADA ainda não.** A metade resolvida: `usuarios` ganhou
-  `empresa_id` (migration `20260915_014`) e `Auth::finalizeLogin()` carimba
-  `$_SESSION['tenant_empresa_id']`. Medido por HTTP, lendo a sessão de cada usuário: ALFA vê só
-  ALFA + legado, BETA só BETA + legado, usuário sem empresa vê tudo (de propósito — aplicar não
-  esvazia tela de ninguém). **A metade aberta:** webhook e fila rodam sem sessão, então
-  `applyToInsert()` devolve o SQL intacto e a linha nasce com `empresa_id` NULL — visível a todas
-  as empresas, porque `where()` inclui NULL. É o caso de `ApiController.php:739`. Resolver exige
-  decidir de onde a entrada tira a empresa (token de webhook por empresa? coluna na fila? empresa
-  por conexão Tiny/VSM?) — decisão de produto. A atribuição já tem tela: **Usuários e Permissões** ganhou o
-  campo *Empresa* e a coluna na lista (2026-09-15). O id vindo do POST é conferido contra
-  `empresas` antes de gravar, e trocar a empresa de alguém incrementa `session_version` —
-  revoga a sessão aberta dele.
+- **H-01 — RESOLVIDO para instalação de empresa única; em aberto para 2+ empresas.**
+  A leitura já isolava (`usuarios.empresa_id`, migration `20260915_014`, `Auth::finalizeLogin()`
+  carimbando `$_SESSION['tenant_empresa_id']`). Faltava a escrita de entrada: webhook, fila, worker
+  e cron rodam sem sessão, `applyToInsert()` devolvia o SQL intacto e a linha nascia com
+  `empresa_id` NULL — visível a todas as empresas. **Decisão do produto (2026-09-15): empresa
+  única.** `TenantScopeService::empresaParaGravar()` resolve a sessão primeiro e, fora dela, a
+  ÚNICA empresa cadastrada (`EmpresaCatalogService::empresaUnicaId()`), com a **mesma regra** das
+  migrations `010`/`014`: `COUNT(*) = 1` então `MIN(id)`. Todo instalador semeia exatamente uma
+  (`INSERT IGNORE INTO empresas(id,nome,cnpj) VALUES(1,'Empresa Demonstração','')`, no consolidado
+  e em `database/modules/core.sql`), então a resolução acontece.
+  **A leitura NÃO recorre à empresa única, de propósito:** alargar `where()` poderia esconder linha
+  já carimbada com outra empresa, e tela que perde dado sem aviso é pior que a lacuna. Só a
+  gravação usa o recurso.
+  Medido contra MariaDB 10.11, mesmo banco, antes e depois: webhook VSM real (HMAC v2, HTTP 200)
+  gravava `fila_estoque` e `estoque_movimentos` com `empresa_id` **NULL** antes, **1** depois. Pela
+  tela Fila, por HTTP: usuário sem empresa vê as duas linhas; usuário da empresa 1 vê as duas;
+  usuário da empresa 2 **não vê** a linha da empresa 1 — antes veria, porque ela seria NULL.
+  **Continua em aberto com DUAS OU MAIS empresas:** ali a entrada sem sessão não tem como decidir, o
+  serviço devolve `null` e a linha nasce NULL, como antes. Resolver exige a decisão adiada (token de
+  webhook por empresa? empresa por conexão Tiny/VSM?) — e o payload da VSM não carrega empresa.
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
@@ -413,6 +459,9 @@ no PR #2:
 | Login, sessão, rotas do painel, 404 de rota desconhecida | sessão local, MariaDB 10.11 | verde |
 | `pwa-static-and-e2e` (Lighthouse + PWA) | CI, workflow `pwa-quality.yml` | verde |
 | **Isolamento multiempresa, duas empresas** | sessão local, MariaDB 10.11 | leitura isola; escrita de entrada não — ver H-01 |
+| **Escrita de ENTRADA isolada** (webhook VSM real, HMAC v2, HTTP 200) | sessão local, MariaDB 10.11 | verde — `empresa_id` NULL antes, 1 depois, mesmo banco |
+| **Tela Fila / Fiscal com usuário COM empresa atribuída** | sessão local, MariaDB 10.11 | quebradas (I-06, I-08); corrigidas e remedidas verdes |
+| **12 rotas do painel por STATUS HTTP**, usuário da empresa 1 | sessão local, MariaDB 10.11 | verde (antes: `fila` em 500) |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está

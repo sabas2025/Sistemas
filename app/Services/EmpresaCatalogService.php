@@ -12,6 +12,11 @@
  * "quais empresas existem" e "este id é de uma empresa de verdade".
  */
 class EmpresaCatalogService {
+  /** Memória por requisição da empresa única — `empresaUnicaId()` é chamada em todo INSERT. */
+  private static bool $unicaResolvida = false;
+  private static ?int $unicaId = null;
+  private static bool $resolvendo = false;
+
   /**
    * Empresas cadastradas, ordenadas por nome. Devolve lista vazia quando a tabela não existe —
    * mesmo desenho do LicenseEnforcementService, para que instalação antiga não quebre a tela.
@@ -43,6 +48,50 @@ class EmpresaCatalogService {
     if ($texto === '') return null;
     $id = (int)$texto;
     return self::existe($id) ? $id : false;
+  }
+
+  /**
+   * Id da ÚNICA empresa cadastrada, ou `null` quando há zero ou duas ou mais.
+   *
+   * Existe para responder a uma pergunta que a sessão não consegue: quem grava vindo de webhook,
+   * fila, worker ou cron não tem sessão, então `TenantContextService::currentEmpresaId()` devolve
+   * `null` e a linha nascia com `empresa_id` NULL — visível a todas as empresas (a metade aberta
+   * do achado H-01). Numa instalação de empresa única não há dúvida sobre a quem a linha pertence.
+   *
+   * A regra é a MESMA das migrations `20260914_010` e `20260915_014`, de propósito:
+   * `COUNT(*) = 1` então `MIN(id)`. Com duas ou mais empresas a resposta é `null` e o
+   * comportamento anterior é preservado inteiro — atribuir a linha a uma delas seria adivinhar.
+   *
+   * Nunca lança e nunca registra em banco: é chamada de dentro do caminho de gravação, e uma
+   * escrita de log aqui reentraria em `applyToInsert()`. Daí a trava `$resolvendo`.
+   */
+  public static function empresaUnicaId(): ?int {
+    if (self::$unicaResolvida) return self::$unicaId;
+    if (self::$resolvendo) return null; // reentrância: responde "não sei" em vez de recursar
+    self::$resolvendo = true;
+    try {
+      if (!class_exists('Database') || !Database::tableExists('empresas')) return self::$unicaId = null;
+      $st = Database::forTable('empresas')->prepare('SELECT COUNT(*) AS total, MIN(id) AS menor FROM empresas');
+      $st->execute();
+      $linha = $st->fetch(PDO::FETCH_ASSOC);
+      $st->closeCursor(); // MariaDB exige drenar o result set antes da próxima consulta
+      $total = (int)($linha['total'] ?? 0);
+      $menor = isset($linha['menor']) ? (int)$linha['menor'] : 0;
+      return self::$unicaId = ($total === 1 && $menor > 0) ? $menor : null;
+    } catch (Throwable $e) {
+      // Banco indisponível (instalador, CLI sem config) é estado normal, não defeito: sem empresa
+      // resolvida o Hub segue exatamente como seguia antes desta classe existir.
+      return self::$unicaId = null;
+    } finally {
+      self::$resolvendo = false;
+      self::$unicaResolvida = true;
+    }
+  }
+
+  /** Esquece a empresa única memorizada. Para teste e para depois de mexer no cadastro. */
+  public static function limparCache(): void {
+    self::$unicaResolvida = false;
+    self::$unicaId = null;
   }
 
   /**

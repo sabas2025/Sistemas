@@ -206,9 +206,9 @@ class EstoqueVsmSchedulerService {
   }
 
   private static function atualizarCacheVSM(string $sku, float $saldo, array $ret): void {
-    $db = Database::forTable('estoque_saldos_cache');
-    $db->prepare("INSERT INTO estoque_saldos_cache(sku,saldo_vsm,diferenca,trace_id) VALUES(?,?,0,?) ON DUPLICATE KEY UPDATE saldo_vsm=VALUES(saldo_vsm), diferenca=saldo_tiny-saldo_vsm, trace_id=VALUES(trace_id), atualizado_em=NOW()")
-      ->execute([$sku,$saldo,RequestContext::id()]);
+    // Roda pelo agendador, fora de sessão: sem o escopo aqui a linha de cache nascia com
+    // empresa_id NULL. A gravação crua passava pelo portão por acidente — ver o achado I-02.
+    TenantScopeService::run('estoque_saldos_cache', "INSERT INTO estoque_saldos_cache(sku,saldo_vsm,diferenca,trace_id) VALUES(?,?,0,?) ON DUPLICATE KEY UPDATE saldo_vsm=VALUES(saldo_vsm), diferenca=saldo_tiny-saldo_vsm, trace_id=VALUES(trace_id), atualizado_em=NOW()", [$sku,$saldo,RequestContext::id()]);
     try {
       // P1-08 (reauditoria 2026-08-23): a resposta integral da VSM era gravada sem
       // sanitização nem limite de tamanho. Agora usa o mascaramento/truncamento que
