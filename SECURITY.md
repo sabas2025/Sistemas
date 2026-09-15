@@ -125,21 +125,69 @@ um anônimo não consegue inundar o log.
 
 ## 5. Isolamento multiempresa — leia antes de ativar
 
-`security.tenant_scope_required` **bloqueia** acesso a rotas operacionais sem empresa selecionada.
+`commercial.tenant_scope_required` **bloqueia** acesso a rotas operacionais sem empresa selecionada.
 Isso não é isolamento de dados por si só.
+
+> A chave vive em `commercial`, não em `security` — é assim que `TenantContextService::strictEnabled()`
+> a lê, e é onde `config.example.php` e o `install.php` a declaram. Até 2026-09-15 este documento
+> dizia `security.tenant_scope_required`, que **não existe**: quem seguisse o passo 3 abaixo ligava
+> uma chave inerte e podia concluir que o bloqueio estava ativo.
 
 O isolamento de dados é aplicado por `TenantScopeService`, que filtra por `empresa_id` nas tabelas
 registradas em seu catálogo, e é verificado estaticamente por `scripts/ci/tenant-scope-check.php` —
 toda consulta a tabela com escopo precisa passar pelo serviço ou estar numa exceção justificada.
 
+> ### Estado do isolamento em 2026-09-15 — leitura isolada, escrita de entrada ainda não
+>
+> A validação de runtime foi feita contra banco real com duas empresas. Na primeira passagem
+> **reprovou**: nada selecionava a empresa ativa, `$_SESSION['tenant_empresa_id']` nunca existia e
+> `TenantScopeService::where()` devolvia predicado vazio — a tela de pedidos mostrava as linhas
+> das duas empresas.
+>
+> **Corrigido (achado H-01).** `usuarios` ganhou `empresa_id` (migration `20260915_014`) e
+> `Auth::finalizeLogin()` passou a carimbar a sessão. Medido depois, lendo o arquivo de sessão de
+> cada usuário:
+>
+> | usuário | sessão | a tela de pedidos mostra |
+> |---|---|---|
+> | `alfa@` (empresa 1) | `tenant_empresa_id\|i:1` | ALFA-001, ALFA-002, LEGADO-1 |
+> | `beta@` (empresa 2) | `tenant_empresa_id\|i:2` | BETA-001, BETA-002, LEGADO-1 |
+> | admin sem empresa | sem a chave | todas as linhas |
+>
+> Usuário sem empresa continua vendo tudo, de propósito: aplicar a migration não esvazia tela de
+> ninguém, e o isolamento entra em vigor por usuário conforme as empresas são atribuídas.
+>
+> ### ⚠️ O que ainda NÃO está isolado: a escrita vinda de fora
+>
+> Webhook e processamento de fila rodam **sem sessão de usuário**. Sem empresa ativa,
+> `TenantScopeService::applyToInsert()` devolve o SQL intacto — então a linha nasce com
+> `empresa_id` NULL e, por `where()` incluir NULL, fica **visível a todas as empresas**. É o caso
+> de `ApiController.php:739`, que grava `pedidos_integracao` no caminho de entrada.
+>
+> Ou seja: hoje a **leitura** está isolada para quem entra pelo painel com empresa atribuída; a
+> **entrada de dados** ainda não tem de onde tirar a empresa. Resolver isso exige decidir a fonte
+> (token do webhook por empresa? coluna na fila? empresa por conexão Tiny/VSM?) — decisão de
+> produto, como foi a do vínculo usuário↔empresa.
+>
+> Não há tela para atribuir empresa a usuário: hoje é `UPDATE usuarios SET empresa_id = …`.
+
 **Antes de usar com mais de um cliente na mesma instalação:**
 
 1. Rode `php scripts/ci/tenant-scope-check.php` e confirme que passa sem exceções novas.
+   Atenção: este portão fica **verde** mesmo com o isolamento inerte — ele verifica que a consulta
+   passa pelo serviço, não que exista empresa ativa. Verde aqui não é prova de isolamento.
 2. Aplique a migration `20260914_010_tenant_isolation.sql` e confira o backfill.
-3. Ligue `security.tenant_scope_required`.
-4. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
-   outra. A validação de runtime desta entrega foi estática: não havia banco disponível no ambiente
-   em que ela foi feita.
+3. Ligue `commercial.tenant_scope_required`.
+4. Atribua a empresa a cada usuário (`usuarios.empresa_id`) — sem isso ele vê tudo. E **resolva a
+   empresa no caminho de entrada** (o aviso acima), ou os pedidos que chegarem por webhook ficarão
+   visíveis a todas as empresas.
+5. **Valide contra o seu banco**, com dados de duas empresas, que nenhuma tela mostra dados da
+   outra. Dá para reproduzir sem Docker; a receita está no `CLAUDE.md`, na seção de validação
+   contra banco real.
+
+Lembre ainda que `where()` deixa passar linhas com `empresa_id IS NULL` — legado anterior à
+migration, visível a todas as empresas por decisão deliberada. Onde herdar esse histórico for
+errado, use `whereStrict()`.
 
 ## 6. Reportando uma vulnerabilidade
 

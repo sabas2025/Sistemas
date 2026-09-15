@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-5e0836a8d20363b24a01e6762fc515dcd72d84ed752a2e06d28d7c9b9dc0080b  ./CLAUDE.md
+7019aa0ba01af123171054832f71e1185b2c713457423a67f1967508ff94c413  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -109,7 +109,7 @@ d3513c071472d74fb1117792f5cc5874bbf37bf4321fb9cbb677d18fae138537  ./RELATORIO-V9
 ad72bf6d065e2478a4b85baa301d30f1fed3a51336aca2e9bbf13b2839b7f9b7  ./RELATORIO-V98-BLINDAGEM-OPERACIONAL-SEGURANCA.md
 1af9167dd5e414fb20ed7b397850591639bd29607e9e3f8a2d1bf907d3bd24bd  ./RELATORIO-V99-BLINDAGEM-FINAL-SEGURANCA.md
 fde2e1998fc2c724af5f5b1bf48955a64fc8e47a429e4277f07e0a7f4abc81a1  ./RELATORIO-VALIDACAO-E-MELHORIAS-2026-09-14.md
-0b5c9c25ca383e5dd4e1f2e0e92d467c6c8d06f7caec93a12aafdfac40c60c4f  ./SECURITY.md
+3ea572fbc2c48948d5186338b4b7c6c1459ddc6d6ac1ed32b76b5d2aa5335d91  ./SECURITY.md
 3a18df1c5f43a9cae596e0d686a13ba77bc59f9d542149e3ff4cf64b663db9e4  ./VALIDACAO-FINAL-HOTFIX-SCHEMA-R3.md
 b0f7ba50027acbde3546afd60663971c40a44e4927cd586712848c0e00dc6d2b  ./VALIDACAO-PACOTE-COMPLETO-V104.49.2.md
 d31ef66a851ae1e482d6ad32621e7ab0bba0250d474cf1d00ba93af90d892b62  ./VALIDACAO-V97.txt
@@ -165,7 +165,7 @@ b1062b7f872fcefe7fc79cecbcf783f69aeb2a2fb26dad3c4cd01dd3fdf5ff18  ./app/Controll
 f5e189efd4721d05dee69684d99cb209b99337628068b06a69fce480eaec202d  ./app/Controllers/VsmController.php
 5283f6ecb1213defa22d30cb28af0bdc22f904cf4ab2e3b29338dcb114a2bfe2  ./app/Controllers/XmlNfeController.php
 b6ffaf05797b08ba7984fab860d6dfbc60c883df9130e3e0ad6fcba0ac2b6877  ./app/Core/App.php
-0fd3268284a72b2e6ddfbb562a7ad4765f6a57f035e92164c2e7fcf70ee7d7e1  ./app/Core/Auth.php
+315d674cfb390bc6a91acb69f2f352b966981ffeb6fdb8fa04f18ea45be40d8d  ./app/Core/Auth.php
 aff900ec020896b8273dd34036de25f07d0d82e9e3967dd16b7735cff9f27700  ./app/Core/Autoload.php
 f8f9ad65d6bc05b10a7606df81ba3bd395ec50172054294474d3cd79a019084d  ./app/Core/Csrf.php
 4be1ef17e2f8c4d90b827056ba006a9e06943d3267bb366803ccb84b283aa0b9  ./app/Core/Database.php
@@ -362,8 +362,8 @@ c0e821fd34d8a6774586005eeb178147b724aa3f531bd0d8e3464e4035f14663  ./contracts/vs
 e62ff279f3a0bf72331559cf7c3ab5725c468028f325201a75b6d4888ae9c5c0  ./database/baseline/schema-v104.36.sql
 28b41f27545b1c70f22a0c0416f88a3b67bb1de5fbfcc70a3f830a1cd0a660b4  ./database/diagnostics/20260712_schema_connection_visibility.sql
 ad59b51437624c16787e613f2bd9a4dbb3357d263c329695f7108e91b49add9b  ./database/enterprise_core_bootstrap_v104_34.sql
-f1121a23fc7500488587cf43c3cdcac02c665c3b53e60ef85ee6b9757d4ce914  ./database/install.sql
-f1121a23fc7500488587cf43c3cdcac02c665c3b53e60ef85ee6b9757d4ce914  ./database/install_final_current.sql
+0893d16fc93fe11a31c8382f336f592e09ee8470c8e6c88a11f24e7e8dcde857  ./database/install.sql
+0893d16fc93fe11a31c8382f336f592e09ee8470c8e6c88a11f24e7e8dcde857  ./database/install_final_current.sql
 66a8ab118452777ea48a41cf72779bb9178b9a25701c0d5a6a5eaff70004a55a  ./database/install_final_v104_16.sql
 6d2377289670c41e54ee8a2d5849dd5939777663ed0cd40119e332b0718714df  ./database/install_final_v104_18.sql
 0409be132d3ef95fd4818f1280c9b7cb7c1c8b44579954dbb4f2171102de50dd  ./database/install_final_v104_19.sql
@@ -440,8 +440,9 @@ a0bd26604eaa82da832af602038fff26c2ab3cf66f426f383d6e16478662717e  ./database/mig
 8eb6deddfdcde95e76cc12c170d3658227bfa1138f6914140ef76a86a239a778  ./database/migrations/20260914_011_indices_capacidade.sql
 8ed8d2b7449f8658e2de2f4a2878c46f17d5b7f1ba919a5f9052e1e47d2c2b29  ./database/migrations/20260914_012_pk_bigint_capacidade.sql
 80c51b4ec395f34038995a6941aa16c86e2285a6d55ebed5be90bf24b68a313e  ./database/migrations/20260914_013_capacidade_logs_sessoes.sql
+ef71ef01874832d03354d4e1e8f341b534cf785bd1a7bd0146a633b4385f0c75  ./database/migrations/20260915_014_usuarios_empresa.sql
 6c9dc93d3d83b08dface9c10faa75d77dc31801d7e36a2766e89810877a294b1  ./database/modules/backups.sql
-79dae75afbe785b1d6668052d851ea54b867264cb413acac0423c000329227b6  ./database/modules/core.sql
+862898a527a564c38fb89530dc10c1c41ae74a1d1f2c7fc10848b3edeceb03d3  ./database/modules/core.sql
 1e86238b265f10de5f9d07b56aea570a5931146ddda09fc549b7ec88228a8fd3  ./database/modules/estoque.sql
 dabc53af3953d4320dbf14c64abb62d1fcee19d6d7e413e53da60c9120cfc03c  ./database/modules/fila.sql
 b3943048e1640f87a7b101bf52af38b817e1a32503a2b68016edc72aa73d736d  ./database/modules/fiscal.sql

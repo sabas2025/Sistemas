@@ -219,7 +219,22 @@ class Auth {
   private static function finalizeLogin(array $u): bool {
     session_regenerate_id(true);
     unset($_SESSION['pending_2fa_user_id'], $_SESSION['pending_2fa_email'], $_SESSION['pending_2fa_ok_password'], $_SESSION['pending_2fa_setup_required'], $_SESSION['pending_2fa_secret'], $_SESSION['pending_2fa_started_at']);
-    $_SESSION['user']=['id'=>$u['id'],'nome'=>$u['nome'],'email'=>$u['email'],'perfil'=>$u['perfil'],'deve_trocar_senha'=>(int)($u['deve_trocar_senha'] ?? 0),'2fa_ativo'=>(int)($u['two_factor_enabled'] ?? 0)];
+    $empresaId = isset($u['empresa_id']) && (int)$u['empresa_id'] > 0 ? (int)$u['empresa_id'] : null;
+    $_SESSION['user']=['id'=>$u['id'],'nome'=>$u['nome'],'email'=>$u['email'],'perfil'=>$u['perfil'],'deve_trocar_senha'=>(int)($u['deve_trocar_senha'] ?? 0),'2fa_ativo'=>(int)($u['two_factor_enabled'] ?? 0),'empresa_id'=>$empresaId];
+    // Achado H-01: é AQUI que o isolamento multiempresa deixa de ser inerte. Até 2026-09-15
+    // TenantContextService::set() não tinha nenhum chamador no aplicativo, então
+    // $_SESSION['tenant_empresa_id'] nunca existia, currentEmpresaId() devolvia null e
+    // TenantScopeService::where() devolvia predicado VAZIO — os 162 pontos que roteiam consultas
+    // pelo serviço não filtravam nada. Medido por HTTP, com duas empresas povoadas, a tela de
+    // pedidos mostrava as linhas das duas.
+    //
+    // Fica depois do session_regenerate_id() acima, de propósito: a chave tem de nascer na sessão
+    // NOVA, não na que foi descartada.
+    //
+    // empresa_id nulo mantém o comportamento anterior (vê tudo) em vez de trancar o usuário fora
+    // de tudo. É a escolha deliberada da migration 20260915_014: aplicar não esvazia tela de
+    // ninguém, e o isolamento entra em vigor por usuário conforme as empresas são atribuídas.
+    if (class_exists('TenantContextService')) TenantContextService::set($empresaId, null);
     $_SESSION['fingerprint'] = self::fingerprintHash();
     $_SESSION['session_version'] = (int)($u['session_version'] ?? 0);
     $_SESSION['login_at'] = time();
