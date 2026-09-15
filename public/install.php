@@ -395,6 +395,18 @@ function split_schema_definitions(string $body): array {
       continue;
     }
     if ($char === "'" || $char === '"' || $char === '`') { $quote = $char; $buffer .= $char; continue; }
+    // Comentário SQL fora de aspas é descartado inteiro, até o fim da linha. Sem isto, uma
+    // vírgula DENTRO de um comentário partia a lista de definições e o fragmento virava coluna
+    // fantasma: o preflight do instalador via colunas chamadas `e`, `os`, `por` e `UPDATE`, e
+    // expected_column_contract() lançava "Definição de coluna SQL não reconhecida no contrato
+    // canônico", abortando TODA instalação limpa antes do DDL. MySQL exige espaço depois de --;
+    // exigir o mesmo evita comer `DEFAULT -1`.
+    if ($char === '#' || ($char === '-' && $i + 1 < $length && $body[$i + 1] === '-'
+        && ($i + 2 >= $length || preg_match('/\s/', $body[$i + 2]) === 1))) {
+      while ($i < $length && $body[$i] !== "\n") $i++;
+      $buffer .= ' ';
+      continue;
+    }
     if ($char === '(') { $depth++; $buffer .= $char; continue; }
     if ($char === ')') { $depth--; $buffer .= $char; continue; }
     if ($char === ',' && $depth === 0) { if (trim($buffer) !== '') $items[] = trim($buffer); $buffer = ''; continue; }

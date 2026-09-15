@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**44 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**45 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -717,6 +717,35 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   com a saída redigida. O que o portão **não** prova: que a saída dos scripts está correta, nem que
   os ramos não alcançados naquela invocação funcionam.
 
+- **Comentário SQL com vírgula quebrava TODA instalação limpa.** O achado I-22, encontrado ao
+  empacotar o zip e **rodar `public/install.php` de verdade** contra MariaDB, com banco vazio e
+  usuário MySQL exclusivo. `split_schema_definitions()` respeita aspas e parênteses, mas não
+  descartava comentário: uma vírgula dentro de um `--` partia a lista de definições e o pedaço
+  seguinte virava **coluna fantasma**. O parser via colunas chamadas `e`, `os`, `por` e `UPDATE`;
+  a primeira fazia `expected_column_contract()` lançar "Definição de coluna SQL não reconhecida no
+  contrato canônico" dentro de `assert_fresh_install_targets()`, **antes de qualquer DDL**. Medido:
+  o instalador respondia "Erro técnico na instalação", **consumia a autorização de 15 minutos** e
+  deixava o banco com **zero tabelas**. Eram 7 ocorrências; 6 existem desde que o Hub chegou ao
+  repositório (`cf0214c`) e **a sétima é minha**, do comentário do I-19 em `fila.sql`. Nenhum
+  portão pegava porque **nenhum roda o parser do instalador**: a CI aplica os módulos pelo cliente
+  mysql e o E2E usa o consolidado — os dois pulam `public/install.php`. Corrigido descartando
+  comentário fora de aspas dentro do mesmo autômato (exigindo espaço depois de `--`, como o MySQL,
+  para não comer `DEFAULT -1`). Medido depois: 135 tabelas e **1.550 colunas** reconhecidas, zero
+  rejeitadas — o mesmo 1.550 da paridade do I-18, o que confirma que as 7 eram fantasmas. E a
+  instalação limpa foi ao fim: 135 tabelas, 1.550 colunas, 558 índices, login, troca de senha
+  obrigatória e dashboard 200. Travado por `tests/enterprise/v104_49_3_install_sql_contract_test.php`,
+  que roda as **funções reais** do instalador (extraídas por `token_get_all`, não por regex) sobre
+  os módulos reais; conferido contra o defeito reposto: reprova com as 7.
+
+- **`config/config.php` presente muda o resultado de 4 testes enterprise.** Descoberto ao rodar a
+  suíte numa árvore onde eu tinha provisionado o Hub: `v104_36_hardening`, `v104_48_1_architecture`,
+  `v104_48_1_tiny_security` e `v104_48_corrections` leem `hub_read('config/config.php')` e afirmam
+  sobre **defaults**. Num checkout limpo o arquivo não existe, `hub_read()` devolve string vazia e
+  as asserções passam; com uma config real — a minha, de CI, com limites afrouxados — as quatro
+  reprovam. Por um instante pareceram regressão da minha alteração no instalador, e não eram:
+  removido o `config.php`, a suíte voltou a 45/45. **Ao ver teste enterprise falhar depois de
+  subir o Hub localmente, confira `ls config/` antes de culpar o diff.**
+
 - **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
   sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
   da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
@@ -797,6 +826,8 @@ no PR #2:
 | **`scripts/diagnose-http-500.php` executado** em ambiente provisionado | sessão local, MariaDB 10.11 | quebrado por mim (I-21); corrigido e remedido, exit 0 |
 | **Portão 14 contra o I-21 reposto** (com config e banco) | sessão local, MariaDB 10.11 | pega — `Class "Database" not found`, exit 1 |
 | **Portão 14 contra o I-21 reposto, sem `config/config.php`** | sessão local | **verde** — o ramo de banco não é alcançado; por isso o passo roda duas vezes |
+| **`public/install.php` executado**: instalação limpa, banco vazio, usuário MySQL exclusivo | sessão local, MariaDB 10.11 | quebrada (I-22) — zero tabelas; corrigida e remedida: 135 tabelas, 1.550 colunas, 558 índices |
+| **Primeiro acesso após a instalação real**: login → troca de senha obrigatória → dashboard | sessão local, MariaDB 10.11 | verde — 302 para `trocar-senha`, depois dashboard 200 |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
