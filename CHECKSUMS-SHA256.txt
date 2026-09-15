@@ -1,10 +1,10 @@
-6a41541f6d9ee1b59b3aa098241bb54ec27d014e66dc259c485de6827b1aea68  ./.github/workflows/hub-ci.yml
+93496857456e97fcd524baf32f38362fcd434ee77fe98c5c9d28e917a8c1023b  ./.github/workflows/hub-ci.yml
 667546ed22b1c51a72d8a41928c4b05ccf66d0700a9a38f5901a3a1e5841f4e5  ./.github/workflows/pwa-quality.yml
 7bffc672376fa470ba1dfc4fbded59d7f4227e136e987d17f2f9b91fd3e4f2d5  ./.htaccess
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-7b4bc43bc10bda4577411b2e9b4018433b8a662f2d517efb85b061e140f774bb  ./CLAUDE.md
+60f3e8e09d73638d9f40e9dd107f6d6ada9ddd5c287ab816e2c74a85be9e6087  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -585,6 +585,7 @@ d51e238b97122a0116e55fc27ed6fc6960eea39604782e5ad977aaf3031342be  ./public/worke
 84f514000458e59038def4ad51bfb008417d9a92edd80384d3a225caeda6dae4  ./public/worker_xml_nfe.php
 5d453e0c7b0138a1bce35bdaee08d7e1fcc594f15b472b72d7c90078d19cc667  ./scripts/build-classmap.php
 509114660992af9c5ad07e2f61667c4520018b40742bf9a387ec5f61f31bebf0  ./scripts/ci/build-consolidated-schema.mjs
+17ab3e6d2578461af36ddaa1169d192d41594ff5b9cd798b2efac5556b76554f  ./scripts/ci/cli-scripts-smoke.php
 5b21d53429b8bde1b214e732e5be0ae0cabe337b3fbace673acfc14974f2b31f  ./scripts/ci/controller-route-check.php
 2d3e3369e6e56b248657f9c87758d4cd113767008fe229b18a1fbf503d45da91  ./scripts/ci/enterprise-tests.sh
 12e9d8b031de679cdfea436ab8fec7de22a3070543e64124b0952b11b2826877  ./scripts/ci/mysql-modular-runtime-regression.php
@@ -652,7 +653,7 @@ fc05a64d3d713e3bf3e0e5e4afbcd7a8869d4ac9fb0c07dc17b80e0832d493cc  ./tests/enterp
 da2144e3ef76673f6a5a0b75822f411bd0afb9633e453bf0f65c38b589db55ca  ./tests/enterprise/v104_49_3_backup_provenance_test.php
 e66b527c18aa10796e4ae8960ebe45da46e3abd8df8c2924b70158f2bf3eceec  ./tests/enterprise/v104_49_3_mariadb_type_contract_test.php
 cb9a7f7e77e48dbb36be2dc2ea0bb827fe3a0f53d708712dde20bd798075f9c4  ./tests/enterprise/v104_49_3_paridade_indices_test.php
-ce2c56ecd338d6ebf45379c748300a52454f23e630382ebcc869d9f6bd3f0ff3  ./tests/enterprise/v104_49_3_r5_ci_quality_gate_test.php
+ece51040c7839f7a271c5efde50ee7a0d74a16bed2a084eebb1d4026f70b9d77  ./tests/enterprise/v104_49_3_r5_ci_quality_gate_test.php
 4312c57589ba4710172eeedf8af17357c802b7fe3a5d724b6db112dfcbe6b48d  ./tests/enterprise/v104_49_3_r5_vsm_governance_test.php
 1e5a35c3d7a7f8dd3f5fb365ecd1b16151266967a14e4e723bc91d51c98c187c  ./tests/enterprise/v104_49_3_r6_reauditoria_test.php
 436db22ae1ad22cffed37d0c4dce93437facb1a6c48a5c5ac322908f40d028b5  ./tests/enterprise/v104_49_3_r7_auditoria_fases_test.php

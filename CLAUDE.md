@@ -179,13 +179,15 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `EmpresaCatalogService` | Catálogo de `empresas`: listar, validar id de formulário e **`empresaUnicaId()`** — a empresa única da instalação, que é de onde a gravação sem sessão tira o `empresa_id` |
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
-**Portões de CI (13) — todos precisam ficar verdes**
+**Portões de CI (14) — todos precisam ficar verdes**
 `php-lint.sh` · `enterprise-tests.sh` (**44 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
 **`build-assets.mjs --check`** (`npm run check:pwa`, desde 2026-09-15: os `.min` servidos têm de
-bater com a fonte — por isso o `static-enterprise` agora instala Node e dependências)
+bater com a fonte — por isso o `static-enterprise` agora instala Node e dependências) ·
+**`cli-scripts-smoke.php`** (desde 2026-09-15: **executa** os scripts de `scripts/`; roda duas
+vezes, no job estático e depois do provisionamento do job E2E — só a segunda alcança o ramo de banco)
 Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do workflow.
 
 **Armadilhas já pagas caro — não repita**
@@ -684,9 +686,10 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `Database::tableExistsOn`** — ou seja, travava o defeito no lugar. Só apareceu quando eu executei
   o script. E ele nem chega ao ramo de banco sem `config/config.php`, então é preciso rodá-lo num
   ambiente provisionado. A correção usa `information_schema.TABLES` com placeholder: resolve o I-10
-  e não depende de classe nenhuma. **Nenhum portão executa os scripts de `scripts/`** — o novo
-  teste ao menos garante que eles não chamem classe de `app/` sem carregá-la (28 scripts varridos;
-  `Classe::class` é permitido, porque resolve para string sem disparar autoload).
+  e não depende de classe nenhuma. O teste estático garante que os scripts não chamem classe de
+  `app/` sem carregá-la (28 scripts varridos; `Classe::class` é permitido, porque resolve para
+  string sem disparar autoload) — e desde 2026-09-15 o **portão 14 os EXECUTA**, que é o único
+  jeito de pegar este defeito. Veja a armadilha abaixo.
 
 - **Verde sobre conjunto vazio, agora nos MEUS testes.** O achado I-20, também meu: as varreduras
   de `v104_49_3_sql_portability_test.php` e `v104_49_3_retencao_fila_test.php` afirmavam "nenhuma
@@ -696,6 +699,23 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   conjunto varrido antes de afirmar o vazio. O mesmo vale para asserção **negativa**
   (`!str_contains($arquivo, …)`): sobre arquivo ausente `hub_read()` devolve string vazia e a
   negativa passa por engano — por isso ela ganhou um `$arquivo !== ''` à frente.
+
+- **Portão que só LÊ o script não vê o script morrer.** Fechando o I-21: os 13 portões liam
+  `scripts/`, nenhum o executava. O portão 14 (`scripts/ci/cli-scripts-smoke.php`) executa cada
+  `scripts/*.php` e reprova por **texto de erro fatal** na saída. Três coisas medidas ao construí-lo,
+  todas contraintuitivas. **(a)** Com o I-21 reposto o script sai com **exit 1, não 255**, porque o
+  próprio `catch(Throwable)` dele captura o `Error` — portão que olhasse só o código de saída
+  deixaria passar o defeito que motivou o portão. **(b)** Com o defeito reposto e **sem**
+  `config/config.php`, o portão fica **VERDE**: o ramo de banco nem é alcançado. Por isso o passo
+  existe duas vezes no `hub-ci.yml`, e é o do job `e2e-authenticated`, depois do provisionamento,
+  que pega o I-21. **(c)** Cada script precisa de decisão declarada no catálogo do portão —
+  `direto` (comprovadamente sem escrita), `isolado` (roda numa raiz descartável) ou `excluido` com
+  motivo; script novo sem entrada reprova, para que a decisão seja de quem o escreve. Hoje:
+  `build-classmap.php --check` e `diagnose-http-500.php` são leitura pura, `rotate-secrets.php
+  --audit` também (as duas escritas dele ficam depois do `exit` que ocorre sem `--rotate=`), e
+  `create-install-authorization.php` **escreve e imprime um código**, então roda em raiz temporária
+  com a saída redigida. O que o portão **não** prova: que a saída dos scripts está correta, nem que
+  os ramos não alcançados naquela invocação funcionam.
 
 - **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
   sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
@@ -775,6 +795,8 @@ no PR #2:
 | **`integration_events` por `fila_id`**, medido antes e depois do índice | sessão local, MariaDB 10.11 | gargalo real (I-19): 43→9 ms e 87→9 ms; índice nos dois caminhos |
 | **Auto-auditoria do diff da sessão** (8 commits) | sessão local | 2 achados MEUS: I-20 (teste verde sobre varredura vazia) e I-21 (script autônomo chamando classe não carregada) |
 | **`scripts/diagnose-http-500.php` executado** em ambiente provisionado | sessão local, MariaDB 10.11 | quebrado por mim (I-21); corrigido e remedido, exit 0 |
+| **Portão 14 contra o I-21 reposto** (com config e banco) | sessão local, MariaDB 10.11 | pega — `Class "Database" not found`, exit 1 |
+| **Portão 14 contra o I-21 reposto, sem `config/config.php`** | sessão local | **verde** — o ramo de banco não é alcançado; por isso o passo roda duas vezes |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
