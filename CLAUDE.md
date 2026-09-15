@@ -244,6 +244,45 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   aplicação. **Ao mexer na E2E, confira as duas formas** — e lembre que 404 e 503 dizem coisas
   diferentes: 404 é rota errada, 503 é aplicação alcançada sem banco.
 
+- **O Service Worker recarrega a página na PRIMEIRA visita e apaga o que foi digitado.**
+  A causa raiz de toda a saga do E2E do PR #2, encontrada só quando houve MariaDB real na sessão.
+  `public/assets/pwa.js` fazia `navigator.serviceWorker.addEventListener('controllerchange', …
+  location.reload())`. Num perfil de navegador novo — que é **todo contexto do Playwright** — não
+  existe controlador: o SW registra, ativa, assume pela primeira vez, o `controllerchange` dispara
+  e a página recarrega ~1 s após o load. Medido: `performance.getEntriesByType('navigation')`
+  devolvia `["reload"]`, e o campo `input[name="email"]` voltava vazio 500 ms depois do `fill()`.
+  Como e-mail e senha são `required`, o clique seguinte em *Entrar* **não enviava POST nenhum** —
+  a tela ficava parada, sem mensagem de erro, e o teste falhava adiante procurando
+  `#hubMainContent`. Era uma corrida: quando o teste demorava um pouco mais entre preencher e
+  clicar, o POST saía e o login funcionava. Daí o placar oscilar entre execuções e entre testes do
+  mesmo arquivo. Medido com o recorte aplicado: **0 de 6 → 6 de 6 logins** e a suíte inteira de
+  23 testes verde contra MariaDB real. O recarregamento continua igual quando existe controlador
+  anterior (atualização de verdade do SW); só a primeira posse deixou de recarregar, porque ali
+  não há nada a atualizar — a página acabou de vir da rede. **Isso não era defeito só de teste:**
+  uma pessoa na primeira visita ao Hub, digitando e-mail e senha, perdia o que digitou.
+  Ao mexer em `pwa.js`, lembre que a tela é servida por `pwa.min.js` — regenere com
+  `npm run build:pwa`, nunca editando o `.min.js` à mão.
+
+- **`usuarios.deve_trocar_senha` nasce em 1, e isso redireciona TODA rota autenticada.**
+  `database/install_final_current.sql` declara `deve_trocar_senha TINYINT DEFAULT 1` e
+  `FastRouteDispatcherService` (linha 79) manda para `index.php?page=trocar-senha` enquanto a
+  marca estiver ligada, exceto a própria troca e o logout. É o comportamento correto do Hub. Só
+  que o administrador criado por `scripts/ci/provision-e2e-environment.php` nascia com a marca
+  ligada: o login funcionava, a sessão era criada, e mesmo assim toda tela autenticada respondia
+  302. Os sintomas apareciam longe da causa — `#hubMainContent` "não encontrado", o texto da tela
+  de diagnóstico ausente, e **200 em vez de 404** na rota desconhecida, porque o dispatcher nunca
+  chegava ao ramo `default: naoEncontrado()`. O provisionamento de CI desliga a marca e **confere
+  o que escreveu**; o ambiente representa um Hub já instalado. A regra vale inteira na instalação
+  real.
+
+- **O rótulo do menu e o título da tela nem sempre são o mesmo texto.** O `authenticated-smoke`
+  afirmava `/Teste Segurança Assistido/i`. A tela se chama **"Teste de Segurança Assistido"** — é
+  assim no `<title>`, no `<h2>` de `views/security_assisted_test.php`, no `$pageTitle` do
+  controller e no relatório do serviço. A única grafia sem o "de" é o rótulo do menu lateral
+  (`views/layout_top.php:118`), que só é renderizado quando o perfil visual em uso mostra o grupo
+  Segurança. A asserção passava por acidente, quando o item do menu aparecia. Ao afirmar sobre o
+  conteúdo de uma tela, cite o título **dela**, não o rótulo que leva até ela.
+
 - **`<button>` sem `type` num form É submit, mas `button[type="submit"]` não o encontra.** Terceira
   camada da primeira CI real (PR #2): com a URL corrigida, o login passou a renderizar e os testes
   preencheram e-mail e senha — e travaram no clique. `views/login.php` declarava

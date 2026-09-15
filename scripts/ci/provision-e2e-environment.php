@@ -95,6 +95,48 @@ if ($adminCount !== 1) {
     exit(1);
 }
 
+// PR #2 - causa raiz das 5 falhas restantes do E2E autenticado.
+//
+// `usuarios.deve_trocar_senha` e TINYINT DEFAULT 1 no schema de instalacao, e
+// FastRouteDispatcherService (linha 79) redireciona TODA rota autenticada para
+// index.php?page=trocar-senha enquanto a marca estiver ligada - exceto a propria troca e o
+// logout. Isso e comportamento CORRETO do Hub: a senha inicial tem de ser trocada antes do uso.
+//
+// So que o administrador provisionado aqui nasce com a marca ligada. O login funcionava, a
+// sessao era criada, e ainda assim toda tela autenticada respondia 302 para a troca de senha.
+// Os testes falhavam longe da causa: #hubMainContent "nao encontrado", o texto da tela de
+// diagnostico ausente, e 200 em vez de 404 na rota desconhecida (o dispatcher nunca chegava ao
+// ramo `default: naoEncontrado()`).
+//
+// Medido contra MariaDB real, com a marca em 1 e depois em 0, mesmo servidor e mesma sessao:
+//   index.php                              302 -> 200 (com id="hubMainContent")
+//   index.php?page=diagnostico-config-real 302 -> 200 ("Diagnóstico de Configuração Real")
+//   index.php?page=security-assisted-test  302 -> 200 ("Teste Segurança Assistido")
+//   index.php?page=rota-inexistente-999    302 -> 404
+//
+// O ambiente de CI representa um Hub JA instalado, com administrador pronto para operar, entao a
+// marca e desligada aqui - no provisionamento, nao no teste. A regra de negocio continua intacta
+// para instalacao real.
+$pdo->prepare('UPDATE usuarios SET deve_trocar_senha=0 WHERE email=?')->execute([E2E_ADMIN_EMAIL]);
+
+// F-01/F-02: indicador que mente e pior que indicador ausente. Conferir o que acabou de ser
+// escrito, para que um schema futuro que renomeie ou repopule a coluna falhe AQUI, alto e claro,
+// em vez de derrubar o E2E vinte minutos depois com uma mensagem que nao aponta a causa.
+$deveTrocar = $pdo->query('SELECT deve_trocar_senha FROM usuarios WHERE email=' . $pdo->quote(E2E_ADMIN_EMAIL))->fetchColumn();
+if ((int)$deveTrocar !== 0) {
+    fwrite(STDERR, "[FALHA] deve_trocar_senha continua ligado para " . E2E_ADMIN_EMAIL . ".\n"
+        . "        Toda rota autenticada responderia 302 para index.php?page=trocar-senha e o E2E falharia longe da causa.\n");
+    exit(1);
+}
+
+// E conferir que a senha conhecida realmente abre o hash gravado pelo schema: se o placeholder
+// {ADMIN_HASH} deixar de ser substituido, o sintoma seria identico ao de cima.
+$hash = (string)$pdo->query('SELECT senha FROM usuarios WHERE email=' . $pdo->quote(E2E_ADMIN_EMAIL))->fetchColumn();
+if (!password_verify(E2E_ADMIN_PASSWORD, $hash)) {
+    fwrite(STDERR, "[FALHA] A senha de CI nao confere com o hash gravado para " . E2E_ADMIN_EMAIL . ".\n");
+    exit(1);
+}
+
 $config = <<<PHPCFG
 <?php
 // Gerado por scripts/ci/provision-e2e-environment.php - ambiente de CI descartável.

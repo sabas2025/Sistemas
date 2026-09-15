@@ -23,6 +23,9 @@ async function entrar(page) {
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="senha"], input[name="password"]', password);
   await page.click('button[type="submit"]');
+  // PR #2: mesma razão do authenticated-smoke. Sem conferir aqui, o teste do 404 recebia 200 e a
+  // mensagem culpava o dispatcher, quando a causa era a sessão cair na troca obrigatória de senha.
+  await expect(page.locator('#hubMainContent'), 'o login precisa autenticar e cair no painel, não na troca de senha').toBeVisible({timeout:15000});
 }
 
 /**
@@ -99,6 +102,7 @@ test.describe('Início do fluxo OAuth (exige sessão administrativa)', () => {
     await page.fill('input[name="email"]', email);
     await page.fill('input[name="senha"], input[name="password"]', password);
     await page.click('button[type="submit"]');
+    await expect(page.locator('#hubMainContent'), 'o login precisa autenticar antes de abrir a ficha Tiny V3').toBeVisible({timeout:15000});
 
     await page.goto('/index.php?page=tiny-v3-ficha');
     await expect(page.locator('body')).not.toContainText(/Fatal error|SQLSTATE|Stack trace/i);

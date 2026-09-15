@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-f7d733ad21f0ba50c3510cb418b56f0d4cef50b9496be700bad1832757731ca4  ./CLAUDE.md
+05619e63caf9bfbfa652de3d868ef80ccf722c0be5904d7e9ab00709f492094e  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -510,7 +510,7 @@ d5cc4659436b415aa5313cca12f65e5f3754e41bf797adc4c282708350b3e0fc  ./docs/testing
 fec16d6a103e1ed9b9de65c9a486929013a9c730ac607f2e0685669ee667cfde  ./docs/testing/PLAYWRIGHT-E2E.md
 76db1da110de9b375f49e4a0df9f49eefea2690c28dc428e29ff56ed2c2a96f7  ./lighthouserc.json
 94239d686bf32e7e82f5fb15a371150d03b61e0bc99bd15ecae5553914040c8d  ./nginx.conf.example
-5b14ee45a4398a553480425e4db76ac67d4620dc7cfdaf7fb1cfc026d2d6a121  ./package-lock.json
+9941e4764fc846fe09ea78ab74838ace25aca7ac81cfb80bc6d182e136a75f89  ./package-lock.json
 e5ecc3ca99082106cabef33467f49c29e4680f42754f5ce892699c1cf14018ff  ./package.json
 af0665e6498d8348895a3f80a51f30cb0789470483529ffa52fe4eff621f9fab  ./public/.htaccess
 69a6feb7d11a23bcbf83d7d8e3a00215779a419ac7d7a7120e7bb3790fa0655d  ./public/assets/app.css
@@ -550,8 +550,8 @@ e28b27bde34b9f20030fb4d144e0e0b8132f9c3ec64cc86e7d7fd1dcd78b8c6a  ./public/asset
 ffed9ed3fc4d99bfb4d4ae8283ce9c90c7d06d2887f78f84c37325e4cd7ee25a  ./public/assets/offline.js
 61d3e9a6e36a222f66a99f99ce29009d20abdcf1e79447f6a5e6fc28480d3668  ./public/assets/offline.min.css
 77db2672b1ebe3000b40d109706e908a06e1c14efe4e356735752733883f55f6  ./public/assets/offline.min.js
-b2395136d188fdabb0223fee63f5a9e67fa7b531c6095cf84b75a49396f7fed4  ./public/assets/pwa.js
-a93e9b3a01ed518783938c790a2ed74dfe3bad5b98752db3b1d1253a5d7b8350  ./public/assets/pwa.min.js
+79ee6b3b61e407419098a70f9a86f154250524f3bc703e467ee0477fbe6d8bb4  ./public/assets/pwa.js
+af540c99713b2a7384c70b60f75b60c0c0b4967704bd082478b750ca8b8407b8  ./public/assets/pwa.min.js
 6f2d35092621f5cd76a8bcf712b957e4cdf6312905f6b9e7a5b0393e9471bb41  ./public/assets/responsive-enterprise.css
 e476918dcd0e002c629a78f0ef765c8645abdac219ef3752fba33f55e34d19bd  ./public/assets/responsive-enterprise.min.css
 75960d30e345a47bdd3c298d11ebec889b34e56f15c7aec3a189527d4e5bd137  ./public/assets/screenshots/dashboard-desktop.png
@@ -588,7 +588,7 @@ fda6cca9db3c0aff4aaf9cac9b5b6910bb4887875c91bf2eaabf8e534a0454a3  ./scripts/ci/m
 ae9cb0d2bde5eab7338345800c247b3cf56c19b6b6406eac87e15a8a7e2ecb96  ./scripts/ci/mysql-runtime-regression.php
 679666b180adbe4ad7323872503e4260da0a67c5cbe012695748ef11d25e685f  ./scripts/ci/mysql-schema-static-check.php
 836ffb2ba9c653795956548daf9cf038b4c131dc4e20a4a5524e5f38297dd536  ./scripts/ci/php-lint.sh
-45fe8a14650b07880acfea628a6468b1e4902f2c09a6d8ec18fdfb1c2b8ebbc3  ./scripts/ci/provision-e2e-environment.php
+700880c16030fc65fab879942b19b2fb89611889697501c21ee203b1299803d5  ./scripts/ci/provision-e2e-environment.php
 b262fa75126b7584458a91c013d7f1a149d3c3195ea937f3ebac895691e94262  ./scripts/ci/schema-runtime-ddl-check.php
 4448d331e1eba05141badd0ece070164e529812582d905cac8f5358a6276a0d0  ./scripts/ci/secret-hygiene-check.php
 f3c01d027564705613931ac04bd11ba3657489d1e262c2a56046ec69d894048b  ./scripts/ci/sql-inventory-check.php
@@ -610,8 +610,8 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./storage/logs
 2416de3010bba02ddf819de4ecf003dede376577c804bfa3921c82046dbc0489  ./tests/e2e/package-lock.json
 62709b9a593bf308d8284136a74bf7f6d69e5301dfd74b90f44e8187ec13432e  ./tests/e2e/package.json
 04bfc5eef326ad53efe73b1bc2d1ff95c9caf244482ccc8666ce890cf734dcf8  ./tests/e2e/playwright.config.js
-6f09415b5a9ea34ed4093567bb9dd1709087cc11d70be32e57c1ad97b384d902  ./tests/e2e/specs/authenticated-smoke.spec.js
-69b817bdadb042dbe7f813b36e077ca2228433402494cc7bc496eeab8fa3fdb3  ./tests/e2e/specs/oauth-callback-security.spec.js
+6e933fe598cb9d821ce189f602f149f89ecb1f22d0162acdb73e1f0a3560864e  ./tests/e2e/specs/authenticated-smoke.spec.js
+cedec2b1b0294d570ccdfb20958bbc911b5b583adbf7225e29c965703522d224  ./tests/e2e/specs/oauth-callback-security.spec.js
 27e4a8d1c964059e56f81ed5b80bcb6f1e7467e23fd0f39eff1f69869af09324  ./tests/e2e/specs/public-security.spec.js
 1d0c71774fd50fc8cb7b23b97a26daeb9bcf0746f9b320b71279e38a6e851419  ./tests/e2e/specs/pwa-v104-48.spec.js
 62f901bcf85279a068329ca85499e42785f5b475a93717fe8bc65fa369f35653  ./tests/e2e/specs/visual-accessibility-v104-43.spec.js
