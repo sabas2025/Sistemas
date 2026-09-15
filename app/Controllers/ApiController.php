@@ -294,7 +294,13 @@ class ApiController {
       try { $fila=PedidoTinyVsmValidationService::enfileirar($id); $this->responderTiny(true,['message'=>'Pedido Tiny validado e enfileirado para VSM.','pedido_validacao_id'=>$id,'fila_id'=>$fila]); return; }
       catch(Throwable $e){ Audit::exception($e,'tiny.webhook.pedido.enfileirar_erro',['pedido_validacao_id'=>$id]); $this->responderTiny(false,['message'=>'Pedido validado, mas falhou ao enfileirar para VSM.','erro'=>$e->getMessage(),'pedido_validacao_id'=>$id],500); return; }
     }
-    $this->responderTiny(true,[
+    // Achado I-14: o primeiro argumento era `true` FIXO enquanto o código HTTP varia 202/422, então
+    // um pedido bloqueado respondia `HTTP 422` com `"success": true` — os dois sinais do mesmo
+    // corpo dizendo o contrário. A convenção deste controller é a oposta e está logo acima, na
+    // resposta de estoque sem itens: `responderTiny(false, …, 422)`. Esta linha era a única a
+    // divergir. **O código HTTP fica como está**: mudá-lo alteraria quando o Tiny reenvia, que é
+    // decisão de produto, não de correção. Aqui só o corpo deixa de contradizer o status.
+    $this->responderTiny($validacao['ok'],[
       'message'=>$validacao['ok']?'Pedido Tiny validado e aguardando aprovação/envio.':'Pedido Tiny recebido, mas bloqueado por validação.',
       'pedido_validacao_id'=>$id,
       'status_validacao'=>$validacao['status_validacao'],

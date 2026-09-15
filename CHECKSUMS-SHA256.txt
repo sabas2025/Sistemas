@@ -4,7 +4,7 @@
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-14ab7ad7d11b266be1b6a76ca7e0e58fc9355b9a5bbaf5958af00b8ad20d7b3d  ./CLAUDE.md
+bf5f1544221ce2468b6e3a10f5b08abf5b7b8b07b8ae1adc83112cd0f2020b04  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -124,7 +124,7 @@ e1925421d2fc7e88c952b9f235e83d668fe8b7df526e883dd3388256605b234d  ./app/Connecto
 3dba9d783a460d05f960fffe9a1f72568037cac2bd69c4549878158b9bcde372  ./app/Connectors/TikTokShopConnector.php
 6581a22e3d5f37ce2615329b6b92b7bd846adbf28102b0aa4385afd25e56a9ad  ./app/Connectors/TinyConnector.php
 4a765c68dc847ef5884af93821877bb038474efe7dd4a62eea310312e5fee3a1  ./app/Connectors/VsmConnector.php
-acb3c2c2caef94bcf1ad0ebb3acd64220917e7b6366d836033ca7b0ee8e65859  ./app/Controllers/ApiController.php
+a03fcd972b7a558322487341e1f92bb0ef71ea397156378f4aaba93890886a99  ./app/Controllers/ApiController.php
 8630e707ef34acf3196af3a0e92455ceb47971986bd54dffbf2c7b0c5be2bc9b  ./app/Controllers/ApiTinyController.php
 4bdc5948b5771114cbfb7c9dc4e74dba45d3d27db0ba59b56b681e0c81fa05e1  ./app/Controllers/ApiVsmWebhookController.php
 0985116e251c9928208288556750879900c55fb8df49e9d2c87842c6aca9fe25  ./app/Controllers/AuditoriaController.php
@@ -660,6 +660,7 @@ d20f22bde2c7fa978b08a7353cbf94bc6081044715a39b4dfe196ba04a18338c  ./tests/enterp
 514a597c3c0eb269f169eec58126860abda4eb7ba7824a42c59ab5fa31ce555b  ./tests/enterprise/v104_49_3_service_call_test.php
 03a13b6af0d19cacc225f175a4f99a61beb9f99d320540a5e7155d519f7dfaef  ./tests/enterprise/v104_49_3_sql_portability_test.php
 e6b724c1e3b717389409bc4ca176e161e371d04f85ecadbf851f7cbe46cfd988  ./tests/enterprise/v104_49_3_tenant_scope_test.php
+da8417258744a1e85ab67eece410578b4bcee32b6bb16544ac29d3087976b9ed  ./tests/enterprise/v104_49_3_webhook_contract_test.php
 41dbb8b01ff2548bb81aa05efad0f2af92d1808a0f49f25f271350955e9241c6  ./tests/fixtures/vsm/openapi-minimal.json
 e3f387459e4f529ad5b6767968f69bcf97741e6025b0e1deadf02861e3c09f22  ./tests/load/light-smoke.sh
 8501255577cc161e2fbca35d470097b2a749729364a4b0898970a36aa4b90256  ./views/alertas_operacionais.php

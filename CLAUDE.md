@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**40 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**41 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -485,6 +485,46 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `ambiente-demo-reset`, `usuario-excluir`, `trocar-senha`) — todas se comportaram bem, mas
   `trocar-senha` deve ficar por último, porque invalida o login das seguintes.
 
+- **A autenticação dos webhooks do Tiny NÃO é a da VSM.** A VSM assina HMAC
+  (`v2:MÉTODO:rota:timestamp:nonce:hash`, `WebhookSecurityService`); o Tiny manda um **segredo
+  compartilhado no header** `X-TINY-HUB-SECRET` (`TinyWebhookSecurityService`), comparado com
+  `hash_equals`. Em cima disso vêm lista de CNPJ autorizado, lista de IP, teto de payload e **dois**
+  limitadores — o de tentativas roda ANTES da autenticação (achado A-09), e o de gravações depois.
+  Medido nas seis rotas contra MariaDB: sem segredo → 401, segredo errado → 401, correto → aceito,
+  **zero erro fatal**. Com a lista de CNPJ ligada: autorizado → 200, outro → 401, vazio → 401, e o
+  bloqueio auditado como `TINY_WEBHOOK_CNPJ_NOT_ALLOWED`. Ao mexer num dos lados, **não copie o
+  desenho do outro**.
+
+- **O webhook de PEDIDO do Tiny carrega CNPJ; o da VSM não carrega empresa nenhuma.** Isso decide a
+  metade aberta do H-01: se um dia a instalação passar a ter duas ou mais empresas, o lado Tiny tem
+  sinal para resolver a empresa (o CNPJ já é validado contra `tiny_webhook_cnpj_autorizados`), e o
+  lado VSM não tem. Não são simétricos, e a decisão de produto precisa tratá-los separado.
+
+- **`success` no corpo contradizendo o status HTTP.** O achado I-14:
+  `responderTiny(true, …, $validacao['ok']?202:422)` tinha o primeiro argumento **fixo em `true`**
+  enquanto o código variava, então um pedido bloqueado respondia `HTTP 422` com `"success": true`.
+  Quem integra lê um dos dois e erra. Que era inconsistência, e não contrato, ficou provado pelo
+  próprio arquivo: a resposta de estoque sem itens já fazia `responderTiny(false, …, 422)` — aquela
+  linha era a única a divergir entre 14. **O código HTTP não foi tocado**: mudá-lo alteraria quando
+  o Tiny reenvia, que é decisão de produto. Medido antes de classificar a gravidade: três reenvios
+  do mesmo pedido bloqueado produzem **uma linha só** em `pedidos_validacao` (idempotência por
+  `pedido_origem_id`), então o contrato mentia mas não duplicava. Travado por
+  `tests/enterprise/v104_49_3_webhook_contract_test.php`.
+
+- **Varredura que casa "dentro de uma linha" não vê a chamada que motivou o teste.** Ao escrever a
+  checagem do I-14 eu casei `responderTiny(` e o código HTTP na mesma linha — e ela ficou verde
+  sobre a árvore com o defeito reposto, porque justamente aquela chamada é **multilinha** e o código
+  vem de um ternário. Generalizada para balancear parênteses e ler a chamada inteira, passou de 11
+  para 14 respostas conferidas e pegou o caso. **Ao escrever verificação estática, teste-a contra o
+  defeito original antes de confiar nela** — não contra um parecido.
+
+- **Em shell, função sem `local` sobrescreve a variável do laço que a chama.** A primeira bateria
+  dos webhooks Tiny fazia `for R in <rotas>` e, dentro da função, `R=$(curl …)`. Da segunda sonda em
+  diante a rota virava `401` e o POST ia para `index.php?page=401`, que responde 302 — e o placar
+  parecia dizer que o segredo não estava sendo exigido. Não era o Hub: era o harness. **Declare
+  `local` em toda variável de função de harness**, e desconfie de resultado onde a coluna de
+  identificação mudou de valor sozinha.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -538,6 +578,9 @@ no PR #2:
 | **Helpers de existência de tabela** (4 serviços) contra a verdade do banco | sessão local, MariaDB 10.11 | verde (antes: os 4 diziam AUSENTE — I-10) |
 | **78 rotas de MUTAÇÃO** (POST + CSRF), status + `sistema.erro_fatal` na trilha | sessão local, MariaDB 10.11 | verde (antes: 2 em 500 — I-11, I-12) |
 | **Cadeia fila → fila morta → reprocessamento**, empresa em cada salto | sessão local, MariaDB 10.11 | verde (antes: a volta nascia NULL — I-13) |
+| **6 webhooks de entrada do Tiny**: sem segredo / segredo errado / correto | sessão local, MariaDB 10.11 | verde — 401, 401, aceito; zero erro fatal |
+| **Trava de CNPJ autorizado do Tiny** | sessão local, MariaDB 10.11 | verde — autorizado 200, outro 401, vazio 401 |
+| **Pedido Tiny ponta a ponta**: bloqueado (422) e aprovado (202), com reenvio | sessão local, MariaDB 10.11 | verde — 3 reenvios, 1 linha; `empresa_id` carimbado |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
