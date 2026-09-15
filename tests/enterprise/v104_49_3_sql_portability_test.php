@@ -40,6 +40,9 @@ foreach ($arquivos as $arquivo) {
         }
     }
 }
+// Achado I-20 (auto-auditoria): ver a nota em v104_49_3_retencao_fila_test.php. Sem esta linha,
+// a afirmação "nenhum placeholder" ficaria verde mesmo se a varredura não lesse arquivo nenhum.
+hub_check($checks, 'A varredura leu arquivos de verdade: '.count($arquivos), count($arquivos) > 100);
 hub_check($checks, 'Nenhum placeholder em SHOW/DESCRIBE/EXPLAIN: '.(implode(', ', $ofensores) ?: 'nenhum'), $ofensores === []);
 
 hub_check($checks, 'O Hub realmente usa prepares nativos (é o que torna o padrão inválido)',

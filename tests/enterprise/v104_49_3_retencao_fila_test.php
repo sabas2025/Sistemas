@@ -65,6 +65,10 @@ foreach ($arquivos as $arquivo) {
         }
     }
 }
+// Achado I-20 (auto-auditoria): "nenhuma ocorrência" sobre ZERO arquivos lidos é verde vazio —
+// medido, esta asserção passava numa árvore com app/ e workers/ sem nenhum .php. Provar o N do
+// conjunto varrido é a mesma lição que este projeto já pagou comparando schemas.
+hub_check($checks, 'A varredura leu arquivos de verdade: '.count($arquivos), count($arquivos) > 100);
 hub_check($checks, 'Nenhuma variável usada como objeto sem nunca ser atribuída: '.(implode(' | ', $semAtribuir) ?: 'nenhuma'), $semAtribuir === []);
 
 // ------------------------------------------------- o ponto exato do I-15

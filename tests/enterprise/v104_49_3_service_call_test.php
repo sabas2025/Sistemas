@@ -114,4 +114,47 @@ $dlq = hub_read('app/Services/DeadLetterQueueService.php');
 hub_check($checks, 'A fila morta herda a empresa do item que falhou', str_contains($dlq, '$empresaDoItem'));
 hub_check($checks, 'O reprocessamento devolve a linha à fila com a empresa de origem', str_contains($dlq, '$herdaEmpresa'));
 
+// ------------------- I-21: script CLI autônomo chamando classe que ele não carrega
+/**
+ * Achado I-21, e ele é MEU: corrigindo o I-10 eu troquei um `SHOW TABLES LIKE ?` cru em
+ * `scripts/diagnose-http-500.php` por `Database::tableExistsOn()`. O script é **autônomo** — não
+ * carrega o autoloader do Hub —, então a chamada morria com `Class "Database" not found` e
+ * derrubava o diagnóstico inteiro no ramo de banco, justamente quando alguém precisa dele.
+ * `php -l` passa, e nenhum portão executa os scripts: só apareceu porque eu rodei o script.
+ *
+ * A checagem varre `scripts/` e `workers/`: quem NÃO carrega o autoloader não pode chamar método
+ * estático de classe definida em `app/`, a menos que exija o arquivo dela explicitamente.
+ * `Classe::class` é permitido — resolve para string sem disparar autoload.
+ *
+ * Comentários são removidos antes da varredura: sem isso ela acusa a própria documentação da
+ * correção, o que já aconteceu três vezes nesta sessão.
+ */
+$classesDoApp = [];
+$itApp = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($raiz.'/app', FilesystemIterator::SKIP_DOTS));
+foreach ($itApp as $f) {
+    if (!$f->isFile() || $f->getExtension() !== 'php') continue;
+    if (preg_match_all('/^\s*(?:abstract\s+|final\s+)?class\s+([A-Za-z_]\w*)/m', (string)file_get_contents($f->getPathname()), $cm)) {
+        foreach ($cm[1] as $c) $classesDoApp[$c] = 1;
+    }
+}
+$semCarregar = [];
+$scripts = array_merge(glob($raiz.'/scripts/*.php') ?: [], glob($raiz.'/scripts/ci/*.php') ?: [], glob($raiz.'/workers/*.php') ?: []);
+foreach ($scripts as $script) {
+    $src = (string)file_get_contents($script);
+    if (preg_match('/require(?:_once)?[^;]*(?:Autoload|autoload)\.php/i', $src)) continue;
+    preg_match_all('/require(?:_once)?[^;]*\/([A-Za-z_]\w*)\.php/', $src, $rm);
+    $exigidas = array_flip($rm[1]);
+    // tira comentários de linha e de bloco antes de procurar chamadas
+    $limpo = (string)preg_replace(['/\/\*.*?\*\//s', '/\/\/[^\n]*/', '/^\s*#[^\n]*/m'], '', $src);
+    if (!preg_match_all('/\b([A-Z][A-Za-z0-9_]*)::(?!class\b)([a-zA-Z_]\w*)/', $limpo, $um, PREG_SET_ORDER)) continue;
+    foreach ($um as $u) {
+        if (!isset($classesDoApp[$u[1]]) || isset($exigidas[$u[1]])) continue;
+        $semCarregar[] = ltrim(str_replace($raiz, '', $script), '/')." chama {$u[1]}::{$u[2]}()";
+    }
+}
+hub_check($checks, 'Scripts varridos: '.count($scripts), count($scripts) > 15);
+hub_check($checks, 'Nenhum script autônomo chama classe do app/ sem carregá-la: '.(implode(' | ', array_unique($semCarregar)) ?: 'nenhum'), $semCarregar === []);
+hub_check($checks, 'O diagnóstico de HTTP 500 confere tabela sem depender de classe do app/',
+    str_contains(hub_read('scripts/diagnose-http-500.php'), 'information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?'));
+
 hub_finish($checks);

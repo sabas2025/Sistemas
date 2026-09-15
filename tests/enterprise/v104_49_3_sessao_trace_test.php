@@ -27,8 +27,11 @@ hub_check($checks, 'O handler mora no AuditoriaController, com dispatch',
     str_contains($aud, 'public function dispatch(string $page)') && str_contains($aud, 'public function detalhe()'));
 
 $dash = hub_read('app/Controllers/DashboardController.php');
+// A segunda metade é uma asserção NEGATIVA, e negativa sobre arquivo ausente passa por engano
+// (hub_read devolve string vazia). O $dash !== '' à frente é o que a torna honesta — achado I-20.
 hub_check($checks, 'O DashboardController delega a rota e não guarda mais o handler',
-    str_contains($dash, "case 'auditoria-detalhe': (new AuditoriaController())->dispatch(\$page); break;")
+    $dash !== ''
+    && str_contains($dash, "case 'auditoria-detalhe': (new AuditoriaController())->dispatch(\$page); break;")
     && !str_contains($dash, 'private function auditoriaDetalhe'));
 hub_check($checks, 'O redirect de assinatura continua usando trace_id (era o link que quebrava)',
     str_contains($dash, "page=auditoria-detalhe&trace_id='.urlencode(\$trace)"));

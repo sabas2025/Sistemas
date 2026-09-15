@@ -675,6 +675,34 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   consolidado (`node scripts/ci/build-consolidated-schema.mjs`), e remedir a paridade: ficou em
   **615 índices idênticos** nos dois lados.
 
+- **Corrigir um achado pode criar outro, e só rodar o programa mostra.** O achado I-21, e ele foi
+  **meu**: ao corrigir o I-10 eu troquei um `SHOW TABLES LIKE ?` cru em
+  `scripts/diagnose-http-500.php` por `Database::tableExistsOn()`. Aquele script é **autônomo** —
+  não carrega o autoloader do Hub —, então a chamada morria com `Class "Database" not found` e
+  derrubava o diagnóstico inteiro no ramo de banco, justamente na hora em que alguém recorre a ele.
+  `php -l` passava, os 13 portões passavam, e o meu próprio teste **afirmava que o arquivo continha
+  `Database::tableExistsOn`** — ou seja, travava o defeito no lugar. Só apareceu quando eu executei
+  o script. E ele nem chega ao ramo de banco sem `config/config.php`, então é preciso rodá-lo num
+  ambiente provisionado. A correção usa `information_schema.TABLES` com placeholder: resolve o I-10
+  e não depende de classe nenhuma. **Nenhum portão executa os scripts de `scripts/`** — o novo
+  teste ao menos garante que eles não chamem classe de `app/` sem carregá-la (28 scripts varridos;
+  `Classe::class` é permitido, porque resolve para string sem disparar autoload).
+
+- **Verde sobre conjunto vazio, agora nos MEUS testes.** O achado I-20, também meu: as varreduras
+  de `v104_49_3_sql_portability_test.php` e `v104_49_3_retencao_fila_test.php` afirmavam "nenhuma
+  ocorrência" sem provar que tinham lido arquivo algum. Medido numa árvore com `app/` e `workers/`
+  vazios: a asserção saía **`[OK]`**. É exatamente a armadilha que eu havia acabado de escrever
+  neste documento ao comparar schemas — e caí nela escrevendo o teste. As duas agora afirmam o N do
+  conjunto varrido antes de afirmar o vazio. O mesmo vale para asserção **negativa**
+  (`!str_contains($arquivo, …)`): sobre arquivo ausente `hub_read()` devolve string vazia e a
+  negativa passa por engano — por isso ela ganhou um `$arquivo !== ''` à frente.
+
+- **Varredura estática acusa a própria documentação da correção.** Aconteceu **três** vezes nesta
+  sessão: o teste do I-11 casou com o comentário que explicava o I-11; o do I-15 casou com o nome
+  da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
+  dentro do comentário que explica por que ele saiu dali. **Tire comentários antes de varrer**, ou
+  ancore a asserção no código (`e($r['ok'])`, `'nome_da_tabela'` entre aspas) e não no texto.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -745,6 +773,8 @@ no PR #2:
 | **Duplicatas de índice em todo o schema** | sessão local, MariaDB 10.11 | 3 encontradas; 1 corrigida, 2 registradas sem ação (tabelas frias) |
 | **Carga de um dia na meta (1,3 milhão de linhas), caminho quente** | sessão local, MariaDB 10.11 | verde — fila 13 ms, telas 9–11 ms, Trace ID 9 ms |
 | **`integration_events` por `fila_id`**, medido antes e depois do índice | sessão local, MariaDB 10.11 | gargalo real (I-19): 43→9 ms e 87→9 ms; índice nos dois caminhos |
+| **Auto-auditoria do diff da sessão** (8 commits) | sessão local | 2 achados MEUS: I-20 (teste verde sobre varredura vazia) e I-21 (script autônomo chamando classe não carregada) |
+| **`scripts/diagnose-http-500.php` executado** em ambiente provisionado | sessão local, MariaDB 10.11 | quebrado por mim (I-21); corrigido e remedido, exit 0 |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
