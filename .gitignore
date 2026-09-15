@@ -24,6 +24,13 @@
 !/storage/security-reports/index.html
 !/storage/security-reports/.htaccess
 /storage/cache/security/
+# Marca de "já instalado", criada por public/install.php. NUNCA versionar: num pacote ela faria
+# toda instalação nova se julgar concluída e o instalador recusaria rodar.
+/storage/install.lock
+# Relatórios da homologação automática (AutoHomologationService), um por execução, nomeados pelo
+# Trace ID. São saída de execução: acumulariam no repositório e sujariam o manifesto de integridade.
+# O storage/.htaccess do pacote já nega o acesso web à pasta inteira.
+/storage/reports/
 /storage/audit-v*/
 /storage/*.log
 
