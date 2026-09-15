@@ -14,6 +14,15 @@ jobs:
         with:
           php-version: '8.2'
           extensions: pdo_mysql, curl, mbstring, openssl, zip
+      # Node + dependencias entraram em 2026-09-15 por causa do portao de assets minificados
+      # abaixo, que precisa de clean-css e terser. Com o package-lock apontando para o registro
+      # publico o npm ci leva segundos; antes disso ele travava, e a correcao esta no PR #2.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependencias de build
+        run: npm ci --no-audit --no-fund
       - name: PHP lint
         run: bash scripts/ci/php-lint.sh
       - name: Enterprise regression
@@ -37,6 +46,13 @@ jobs:
           php scripts/ci/mysql-schema-static-check.php
       - name: Modular/consolidated schema parity
         run: php scripts/ci/mysql-module-parity-check.php
+      # Portao 13, de 2026-09-15. A tela carrega os .min, nao as fontes: um .min defasado
+      # significa que a alteracao no .css/.js NAO esta no ar. Foi assim que
+      # integration-center.min.css ficou dois meses atras da fonte sem nada acusar - e a propria
+      # CI mascarava, porque rodava `npm run build:pwa`, que REESCREVE os .min no runner antes
+      # dos testes. Este passo nao escreve nada: minifica em memoria e compara.
+      - name: Assets minificados em dia com a fonte
+        run: npm run check:pwa
 
   mysql-runtime:
     name: Runtime ${{ matrix.engine }}

@@ -178,11 +178,13 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `BackupSignatureService` | Assinatura e **proveniência** do backup (a assinatura é autoritativa, não a coluna) |
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
-**Portões de CI (12) — todos precisam ficar verdes**
+**Portões de CI (13) — todos precisam ficar verdes**
 `php-lint.sh` · `enterprise-tests.sh` (**38 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
-`sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php`
+`sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
+**`build-assets.mjs --check`** (`npm run check:pwa`, desde 2026-09-15: os `.min` servidos têm de
+bater com a fonte — por isso o `static-enterprise` agora instala Node e dependências)
 Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do workflow.
 
 **Armadilhas já pagas caro — não repita**
@@ -317,7 +319,12 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `0%`→`0`, aspas em `[data-hub-theme=dark]`, ordem de seletores), então a inclusão não muda o CSS
   servido. **Ao mexer em qualquer `.css`/`.js` de `public/assets/`, confira antes se ele está na
   lista do build** — a varredura que encontra órfãs compara os `*.min.*` referenciados nas views
-  com `cssFiles`/`jsFiles`. Hoje não há nenhuma órfã; nada na CI garante que continue assim.
+  com `cssFiles`/`jsFiles`. Hoje não há nenhuma órfã — e desde 2026-09-15 o portão
+  `npm run check:pwa` trava a CI quando um `.min` sai de sincronia com a fonte. **A própria CI
+  mascarava o problema antes disso:** rodava `npm run build:pwa`, que reescrevia os `.min` no
+  runner, então os testes rodavam contra assets recém-construídos enquanto os commitados podiam
+  estar velhos. O passo agora confere em vez de consertar, nos dois workflows. Conferido que o
+  portão pega os dois casos: fonte editada sem rebuild, e `.min` ausente.
 
 - **`grep` não encontra a regra que decide, quando ela vive num `padding` abreviado.** Ao alinhar a
   `.topbar` do PWA com a web eu troquei a base de 8px para 12px com base no que o grep achou — e

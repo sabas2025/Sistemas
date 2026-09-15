@@ -1,10 +1,10 @@
-5f732b0775f62ed6ff921ef018285ba27902e8c046dd25f1ff0db1783772b24a  ./.github/workflows/hub-ci.yml
-5083eea8caf30132d19825989ce362e3b3fc975fee8ee1851dea519d2eefaccf  ./.github/workflows/pwa-quality.yml
+6a41541f6d9ee1b59b3aa098241bb54ec27d014e66dc259c485de6827b1aea68  ./.github/workflows/hub-ci.yml
+667546ed22b1c51a72d8a41928c4b05ccf66d0700a9a38f5901a3a1e5841f4e5  ./.github/workflows/pwa-quality.yml
 7bffc672376fa470ba1dfc4fbded59d7f4227e136e987d17f2f9b91fd3e4f2d5  ./.htaccess
 4314b2a1acd2789256e5861213e4f57d3260a52da4c9893ea0968b46813443f9  ./ATUALIZACAO-SEGURA.txt
 148703fc5afe4df24a81dc9c34d8d093a94fe284debb7ec8d5c8c768d3fd3eda  ./AUDITORIA-CORRECOES-V104.48.md
 ae30bb20794648203b70aa8e2f50c98f2b2540a5b5f4db644837def29b0c469f  ./AUDITORIA-FINAL-HUB-TINY-V104.48.1.md
-bf504555dd60ce2cb80787c43bc61cc7b26ea5b856b73e9b6630b718581bafcc  ./CLAUDE.md
+5e0836a8d20363b24a01e6762fc515dcd72d84ed752a2e06d28d7c9b9dc0080b  ./CLAUDE.md
 bcb4f3456f9831607e1e4255f92059c7eca632bfb7004c66d30f184688bc75b3  ./HOTFIX-HTTP-500-LEIA-ME.txt
 b163c307dc2ce6b06cea5f76f453b06f7c8a885efa314e5592113a0b25821d0d  ./INVENTARIO-FUNCOES-V104.3.csv
 0a50260ef66a0cc9e442a0e20d9ef0bc91285c61b1a0ab36a8b1c5ddb670350d  ./LEIA-ME-ATUALIZACAO-V104.49.2.txt
@@ -511,7 +511,7 @@ fec16d6a103e1ed9b9de65c9a486929013a9c730ac607f2e0685669ee667cfde  ./docs/testing
 76db1da110de9b375f49e4a0df9f49eefea2690c28dc428e29ff56ed2c2a96f7  ./lighthouserc.json
 94239d686bf32e7e82f5fb15a371150d03b61e0bc99bd15ecae5553914040c8d  ./nginx.conf.example
 9941e4764fc846fe09ea78ab74838ace25aca7ac81cfb80bc6d182e136a75f89  ./package-lock.json
-e5ecc3ca99082106cabef33467f49c29e4680f42754f5ce892699c1cf14018ff  ./package.json
+ec2f3e125c64d1613836f7c6fc27f4d535b4e6a6b9729f794be350a5c431b3f1  ./package.json
 af0665e6498d8348895a3f80a51f30cb0789470483529ffa52fe4eff621f9fab  ./public/.htaccess
 69a6feb7d11a23bcbf83d7d8e3a00215779a419ac7d7a7120e7bb3790fa0655d  ./public/assets/app.css
 5ddb77596853e16480d6b197d9a7f5f5ef7c0ab046b8c58fe833d8b9fc4fa045  ./public/assets/app.min.css
@@ -596,7 +596,7 @@ d33b11f3ae1c2a36b56fc46657e402ed1eaccc6546ce5eb5b61213f422a6cdec  ./scripts/ci/t
 8b1848ddf018f2c2df1e8c8df80c0e2c8a5b878053e9eef513241d8ef0c40ebc  ./scripts/ci/vsm-openapi-check.php
 29560bb5b884c0347387b6b044fc21e1d7411c41bb73b43adde9ef3b8d36a249  ./scripts/create-install-authorization.php
 37b17e972a83588379cc410fb4fa177ea1b3f62f40f248554e94e7edecba2f23  ./scripts/diagnose-http-500.php
-1b76e868bd54be59e01986439ef8dcb19ee8f553762e058486d981f21fb977f1  ./scripts/pwa/build-assets.mjs
+b8ad630a46682e16c5e42bfe45a27f2365b0a8d36510d7bf29c7e50d36745560  ./scripts/pwa/build-assets.mjs
 afa54e346eccf0fa6dc37676637b37347a63446ab1580860ee9edc09b4c47b3a  ./scripts/rotate-secrets.php
 1581faf462f67052c23dee5420cf8c329d6159b54ac433b4eed97a74f3e9ab51  ./storage/.htaccess
 26f9f36baff2ba2ee8131cd66efc9aee8a175a85b71913d4bd976f002ed2ff1e  ./storage/audit-signatures/.htaccess
