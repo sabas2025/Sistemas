@@ -180,7 +180,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (13) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**43 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**44 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -598,6 +598,53 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   renderiza os dois. Medido: buscar por Trace ID devolve origem, rota, usuário, IP, operação,
   entidade, a linha do tempo inteira do trace e — quando existem — causa e ação recomendada.
 
+- **Paridade instalação nova × atualização só aparece aplicando os DOIS caminhos.** O achado I-18:
+  nenhum portão estático encontra isso, porque os dois lados estão certos isoladamente. Aplicando
+  `install_final_current.sql` num banco e módulos + as 13 migrations noutro, e comparando o
+  `information_schema`: as **1.550 colunas batiam exatamente** — inclusive depois da `012` (PK
+  BIGINT) —, e os índices divergiam em **um**. `idx_fila_ready` e
+  `idx_fila_status_proxima_prioridade` são `(status, proxima_tentativa, prioridade, id)`, os dois
+  não-únicos: **o mesmo índice com dois nomes**. A `20260710_001` criou o primeiro; dois dias
+  depois a `20260712_001` criou o segundo, e foi este que entrou nos módulos. Toda instalação que
+  rodou a cadeia mantinha a MESMA árvore B duas vezes em `fila_integracao`, a tabela de escrita
+  mais quente do Hub. Resolvido pela migration `20260915_015`, que **remove** o duplicado em vez de
+  propagá-lo — com guarda: o `DROP` só ocorre se o canônico existir, então a instalação nunca fica
+  sem o caminho de acesso. Medido depois: 1.550 colunas e **613 índices idênticos** nos dois
+  caminhos. **Para repetir: construa os dois bancos e compare `information_schema`, não os arquivos
+  `.sql`.**
+
+- **O consolidado é um TEMPLATE, não um script.** `database/install_final_current.sql` traz
+  `{DB_NAME}`, `{ADMIN_EMAIL}`, `{ADMIN_HASH}` e mais uma dúzia de marcadores que o instalador
+  substitui (ver o mapa em `scripts/ci/provision-e2e-environment.php`). Rodá-lo cru no cliente
+  `mariadb` **sai com código 0** e cria um banco chamado literalmente `` `{DB_NAME}` `` — o banco
+  de destino fica vazio e nada acusa. Substitua os marcadores antes de aplicar.
+
+- **Diff de duas listas vazias é "idêntico".** Ao comparar os dois schemas eu montei a consulta com
+  substituição de shell que comeu as aspas de `TABLE_SCHEMA='hub_nova'`; as duas consultas
+  falharam, os dois arquivos saíram vazios e o `diff` disse **idênticas**. Só não passou por
+  verdadeiro porque eu imprimia a contagem de linhas ao lado. **Em comparação, mostre sempre o N de
+  cada lado** — verde sobre conjunto vazio é o falso verde mais fácil de produzir.
+
+- **Duplicatas de índice que NÃO foram tratadas, e por quê.** A mesma varredura achou
+  `homologacao_checklist.idx_homologacao_chave` e `llm_policy_settings.idx_llm_policy_key`, ambos
+  repetindo uma UNIQUE da mesma coluna. Diferente do I-18, esses existem nos **dois** caminhos —
+  não são divergência de paridade — e as duas tabelas são frias. Removê-los sem evidência de
+  gargalo seria a otimização prematura que a fase 10 proíbe. Ficam registrados aqui para que a
+  próxima auditoria não os "descubra" como novidade.
+
+- **O schema não tem NENHUMA chave estrangeira, e ~20 colunas `*_id` não têm índice.** Medido:
+  zero FKs nas 135 tabelas. É coerente com hospedagem compartilhada e com migrations condicionais,
+  e mudá-lo seria alteração estrutural sem autorização. As colunas sem índice (entre elas
+  `evento_correlacao.fila_id` e `integration_events.fila_id`) só justificam índice **com evidência
+  de gargalo medida** — criar vinte de uma vez custa escrita nas tabelas mais quentes. Registrado,
+  não aplicado.
+
+- **As migrations NÃO são varridas de diretório: não existe executor automático.** A lista em
+  `SchemaMigrationService::checksum()` tem cinco arquivos, e oito outros existem em
+  `database/migrations/` sem estar lá. Isso **não** é defeito: elas são de execução manual, e a
+  "Ordem de implantação" abaixo diz exatamente isso. Não conclua que oito migrations "nunca rodam"
+  — conclua que ninguém as roda sozinho.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
@@ -630,7 +677,8 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.
 
 **Ordem de implantação das migrations de capacidade:** backup verificado → `011` (índices) →
-`013` (logs + sessões) → agendar `worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
+`013` (logs + sessões) → `015` (remove o índice duplicado da fila; barata, sem janela) → agendar
+`worker_retencao.php` no cron → `012` (PK BIGINT, em janela).
 
 **O que já foi validado contra banco real, e o que não foi.** As auditorias da R6/R7 foram todas
 **estáticas** — não havia MySQL nem Docker no ambiente daquelas sessões. Isso mudou em 2026-09-15,
@@ -662,6 +710,8 @@ no PR #2:
 | **Força bruta com os limites REAIS do código** | sessão local, MariaDB 10.11 | verde — bloqueia da 4ª tentativa e recusa até a senha correta |
 | **Revogação por `session_version` e `deve_trocar_senha`** | sessão local, MariaDB 10.11 | verde — 302 para login?expired=1 e para trocar-senha |
 | **Busca por Trace ID** (fase 11), pelas duas formas | sessão local, MariaDB 10.11 | quebrada por `?trace_id=` (I-17); corrigida e remedida |
+| **Paridade instalação nova × atualização** (1.550 colunas, 613 índices) | sessão local, MariaDB 10.11 | um índice duplicado só na atualização (I-18); removido e remedido idêntico |
+| **Duplicatas de índice em todo o schema** | sessão local, MariaDB 10.11 | 3 encontradas; 1 corrigida, 2 registradas sem ação (tabelas frias) |
 
 **Continua sem validação contra banco real:** o ciclo OAuth Tiny V3 completo (depende de
 credenciais reais) e qualquer chamada de verdade ao Tiny ou à VSM. Não confunda "a CI está verde" com "o Hub está
