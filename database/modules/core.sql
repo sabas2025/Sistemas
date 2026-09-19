@@ -50,6 +50,22 @@ CREATE TABLE IF NOT EXISTS empresas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+CREATE TABLE IF NOT EXISTS myouro_conexoes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  empresa_id INT NOT NULL,
+  url VARCHAR(255) NOT NULL DEFAULT 'https://msx.vsm.api.br/graphql',
+  ambiente VARCHAR(20) NOT NULL DEFAULT 'producao',
+  codigo_loja INT NOT NULL,
+  token_encrypted TEXT NULL,
+  habilitado TINYINT NOT NULL DEFAULT 0,
+  ultimo_teste_ok TINYINT NOT NULL DEFAULT 0,
+  ultimo_teste_em DATETIME NULL,
+  ultimo_teste_codigo VARCHAR(80) NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_myouro_empresa (empresa_id),
+  CONSTRAINT fk_myouro_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS filiais (
   id INT AUTO_INCREMENT PRIMARY KEY,
   empresa_id INT NOT NULL,
@@ -64,6 +80,7 @@ CREATE TABLE IF NOT EXISTS filiais (
 
 CREATE TABLE IF NOT EXISTS configuracoes_integracao (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  integracao_empresa_id INT NULL,
   ambiente VARCHAR(30) DEFAULT 'homologacao',
   tiny_versao VARCHAR(10) DEFAULT 'v2',
   tiny_v2_url VARCHAR(255) DEFAULT 'https://api.tiny.com.br/api2',

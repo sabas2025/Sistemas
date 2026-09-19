@@ -17,7 +17,10 @@ class UniversalUpgradeService {
       'arquivos'=>[],
       'mensagens'=>[$msg, 'Nenhum update legado foi executado.'],
       'erros'=>[],
-      'finalizado_em'=>date('c')
+      'finalizado_em'=>date('c'),
+      // Achado I-11: a tela pedia um Trace ID que este retorno não trazia. Correlacionar a
+      // execução com a Auditoria é exigência da fase 11 — e o evento acima já usa este id.
+      'trace_id'=>class_exists('RequestContext') ? RequestContext::id() : null,
     ];
   }
 }

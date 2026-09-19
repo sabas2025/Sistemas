@@ -1,11 +1,12 @@
 <?php
-// V104.49.3-R5 (2026-08-22) - instalador protegido por autorização temporária fora da raiz pública.
+// Instalador protegido; identidade da release vem de SystemVersionService.
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 $root = dirname(__DIR__);
 require_once $root.'/app/Services/InstallDatabaseProbe.php';
+require_once $root.'/app/Services/SystemVersionService.php';
 $configPath = $root . '/config/config.php';
 $lockPath = $root . '/storage/install.lock';
 $authorizationPath = $root . '/storage/install-authorization.json';
@@ -215,7 +216,7 @@ function publish_install_artifacts(string $configPath, string $root, array $conf
   $contents=[
     $fimPath=>$fim.PHP_EOL,
     $configPath=>export_config($config),
-    $lockPath=>'installed_at='.date('c').PHP_EOL.'version='.trim((string)@file_get_contents($root.'/VERSAO.txt')).PHP_EOL.'release_date=2026-09-14'.PHP_EOL.'mode=production_ready'.PHP_EOL,
+    $lockPath=>'installed_at='.date('c').PHP_EOL.'version='.SystemVersionService::artifactVersion().PHP_EOL.'release_date='.SystemVersionService::RELEASE_DATE.PHP_EOL.'mode=production_ready'.PHP_EOL,
   ];
   $snapshots=[];
   foreach(array_keys($contents) as $path){
@@ -261,7 +262,16 @@ function validate_admin_name(string $name): string {
   if(strlen($name)<2||strlen($name)>120||preg_match('/[\x00-\x1F\x7F]/',$name))throw new FriendlyInstallException('Nome do administrador deve ter de 2 a 120 caracteres e não pode conter controles.');
   return $name;
 }
-function validate_base_url(string $baseUrl, bool $production): string {
+/**
+ * Achado I-25 (2026-09-15): o parâmetro `bool $production` era DECLARADO e nunca usado — o corpo
+ * inteiro não o mencionava. Quem lia a assinatura assumia uma regra mais dura em produção que não
+ * existia. Removido em vez de mantido como enfeite: o HTTPS já é exigido de toda URL ABSOLUTA, em
+ * qualquer modo, e caminho relativo continua aceito também em produção porque nada no Hub monta
+ * URL externa a partir do base_url (conferido: DashboardController só o usa para link interno e
+ * TinyV3TokenService só como ingrediente de nome de lock; a Redirect URI do OAuth é configurada no
+ * app do Tiny, não daqui).
+ */
+function validate_base_url(string $baseUrl): string {
   $baseUrl=trim(str_replace('\\','/',$baseUrl));
   if($baseUrl===''||strlen($baseUrl)>500||preg_match('/[\x00-\x1F\x7F]/',$baseUrl))throw new FriendlyInstallException('Base URL inválida.');
   if(str_starts_with($baseUrl,'/')){
@@ -395,6 +405,18 @@ function split_schema_definitions(string $body): array {
       continue;
     }
     if ($char === "'" || $char === '"' || $char === '`') { $quote = $char; $buffer .= $char; continue; }
+    // Comentário SQL fora de aspas é descartado inteiro, até o fim da linha. Sem isto, uma
+    // vírgula DENTRO de um comentário partia a lista de definições e o fragmento virava coluna
+    // fantasma: o preflight do instalador via colunas chamadas `e`, `os`, `por` e `UPDATE`, e
+    // expected_column_contract() lançava "Definição de coluna SQL não reconhecida no contrato
+    // canônico", abortando TODA instalação limpa antes do DDL. MySQL exige espaço depois de --;
+    // exigir o mesmo evita comer `DEFAULT -1`.
+    if ($char === '#' || ($char === '-' && $i + 1 < $length && $body[$i + 1] === '-'
+        && ($i + 2 >= $length || preg_match('/\s/', $body[$i + 2]) === 1))) {
+      while ($i < $length && $body[$i] !== "\n") $i++;
+      $buffer .= ' ';
+      continue;
+    }
     if ($char === '(') { $depth++; $buffer .= $char; continue; }
     if ($char === ')') { $depth--; $buffer .= $char; continue; }
     if ($char === ',' && $depth === 0) { if (trim($buffer) !== '') $items[] = trim($buffer); $buffer = ''; continue; }
@@ -682,7 +704,7 @@ if (!$locked && !$httpsBlocked && $installAuthorized && $requestMethod === 'POST
     $isBlankPasswordUser = is_blank_password_credential($data['db_pass']);
     $isProduction = (($data['app_env'] ?? 'production') === 'production');
     $isLocalConfirmed = (($data['app_env'] ?? '') === 'local') && is_loopback_host($data['db_host']) && (($_POST['confirm_local_insecure_mysql'] ?? '0') === '1');
-    $data['base_url']=validate_base_url($data['base_url'],$isProduction);
+    $data['base_url']=validate_base_url($data['base_url']);
     if ($isRootBlank && ($isProduction || !$isLocalConfirmed)) {
       throw new FriendlyInstallException(insecure_root_message());
     }
@@ -779,7 +801,7 @@ if (!$locked && !$httpsBlocked && $installAuthorized && $requestMethod === 'POST
     }
     $installSteps[] = 'Gate pós-instalação aprovado: '.$schemaGate['tables'].' tabelas, '.$schemaGate['columns'].' colunas e '.$schemaGate['indexes'].' índices, com tipos, nulabilidade, defaults, ordem/unicidade, engine, charset e collation declarada verificados.';
     $cfg = [
-      'app_name'=>'Hub de Integração Enterprise', 'app_version'=>'V104.49.3-R5', 'release_date'=>'2026-08-22', 'installation_id'=>bin2hex(random_bytes(16)), 'base_url'=>$data['base_url'], 'app_env'=>$data['app_env'],
+      'app_name'=>'Hub de Integração Enterprise', 'app_version'=>SystemVersionService::artifactVersion(), 'release_date'=>SystemVersionService::RELEASE_DATE, 'installation_id'=>bin2hex(random_bytes(16)), 'base_url'=>$data['base_url'], 'app_env'=>$data['app_env'],
       'security'=>[
         'block_search_engines'=>true,
         'force_https'=>true,

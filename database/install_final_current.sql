@@ -1,4 +1,4 @@
--- Hub Tiny VSM - instalação consolidada V104.49.3-R5 (2026-08-22)
+-- Hub Tiny VSM - instalação consolidada V104.49.3-R7+20260917.1 (2026-09-17)
 -- Gerado exclusivamente de database/modules/*.sql; não edite manualmente.
 -- Reaplicação não sobrescreve usuários, credenciais nem configurações operacionais.
 
@@ -58,6 +58,22 @@ CREATE TABLE IF NOT EXISTS empresas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+CREATE TABLE IF NOT EXISTS myouro_conexoes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  empresa_id INT NOT NULL,
+  url VARCHAR(255) NOT NULL DEFAULT 'https://msx.vsm.api.br/graphql',
+  ambiente VARCHAR(20) NOT NULL DEFAULT 'producao',
+  codigo_loja INT NOT NULL,
+  token_encrypted TEXT NULL,
+  habilitado TINYINT NOT NULL DEFAULT 0,
+  ultimo_teste_ok TINYINT NOT NULL DEFAULT 0,
+  ultimo_teste_em DATETIME NULL,
+  ultimo_teste_codigo VARCHAR(80) NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_myouro_empresa (empresa_id),
+  CONSTRAINT fk_myouro_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS filiais (
   id INT AUTO_INCREMENT PRIMARY KEY,
   empresa_id INT NOT NULL,
@@ -72,6 +88,7 @@ CREATE TABLE IF NOT EXISTS filiais (
 
 CREATE TABLE IF NOT EXISTS configuracoes_integracao (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  integracao_empresa_id INT NULL,
   ambiente VARCHAR(30) DEFAULT 'homologacao',
   tiny_versao VARCHAR(10) DEFAULT 'v2',
   tiny_v2_url VARCHAR(255) DEFAULT 'https://api.tiny.com.br/api2',
@@ -2279,6 +2296,10 @@ CREATE TABLE IF NOT EXISTS integration_events (
   INDEX idx_ie_status_created(status, created_at),
   INDEX idx_ie_entity(entity_type, entity_id),
   INDEX idx_ie_trace(trace_id),
+  -- Achado I-19 (2026-09-15): onQueueFinished() filtra esta tabela por fila_id duas vezes a cada
+  -- item de fila concluído, e sem este índice as duas viravam varredura completa. Medido com
+  -- 150 mil linhas: SELECT 43ms -> 9ms, UPDATE 87ms -> 9ms. O `id` no fim serve ao ORDER BY id DESC.
+  INDEX idx_ie_fila(fila_id, id),
   INDEX idx_ie_idempotency(idempotency_key),
   INDEX idx_ie_source_target(source_system, target_system)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

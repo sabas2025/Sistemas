@@ -169,7 +169,7 @@ return [
     'license_mode' => 'monitor', // off|monitor|enforce. Use enforce quando vender como SaaS/produção comercial.
     'license_hmac_key' => '', // preencha com chave forte para assinar licenças comerciais; se vazio usa backup_signature_key
     'allow_unlicensed_internal_use' => true,
-    'tenant_scope_required' => false, // P0-02: NÃO ativar ainda para multiempresa real - o filtro por empresa/filial não é aplicado em nenhuma consulta hoje (ver app/Services/TenantContextService.php). Ligar isto sem a filtragem implementada só bloqueia acesso, não isola dados entre clientes.
+    'tenant_scope_required' => false, // Exige empresa selecionada na sessão para abrir rota operacional. O isolamento de dados em si NÃO depende desta flag: ele é aplicado pelo TenantScopeService desde a R6. Ligar isto numa instalação de empresa única só atrapalha, porque nada carimba a empresa na sessão de quem não tem empresa atribuída.
     'public_landing_noindex' => true,
   ],
   'vsm' => [

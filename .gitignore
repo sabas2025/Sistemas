@@ -9,7 +9,9 @@
 /config/config.php
 
 # Dependências npm (o package.json e o lock são versionados; a pasta não).
-/node_modules/
+# Sem âncora: existe um segundo lock em tests/e2e/, e o node_modules dele aparecia como não
+# rastreado a cada execução da suíte porque a regra antiga só valia na raiz.
+node_modules/
 
 # Artefatos de execução dos workers, do painel e dos portões de CI.
 # Os index.html e .htaccess dentro de storage/ SÃO versionados: são a proteção
@@ -24,12 +26,22 @@
 !/storage/security-reports/index.html
 !/storage/security-reports/.htaccess
 /storage/cache/security/
+# Cache de runtime do painel. storage/cache/classmap.php É versionado (consta do manifesto);
+# os .cache.php nascem da navegação e não são do pacote.
+/storage/cache/*.cache.php
+# Marca de "já instalado", criada por public/install.php. NUNCA versionar: num pacote ela faria
+# toda instalação nova se julgar concluída e o instalador recusaria rodar.
+/storage/install.lock
+# Relatórios da homologação automática (AutoHomologationService), um por execução, nomeados pelo
+# Trace ID. São saída de execução: acumulariam no repositório e sujariam o manifesto de integridade.
+# O storage/.htaccess do pacote já nega o acesso web à pasta inteira.
+/storage/reports/
 /storage/audit-v*/
 /storage/*.log
 
 # Saída das suítes de navegador.
-/test-results/
-/playwright-report/
+test-results/
+playwright-report/
 /blob-report/
 /.lighthouseci/
 

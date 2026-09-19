@@ -28,12 +28,13 @@ class SafeSqlUpgradeService {
   }
 
   public static function addColumnIfMissing(PDO $pdo, string $table, string $column, string $definition): string {
-    $st=$pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?"); $st->execute([$column]);
-    if($st->fetch()) return "IGNORADO: {$table}.{$column} já existe.";
+    // Achado I-10: era `SHOW COLUMNS ... LIKE ?`, inválido com prepares nativos — e AQUI sem
+    // catch, então a atualização assistida de schema morria antes do ALTER.
+    if (Database::columnExistsOn($pdo, $table, $column)) return "IGNORADO: {$table}.{$column} já existe.";
     $pdo->exec("ALTER TABLE `$table` ADD COLUMN `$column` {$definition}");
     return "OK: {$table}.{$column} adicionada.";
   }
-  public static function tableExists(PDO $pdo, string $table): bool { $st=$pdo->prepare('SHOW TABLES LIKE ?'); $st->execute([$table]); return (bool)$st->fetch(); }
+  public static function tableExists(PDO $pdo, string $table): bool { return Database::tableExistsOn($pdo, $table); }
   public static function runStatements(PDO $pdo, string $sql): array {
     $out=[]; foreach(array_filter(array_map('trim', explode(';',$sql))) as $stmt){
       try { $pdo->exec($stmt); $out[]='OK: '.substr(preg_replace('/\s+/',' ',$stmt),0,140); }

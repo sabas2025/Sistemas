@@ -69,11 +69,12 @@ class ProductionReadinessV24Service {
   }
 
   private static function hasConfig(array $cfg, string $key): int { return !empty($cfg[$key]) ? 1 : 0; }
+  /* Achado I-10: `SHOW ... LIKE ?` é INVÁLIDO com prepares nativos (o Hub usa EMULATE_PREPARES=false): o servidor recusa com "near '?'". O catch rebaixava isso a "tabela ausente", e a tabela existia. Use sempre o helper central. */
   private static function tableExists(string $table): int {
-    try { $pdo=Database::connection('core'); $st=$pdo->prepare("SHOW TABLES LIKE ?"); $st->execute([$table]); return $st->fetch()?1:0; } catch(Throwable $e){ return 0; }
+    return Database::tableExists($table) ? 1 : 0;
   }
   private static function hasColumn(string $table,string $column): int {
-    try { $pdo=Database::connection('core'); $st=$pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?"); $st->execute([$column]); return $st->fetch()?1:0; } catch(Throwable $e){ return 0; }
+    return Database::columnExists($table, $column) ? 1 : 0;
   }
   private static function tableList(): array {
     try { return array_map('current', Database::connection('core')->query('SHOW TABLES')->fetchAll(PDO::FETCH_NUM)); } catch(Throwable $e){ return []; }

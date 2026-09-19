@@ -62,8 +62,8 @@ body.sidebar-open { overflow:hidden; }
   border:1px solid var(--border);
   background:#fff;
   color:#0f172a;
-  width:42px;
-  height:42px;
+  width:var(--tap);
+  height:var(--tap);
   border-radius:14px;
   display:none;
   align-items:center;
@@ -77,7 +77,7 @@ body.sidebar-open { overflow:hidden; }
   color:#fff;
   border-color:rgba(255,255,255,.16);
   box-shadow:none;
-  flex:0 0 42px;
+  flex:0 0 var(--tap);
 }
 .sidebar-backdrop{
   position:fixed;
@@ -327,7 +327,7 @@ img,svg,canvas,iframe{ max-width:100%; }
 
 
 /* V37 - Menu menos poluído por seções e melhorias visuais de segurança */
-.menu-section{margin:12px 8px 4px;color:#93c5fd;font-size:.70rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.95;}
+.menu-section{margin:12px 8px 4px;color:#93c5fd;font-size:.70rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.95;min-height:var(--tap);align-items:center;}
 .menu-section:first-child{margin-top:2px;}
 .sidebar .menu a[data-menu-group="Técnico"]{opacity:.92;}
 .safety-lock-card{border-left:5px solid #dc2626;background:#fff7f7;}
@@ -586,6 +586,7 @@ html.is-offline .topbar{box-shadow:0 0 0 1px rgba(251,191,36,.22),0 10px 30px rg
    ========================================================= */
 :root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--tap:44px;}
 html{height:100%;-webkit-text-size-adjust:100%;}body{min-height:100%;padding-bottom:var(--safe-bottom);touch-action:manipulation;}img,svg,video,canvas{max-width:100%;height:auto}.content{max-width:1920px;margin:0 auto}.topbar{padding-top:max(0px,var(--safe-top));height:auto;min-height:92px}.topbar-actions{display:flex;align-items:center;gap:12px;min-width:0}.topbar-more{display:none;position:relative}.topbar-more-btn{width:42px;height:42px;border-radius:14px;border:1px solid var(--border);background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center}.topbar-more-menu{position:absolute;right:0;top:48px;min-width:210px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 48px rgba(15,23,42,.18);padding:8px;display:none;z-index:80}.topbar-more-menu.show{display:block}.topbar-more-menu a,.topbar-more-menu button{width:100%;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#0f172a;text-decoration:none;padding:10px 12px;border-radius:12px;font-weight:700;text-align:left}.topbar-more-menu a:hover,.topbar-more-menu button:hover{background:#f8fafc}.content .row{min-width:0}.panel,.kpi,.health-card,.flow-card,.card-soft{overflow-wrap:anywhere}.btn,.form-control,.form-select,.notif-btn,.sidebar-toggle,.topbar-more-btn{min-height:var(--tap)}.table-responsive{border-radius:16px}.table{min-width:680px}.badge-status{display:inline-flex;align-items:center;gap:5px}.pwa-connection-status{position:fixed;left:12px;right:12px;bottom:calc(12px + var(--safe-bottom));z-index:9999;background:#0f172a;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:10px 14px;text-align:center;box-shadow:0 18px 48px rgba(2,6,23,.28)}.pwa-update-banner{position:fixed;left:16px;right:16px;bottom:calc(16px + var(--safe-bottom));z-index:9998;background:#fff;border:1px solid #bfdbfe;border-radius:18px;box-shadow:0 18px 55px rgba(15,23,42,.20);padding:14px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}.pwa-update-banner strong{color:#0f172a}.pwa-update-banner span{color:#64748b}.pwa-update-banner button{border:0;background:#2563eb;color:#fff;border-radius:12px;padding:9px 13px;font-weight:800}.env-badge{white-space:nowrap}.status-producao-pendente,.status-alerta{background:#ffedd5;color:#9a3412}.status-homologacao{background:#fef3c7;color:#92400e}.status-producao-liberada{background:#dcfce7;color:#166534}
+button,input,select,textarea,optgroup{font-family:inherit}
 @media (min-width:1200px){.content{padding:32px}.dashboard-grid,.central-grid{gap:16px}.kpi{padding:22px}.panel-header{gap:12px}}
 @media (max-width:991.98px){body{background:#f8fafc}.sidebar-toggle{display:flex!important}.topbar{position:sticky;top:0;z-index:1020;min-height:auto;padding:calc(10px + var(--safe-top)) 12px 10px;gap:10px}.topbar-title{gap:10px}.topbar h1{font-size:1.05rem;max-width:58vw}.topbar p{display:none}.topbar-actions{margin-left:auto}.userbox{gap:8px;margin-top:0!important}.userbox .btn:not(.notif-btn),.userbox-ident,.btn-logout{display:none!important}.topbar-more{display:block}.env-badge{font-size:.68rem;padding:.35rem .55rem}.avatar{width:34px;height:34px}.notif-dropdown{right:-58px;width:min(340px,calc(100vw - 24px));max-height:70dvh}.content{padding:14px}.panel-header{align-items:flex-start;gap:10px;flex-wrap:wrap}.panel-header h2{font-size:1rem}.sidebar{padding:14px!important;padding-top:calc(14px + var(--safe-top))!important}.sidebar .brand{margin-bottom:10px!important}.sidebar .brand small{display:none}.sidebar .menu a{min-height:44px!important}.sidebar-footer{padding-bottom:var(--safe-bottom)}}
 @media (max-width:767.98px){.row{--bs-gutter-x:.75rem;--bs-gutter-y:.75rem}.kpi .value{font-size:1.6rem}.kpi .label{margin-top:10px}.health-card{min-height:auto}.flow-card,.panel .p-4{padding:14px!important}.table{min-width:0}.table thead{display:none}.table tbody,.table tr,.table td{display:block;width:100%}.table tr{background:#fff;border:1px solid #e5e7eb;border-radius:16px;margin:0 0 12px;box-shadow:0 8px 22px rgba(15,23,42,.05);overflow:hidden}.table td{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #f1f5f9!important;padding:10px 12px!important;text-align:right}.table td:last-child{border-bottom:0!important}.table td::before{content:attr(data-label);font-weight:800;color:#64748b;text-align:left;max-width:48%;overflow-wrap:anywhere}.table td:empty{display:none}.sabas-footer{display:block;text-align:center}.sabas-build{display:inline-block;margin-top:10px}.login-shell{grid-template-columns:1fr!important;width:min(100% - 24px,560px)!important}.login-hero{display:none!important}.login-card-futurista,.login-card{max-width:100%!important}.central-grid{grid-template-columns:1fr!important}}

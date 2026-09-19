@@ -53,6 +53,13 @@ jobs:
       # dos testes. Este passo nao escreve nada: minifica em memoria e compara.
       - name: Assets minificados em dia com a fonte
         run: npm run check:pwa
+      # Portao 14, de 2026-09-15. Achado I-21: nenhum portao EXECUTAVA os scripts de scripts/.
+      # `php -l` aprovava, os 13 portoes aprovavam, e diagnose-http-500.php morria com
+      # `Class "Database" not found` assim que alguem o rodava. Aqui ele roda sem config/config.php,
+      # entao o ramo de banco NAO e alcancado - medido: com o defeito reposto este passo fica VERDE.
+      # Quem pega o I-21 e o passo gemeo do job e2e-authenticated, que roda com banco provisionado.
+      - name: Scripts de CLI executam sem erro fatal (sem config)
+        run: php scripts/ci/cli-scripts-smoke.php
 
   mysql-runtime:
     name: Runtime ${{ matrix.engine }}
@@ -101,6 +108,16 @@ jobs:
           HUB_TEST_DB_PASS: root
           HUB_TEST_DB_NAME: hub_ci_modules
         run: php scripts/ci/mysql-modular-runtime-regression.php
+      - name: Upgrade R7 e MyOuro em banco real (único e modular)
+        env:
+          HUB_TEST_DB_HOST: 127.0.0.1
+          HUB_TEST_DB_PORT: 3306
+          HUB_TEST_DB_USER: root
+          HUB_TEST_DB_PASS: root
+          HUB_R7_TEST_CONFIRM: '1'
+        run: |
+          php scripts/ci/r7-upgrade-runtime.php single
+          php scripts/ci/r7-upgrade-runtime.php modular
   # Reauditoria 2026-09-14 (achado A-03): o job não subia servidor nem banco, não definia
   # HUB_BASE_URL (o default do playwright.config.js apontava para um host REMOTO de produção),
   # usava "@playwright/test": latest sem lockfile e deixava os testes autenticados serem pulados
@@ -140,6 +157,13 @@ jobs:
           # B-05: confirmação explícita exigida pelo script, que é destrutivo por natureza.
           HUB_CI_E2E_CONFIRM: '1'
         run: php scripts/ci/provision-e2e-environment.php
+      # Portao 14 (achado I-21), a metade que importa: aqui existem config/config.php e MariaDB,
+      # entao o ramo de banco de diagnose-http-500.php e realmente executado. Medido numa copia com
+      # o defeito reposto: FALHA com `Class "Database" not found`. Note que o exit code era 1, nao
+      # 255 - o proprio script captura o Throwable -, entao portao que so olhasse codigo de saida
+      # deixaria passar. A assercao e sobre o TEXTO da saida.
+      - name: Scripts de CLI executam sem erro fatal (com banco)
+        run: php scripts/ci/cli-scripts-smoke.php
       # Auditoria da primeira execucao real da CI (PR #2): a suite E2E rodava contra o caminho
       # errado e 20 de 23 testes falhavam com "element(s) not found". A causa era a URL, nao o Hub.
       # Com document root na raiz e HUB_BASE_URL terminando em /public, as DUAS formas de navegar

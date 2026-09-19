@@ -7,7 +7,7 @@ $installer=hub_read('public/install.php');
 $service=hub_read('app/Services/FileIntegrityService.php');
 $manifestPath=$root.'/storage/file_integrity_manifest.json';
 $manifest=is_file($manifestPath)?json_decode((string)file_get_contents($manifestPath),true):null;
-$config=require hub_config_file();
+$config=require hub_config_default_file();
 $key=(string)($config['security']['fim_manifest_hmac_key']??'');
 if($key==='')$key=(string)($config['security']['encryption_key']??'');
 if($key==='')$key='hub-fim-dev-key-change-me';

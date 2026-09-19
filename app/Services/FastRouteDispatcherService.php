@@ -14,6 +14,7 @@ class FastRouteDispatcherService {
 
   /** @var array<string, string[]> */
   private static array $dispatchGroups = [
+    MyOuroController::class => ['myouro-configuracoes','myouro-salvar','myouro-testar','integracao-vincular-empresa'],
     ApiVsmWebhookController::class => ['api/webhook/vsm/pedido','api/webhook/vsm/produto','api/webhook/vsm/estoque','api/webhook/vsm/pedido-retorno'],
     ApiTinyController::class => ['api/webhook/tiny/evento','api/tiny/webhook/estoque','api/tiny/webhook/produto','api/tiny/webhook/nota-fiscal','api/tiny/webhook/situacao-pedido','api/tiny/webhook/pedido'],
     SistemaController::class => ['sobre','tutorial-sistema'],
@@ -69,6 +70,7 @@ class FastRouteDispatcherService {
     if ($page === 'manutencao') { require __DIR__ . '/../../views/manutencao.php'; return; }
     if ($page === 'api/csp-report') { CspReportService::handle(); return; }
 
+    IntegrationTenantService::enforceRequest($page);
     if (class_exists('TenantContextService')) TenantContextService::requireScopeForOperationalRoute($page);
     if (class_exists('LicenseEnforcementService')) LicenseEnforcementService::enforceForRequest($page);
 

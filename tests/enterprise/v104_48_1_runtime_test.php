@@ -81,6 +81,8 @@ class Database {
   public static function tableExists(string $table):bool{return true;}
 }
 Database::$pdo=new QueueFakePDO();
+class TenantContextService { public static function currentEmpresaId(): ?int { return 1; } }
+require_once hub_root().'/app/Services/TenantScopeService.php';
 require_once hub_root().'/app/Services/QueueService.php';
 $future=date('Y-m-d H:i:s',time()+600);$now=date('Y-m-d H:i:s');$past=date('Y-m-d H:i:s',time()-3600);
 Database::$pdo->rows[1]=['id'=>1,'status'=>'processando','locked_by'=>'owner-a','lease_expires_at'=>$future,'heartbeat_at'=>$now,'processando_desde'=>$now,'criado_em'=>$now,'tentativas'=>2,'tipo'=>'pedido_tiny_para_vsm','referencia'=>'P1','trace_id'=>'TRC-1'];
@@ -89,6 +91,7 @@ hub_check($checks,'Resultado de worker obsoleto é rejeitado',!QueueService::mar
 hub_check($checks,'Resultado do proprietário é persistido',QueueService::marcarResultado(1,true,['ok'=>1],null,'owner-a')&&Database::$pdo->rows[1]['status']==='sucesso'&&PayloadSnapshotService::$count===1);
 Database::$pdo->rows[2]=['id'=>2,'status'=>'processando','locked_by'=>'owner-active','lease_expires_at'=>$future,'heartbeat_at'=>$now,'processando_desde'=>$now,'criado_em'=>$now,'tentativas'=>4,'codigo_erro'=>'TIMEOUT','retorno'=>'x'];
 hub_check($checks,'Reprocessamento bloqueia item ativo',!QueueService::reprocessar(2));
+Database::$pdo->rows[2]['empresa_id']=1;
 Database::$pdo->rows[2]['lease_expires_at']=$past;Database::$pdo->rows[2]['heartbeat_at']=$past;Database::$pdo->rows[2]['processando_desde']=$past;
 hub_check($checks,'Reprocessamento libera item expirado e preserva histórico',QueueService::reprocessar(2)&&Database::$pdo->rows[2]['status']==='pendente'&&Database::$pdo->rows[2]['tentativas']===0&&count(Database::$pdo->history)===1);
 

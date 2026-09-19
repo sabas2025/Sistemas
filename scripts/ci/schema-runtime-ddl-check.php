@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
 $allowed = [
+    'app/Services/R7UpgradeService.php' => 'migrations allowlist 008–017, executor CLI explícito e bloqueio GET_LOCK',
     'app/Core/Database.php' => 'DDL centralizado e compatibilidade de schema',
     'app/Controllers/LegacyDatabaseUpgradeController.php' => 'upgrade administrativo legado explicitamente acionado',
     'app/Services/BackupService.php' => 'restore administrativo validado',

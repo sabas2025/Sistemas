@@ -128,14 +128,123 @@ foreach ($arquivos as $arquivo) {
     }
 }
 
+/**
+ * Passagem ESTRITA para GRAVAÇÃO (achado I-02, 2026-09-15).
+ *
+ * A passagem acima aceita a evidência em qualquer lugar de uma janela de ±6 linhas. Em arquivo
+ * denso — FilaController tem métodos inteiros numa linha só — essa janela alcança OUTRO método, e
+ * o portão dava por coberta uma gravação crua. Medido: `FilaController.php:7` gravava em
+ * `fila_integracao` com `$pdo->prepare(...)` e passava, porque a linha 5 (outro método) cita
+ * TenantScopeService; `EstoqueVsmSchedulerService.php:210` passava pela linha 216, que trata de
+ * OUTRA tabela. Duas linhas nasciam sem empresa com o portão verde.
+ *
+ * Aqui a régua é outra, e só vale para INSERT/REPLACE/UPDATE:
+ *   - a evidência tem de estar na PRÓPRIA sentença (mesma linha, ±400 caracteres) ou nas 4 linhas
+ *     SEGUINTES — que é o padrão real de `$sql = "INSERT ..."` seguido de `applyToInsert($sql)`;
+ *   - para trás não vale nada: é de onde vinha o falso negativo;
+ *   - quando a evidência é uma chamada ao serviço, a TABELA citada tem de ser a mesma.
+ */
+$evidencia = static function (string $trecho, string $tabela): bool {
+    // Chamada ao serviço citando a MESMA tabela (ou uma variável, caso tratado na passagem 2).
+    if (preg_match('/TenantScopeService::[A-Za-z]+\s*\(\s*(?:[\'"]'.preg_quote($tabela, '/').'[\'"]|\$)/i', $trecho)) return true;
+    // empresa_id escrito na própria consulta.
+    return (bool)preg_match('/\bempresa_id\b/i', $trecho);
+};
+
+$violacoesEscrita = [];
+$escritasCobertas = 0;
+foreach ($arquivos as $arquivo) {
+    $rel = ltrim(str_replace($root, '', $arquivo), '/');
+    if (isset(EXCECOES[$rel])) continue;
+    $linhas = explode("\n", (string)file_get_contents($arquivo));
+    foreach ($linhas as $n => $linha) {
+        $semEspaco = ltrim($linha);
+        if (str_starts_with($semEspaco, '//') || str_starts_with($semEspaco, '*') || str_starts_with($semEspaco, '#')) continue;
+        if (!preg_match_all('/\b(?:INSERT\s+(?:IGNORE\s+)?INTO|REPLACE\s+INTO|UPDATE)\s+`?('.$padraoTabelas.')`?\b/i', $linha, $ms, PREG_OFFSET_CAPTURE | PREG_SET_ORDER)) continue;
+        $adiante = implode("\n", array_slice($linhas, $n + 1, 4));
+        foreach ($ms as $m) {
+            $tabela = strtolower($m[1][0]);
+            $off = (int)$m[0][1];
+            $janela = substr($linha, max(0, $off - 400), 800)."\n".$adiante;
+            if ($evidencia($janela, $tabela)) { $escritasCobertas++; continue; }
+            $violacoesEscrita[] = ['arquivo' => $rel, 'linha' => $n + 1, 'tabela' => $tabela,
+                'trecho' => trim(substr(ltrim(substr($linha, max(0, $off - 60))), 0, 150))];
+        }
+    }
+}
+
+/**
+ * Passagem 4: JOIN sem ALIAS (achado I-08, 2026-09-15).
+ *
+ * `where()` monta o predicado com o prefixo que recebe em `$alias`. Sem alias ele injeta
+ * `empresa_id = ?` puro — e quando a consulta faz JOIN com OUTRA tabela que também tem a coluna, o
+ * banco recusa a consulta inteira: "Column 'empresa_id' in WHERE is ambiguous". A tela não mostra
+ * dado errado, ela para de funcionar; e só quando alguém tem empresa atribuída, porque sem empresa
+ * na sessão o predicado nem entra. Medido: a tela Fiscal quebrava assim, e eram QUATRO consultas,
+ * não uma — duas em Fiscal, duas em FiscalEnterpriseService.
+ *
+ * A checagem só cobra alias quando há conflito real: JOIN com tabela que TAMBÉM está no catálogo.
+ */
+$violacoesJoin = [];
+$comEscopo = array_flip($alvos);
+foreach ($arquivos as $arquivo) {
+    $rel = ltrim(str_replace($root, '', $arquivo), '/');
+    if (isset(EXCECOES[$rel])) continue;
+    foreach (explode("\n", (string)file_get_contents($arquivo)) as $n => $linha) {
+        if (!preg_match_all('/TenantScopeService::(?:run|applyToSelect)\s*\(\s*([\'"])([a-z_]+)\1\s*,\s*([\'"])/i', $linha, $ms, PREG_OFFSET_CAPTURE | PREG_SET_ORDER)) continue;
+        foreach ($ms as $m) {
+            $aspa = $m[3][0];
+            $ini = (int)$m[3][1];
+            $sql = '';
+            for ($k = $ini + 1, $len = strlen($linha); $k < $len; $k++) {
+                $c = $linha[$k];
+                if ($c === '\\') { $k++; continue; }
+                if ($c === $aspa) break;
+                $sql .= $c;
+            }
+            if (!preg_match('/\bJOIN\b/i', $sql)) continue;
+            preg_match_all('/\bJOIN\s+`?([a-z_]+)`?/i', $sql, $js);
+            $conflito = array_values(array_filter($js[1], static fn(string $t): bool => isset($comEscopo[strtolower($t)])));
+            if ($conflito === []) continue;
+            $depois = substr($linha, $ini + strlen($sql) + 2, 200);
+            if (preg_match('/^\s*,\s*(\[[^\]]*\]|\$[A-Za-z_]+)\s*,\s*[\'"][A-Za-z_]+[\'"]/', $depois)) continue;
+            $violacoesJoin[] = ['arquivo' => $rel, 'linha' => $n + 1, 'tabela' => $m[2][0],
+                'conflito' => implode(', ', $conflito), 'trecho' => trim(substr($sql, 0, 120))];
+        }
+    }
+}
+
 echo "Tabelas com escopo no catálogo: ".count($alvos)."\n";
 echo "Consultas cobertas pelo escopo: {$cobertas}\n";
 echo "Consultas em arquivos isentos:  {$isentas}\n";
 
-if ($violacoes === []) {
+echo "Gravações cobertas (régua estrita):  {$escritasCobertas}\n";
+
+if ($violacoes === [] && $violacoesEscrita === [] && $violacoesJoin === []) {
     echo "[OK] Nenhuma consulta a tabela com escopo ficou sem isolamento nem justificativa.\n";
     exit(0);
 }
+
+if ($violacoesJoin !== []) {
+    fwrite(STDERR, "[FALHA] ".count($violacoesJoin)." consulta(s) com JOIN passam pelo escopo SEM alias:\n\n");
+    foreach ($violacoesJoin as $v) {
+        fwrite(STDERR, sprintf("  %s:%d  (%s, JOIN com %s)\n      %s\n", $v['arquivo'], $v['linha'], $v['tabela'], $v['conflito'], $v['trecho']));
+    }
+    fwrite(STDERR, "\nSem alias o predicado vira 'empresa_id = ?' puro e o banco recusa a consulta\n");
+    fwrite(STDERR, "(\"Column 'empresa_id' in WHERE is ambiguous\") — a tela quebra para quem tem empresa.\n");
+    fwrite(STDERR, "Passe o alias da tabela principal: TenantScopeService::run('tabela', \$sql, \$params, 'i').\n\n");
+}
+
+if ($violacoesEscrita !== []) {
+    fwrite(STDERR, "[FALHA] ".count($violacoesEscrita)." gravação(ões) em tabela com escopo sem isolamento NA PRÓPRIA SENTENÇA:\n\n");
+    foreach ($violacoesEscrita as $v) {
+        fwrite(STDERR, sprintf("  %s:%d  (%s)\n      %s\n", $v['arquivo'], $v['linha'], $v['tabela'], $v['trecho']));
+    }
+    fwrite(STDERR, "\nGravação sem escopo cria linha com empresa_id NULL, visível a todas as empresas.\n");
+    fwrite(STDERR, "A evidência precisa estar na própria sentença ou nas 4 linhas seguintes, e citar a MESMA tabela.\n\n");
+}
+
+if ($violacoes === []) exit(1);
 
 fwrite(STDERR, "[FALHA] ".count($violacoes)." consulta(s) a tabela com escopo de empresa sem isolamento:\n\n");
 foreach ($violacoes as $v) {

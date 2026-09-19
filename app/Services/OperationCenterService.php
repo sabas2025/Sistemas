@@ -7,10 +7,8 @@
 class OperationCenterService {
   public static function tableExists(string $table): bool {
     try {
-      $pdo = Database::forTable($table);
-      $st = $pdo->prepare('SHOW TABLES LIKE ?');
-      $st->execute([$table]);
-      return (bool)$st->fetchColumn();
+      /* Achado I-10: `SHOW TABLES LIKE ?` é inválido com prepares nativos. */
+      return Database::tableExists($table);
     } catch (Throwable $e) { return false; }
   }
 

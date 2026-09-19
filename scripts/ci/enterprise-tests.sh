@@ -12,7 +12,7 @@ while IFS= read -r -d '' test_file; do
   # (v104_48_1_schema_vsm_contract_test.php) mascarava dezenas de outros testes sem executar.
   # Um comando dentro de "if" não aciona o errexit, então isto deixa CADA teste rodar até o
   # fim e só falha a suíte no final, com a lista completa de quem falhou.
-  if php "$test_file"; then
+  if php "$ROOT/scripts/ci/run-strict-test.php" "$test_file"; then
     :
   else
     failed=$((failed + 1))

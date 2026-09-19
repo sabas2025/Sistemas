@@ -55,6 +55,21 @@ class ProductionGoLiveService {
     $vsmToken = trim((string)($cfg['vsm_token'] ?? ''));
     $add('VSM','URL VSM configurada', $vsmUrl !== '' ? 'ok' : 'bloqueio', 'Sem endpoint VSM, o Hub não consulta estoque nem envia/recebe fluxo real.', 'Configurar URL oficial da VSM.', ['vsm_url'=>$vsmUrl]);
     $add('VSM','Token VSM configurado', $vsmToken !== '' ? 'ok' : 'bloqueio', 'Sem token VSM, consultas podem retornar 401/403.', 'Configurar token/chave VSM e liberar domínio/IP do Hub.');
+    // Achado I-23 (2026-09-15): instalar com Ambiente=Produção deixava o Hub apontando para o
+    // host de HOMOLOGAÇÃO da VSM, e NENHUMA checagem acusava. O instalador semeia
+    // '{VSM_URL}' => 'https://conectavenda.homolog.vsm.com.br' como constante, qualquer que seja o
+    // ambiente escolhido, e IntegrationConfig::get() repete esse mesmo host como fallback quando a
+    // coluna está vazia — então nem apagar o valor resolve. As checagens existentes só exigem URL
+    // não-vazia e bem formada. Medido: com ambiente='producao' gravado, o vsm_url efetivo era o de
+    // homologação e o go-live respondia 'ok'. Aqui a coerência é conferida pelo HOST, por RÓTULO —
+    // nunca por substring na URL inteira, que é a armadilha do B-06.
+    $endpointsAmbiente = self::endpointsForaDoAmbiente($cfg);
+    $add('Ambiente','Endpoints coerentes com o ambiente',
+        $endpointsAmbiente['coerente'] ? 'ok' : 'bloqueio',
+        'Em produção, apontar para host de homologação envia pedido, estoque e nota para o ambiente errado — e o erro só aparece quando o cliente reclama.',
+        'Configurar a URL oficial de produção em Configurações → VSM/Tiny antes de liberar a operação.',
+        $endpointsAmbiente);
+
     $add('VSM','Produto novo sob aprovação', !empty($cfg['sync_bloquear_produto_novo_vsm']) || !empty($cfg['sync_aprovacao_manual_produto_novo_vsm']) ? 'ok' : 'alerta', 'Produto novo automático pode duplicar cadastro e causar divergência.', 'Manter produto novo em aprovação manual no início da produção.');
 
     $xmlStatus = self::xmlNfeResumo();
@@ -88,6 +103,34 @@ class ProductionGoLiveService {
     $st->execute([$trace,$status,$score,$bloqueios,$alertas,json_encode(SensitiveDataService::mask($res), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)]);
     Audit::event('production.golive.check', $status==='apto'?'sucesso':'alerta', ['mensagem'=>$res['resumo'], 'contexto'=>SensitiveDataService::mask($res)]);
     return $res;
+  }
+
+  /**
+   * Um host é de homologação quando algum RÓTULO dele é de teste — `conectavenda.homolog.vsm.com.br`
+   * tem o rótulo `homolog`. Comparar rótulo, e não a URL inteira, evita o falso positivo de um
+   * caminho `/homologacao` e o falso negativo de `homologvsm` grudado. O que ele NÃO prova: que um
+   * host de aparência produtiva seja mesmo de produção — isso só o provedor sabe.
+   */
+  private static function hostDeHomologacao(string $url): bool {
+    $host = strtolower((string)(parse_url(trim($url), PHP_URL_HOST) ?? ''));
+    if ($host === '') return false;
+    foreach (explode('.', $host) as $rotulo) {
+      if (in_array($rotulo, ['homolog','homologacao','homologação','sandbox','staging','teste','test','dev'], true)) return true;
+    }
+    return false;
+  }
+
+  /** @return array{coerente:bool,ambiente:string,suspeitos:array<int,string>} */
+  private static function endpointsForaDoAmbiente(array $cfg): array {
+    $ambiente = strtolower(trim((string)($cfg['ambiente'] ?? '')));
+    $suspeitos = [];
+    if ($ambiente === 'producao') {
+      foreach (['vsm_url'=>'VSM','tiny_v2_url'=>'Tiny V2','tiny_v3_url'=>'Tiny V3'] as $chave=>$rotulo) {
+        $url = (string)($cfg[$chave] ?? '');
+        if ($url !== '' && self::hostDeHomologacao($url)) $suspeitos[] = $rotulo.': '.(string)(parse_url($url, PHP_URL_HOST) ?? '');
+      }
+    }
+    return ['coerente'=>$suspeitos===[], 'ambiente'=>$ambiente!==''?$ambiente:'não declarado', 'suspeitos'=>$suspeitos];
   }
 
   public static function historico(int $limit=5): array {

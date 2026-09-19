@@ -26,7 +26,7 @@ $installProbe=hub_read('app/Services/InstallDatabaseProbe.php');
 hub_check($checks,'Release R7 e data final estão declaradas',
     str_contains($version,"VERSION = 'V104.49.3'")
     && str_contains($version,"RELEASE = 'R7'")
-    && str_contains($version,"RELEASE_DATE = '2026-09-14'"));
+    && str_contains($version,"RELEASE_DATE = '2026-09-17'") && str_contains($version,"BUILD = '20260917.1'"));
 
 hub_check($checks,'Status do schema valida colunas por tipo, nulabilidade e default',
     str_contains($schema,'requiredColumnContracts')
@@ -152,5 +152,21 @@ hub_check($checks,'AutoRepair só conclui após validação estrita do SchemaMig
     str_contains($autoRepair,'verifyStrictEnterpriseContract')
     && str_contains($autoRepair,'SchemaMigrationService::status()')
     && str_contains($autoRepair,"'AutoRepair contrato estrito'"));
+
+// Achado I-21 (2026-09-15): NENHUM portao executava os scripts de scripts/. `php -l` passava, os
+// 13 portoes passavam, e diagnose-http-500.php morria com `Class "Database" not found` na primeira
+// vez que alguem o rodava. O portao 14 (cli-scripts-smoke.php) executa. Ele precisa aparecer DUAS
+// vezes no workflow: no job estatico e, principalmente, DEPOIS do provisionamento do job e2e -
+// medido numa copia com o defeito reposto, so a execucao COM config/config.php e banco o pega;
+// sem config o ramo de banco nem e alcancado e o passo fica verde. Uma ocorrencia so nao basta.
+$ocorrenciasSmoke = substr_count($workflow, 'php scripts/ci/cli-scripts-smoke.php');
+$posProvisionamento = strpos($workflow, 'php scripts/ci/provision-e2e-environment.php');
+$posSmokeComBanco = strrpos($workflow, 'php scripts/ci/cli-scripts-smoke.php');
+hub_check($checks,'O portao que EXECUTA os scripts de CLI roda nos dois jobs, um deles com banco',
+    $workflow !== ''
+    && $ocorrenciasSmoke === 2
+    && $posProvisionamento !== false
+    && $posSmokeComBanco !== false
+    && $posSmokeComBanco > $posProvisionamento);
 
 hub_finish($checks);

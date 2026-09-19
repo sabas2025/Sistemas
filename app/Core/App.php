@@ -15,6 +15,9 @@ class App {
       }
       $cfg = require $active;
       if (!is_array($cfg)) throw new RuntimeException('Arquivo de configuração inválido.');
+      // Metadados efetivos acompanham o código; preserva o arquivo e todos os segredos existentes.
+      $cfg['app_version'] = SystemVersionService::artifactVersion();
+      $cfg['release_date'] = SystemVersionService::RELEASE_DATE;
     }
     return $cfg;
   }

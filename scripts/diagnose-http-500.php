@@ -22,7 +22,14 @@ if (is_array($cfg) && extension_loaded('pdo_mysql')) {
     $pdo=new PDO('mysql:host='.($db['host']??'').';dbname='.($db['name']??'').';charset='.($db['charset']??'utf8mb4'),(string)($db['user']??''),(string)($db['pass']??''),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
     $add('Conexão MySQL', true, (string)($db['host']??'').' / '.(string)($db['name']??''));
     foreach(['usuarios','security_events','ips_bloqueados','rate_limit_hits','schema_migrations'] as $table){
-      $st=$pdo->prepare('SHOW TABLES LIKE ?');$st->execute([$table]);$add('Tabela '.$table,(bool)$st->fetchColumn());
+      // Achado I-10: `SHOW TABLES LIKE ?` é inválido com prepares nativos, que é como o Hub abre
+      // toda conexão. Achado I-21: a primeira correção usou Database::tableExistsOn(), mas ESTE
+      // script é autônomo — não carrega o autoloader do Hub —, e a chamada morria com
+      // `Class "Database" not found`, derrubando o diagnóstico inteiro no ramo de banco. O
+      // information_schema aceita placeholder normalmente, resolve os dois e não precisa de classe.
+      $st = $pdo->prepare('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?');
+      $st->execute([$table]);
+      $add('Tabela '.$table, (int)$st->fetchColumn() > 0);
     }
   } catch(Throwable $e) { $add('Conexão MySQL', false, get_class($e).': '.$e->getMessage()); }
 }

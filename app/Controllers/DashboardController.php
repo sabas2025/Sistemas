@@ -125,7 +125,7 @@ class DashboardController {
       case 'sobre': $this->sobre(); break;
       case 'notificacao-lida': $this->marcarNotificacaoLida(); break;
       case 'auditoria': $this->auditoria(); break;
-      case 'auditoria-detalhe': $this->auditoriaDetalhe(); break;
+      case 'auditoria-detalhe': (new AuditoriaController())->dispatch($page); break;
       case 'diagnostico': $this->diagnostico(); break;
       case 'dashboard-integridade': $this->dashboardIntegridade(); break;
       case 'producao-ready': $this->producaoReady(); break;
@@ -181,7 +181,7 @@ class DashboardController {
       case 'tiny-v3-testar-modulo': $this->tinyV3TestarModulo(); break;
       case 'tiny-v3-endpoints-salvar': $this->tinyV3EndpointsSalvar(); break;
       case 'fila-morta': $this->filaMorta(); break;
-      case 'fila-morta-reprocessar': $this->filaMortaReprocessar(); break;
+      case 'fila-morta-reprocessar': (new FilaController())->dispatch($page); break;
       case 'laboratorio': $this->laboratorio(); break;
       case 'laboratorio-executar': $this->laboratorioExecutar(); break;
       case 'reconciliacao': $this->reconciliacao(); break;
@@ -767,17 +767,6 @@ class DashboardController {
     $pageTitle = 'Auditoria';
     require __DIR__.'/../../views/auditoria.php';
   }
-
-  private function auditoriaDetalhe(): void {
-    PermissionService::require('auditoria','visualizar');
-    $id = (int)($_GET['id'] ?? 0);
-    $st=Database::forTable('auditoria_eventos')->prepare("SELECT * FROM auditoria_eventos WHERE id=? LIMIT 1"); $st->execute([$id]); $evento=$st->fetch();
-    if(!$evento){ http_response_code(404); echo 'Evento não encontrado'; return; }
-    $st=Database::forTable('auditoria_eventos')->prepare("SELECT * FROM auditoria_eventos WHERE trace_id=? ORDER BY id ASC"); $st->execute([$evento['trace_id']]); $timeline=$st->fetchAll();
-    $pageTitle = 'Detalhe da Auditoria';
-    require __DIR__.'/../../views/auditoria_detalhe.php';
-  }
-
 
   private function tinyWebhooks(): void {
     PermissionService::require('tiny_webhooks','visualizar');
@@ -1851,12 +1840,6 @@ class DashboardController {
     require __DIR__.'/../../views/fila_morta.php';
   }
 
-  private function filaMortaReprocessar(): void {
-    PermissionService::require('fila_morta','reprocessar'); Csrf::validate();
-    DeadLetterQueueService::reprocessar((int)($_POST['id'] ?? 0));
-    redirect('index.php?page=fila-morta&reprocessado=1');
-  }
-
   private function laboratorio(): void {
     PermissionService::require('laboratorio','visualizar');
     $pageTitle='Laboratório de Integração';
@@ -2293,7 +2276,7 @@ class DashboardController {
   private function atualizadorSeguroExecutar(): void {
     PermissionService::require('database','validar');
     Csrf::validate();
-    $relatorio = (new UniversalUpgradeService($this->pdo))->executarTodos();
+    $relatorio = (new UniversalUpgradeService(dirname(__DIR__,2)))->run();
     $_SESSION['upgrade_report_v32'] = $relatorio;
     redirect('index.php?page=atualizador-seguro&executado=1');
   }
@@ -2320,7 +2303,7 @@ class DashboardController {
     $resumoFiscal = class_exists('FiscalIntegrationService') ? FiscalIntegrationService::resumo() : [];
     $notas = [];
     try { $notas = FiscalIntegrationService::listar($_GET['status'] ?? '', 100); } catch(Throwable $e) { $erroFiscal = $e->getMessage(); }
-    $nfeIntegracoes=[]; try { $nfeIntegracoes = TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50')->fetchAll(); } catch(Throwable $e) { $erroFiscal = ($erroFiscal ?? '').' '.$e->getMessage(); }
+    $nfeIntegracoes=[]; try { $nfeIntegracoes = TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50', [], 'i')->fetchAll(); } catch(Throwable $e) { $erroFiscal = ($erroFiscal ?? '').' '.$e->getMessage(); }
     $pageTitle = 'XML / NF-e';
     require __DIR__.'/../../views/fiscal.php';
   }

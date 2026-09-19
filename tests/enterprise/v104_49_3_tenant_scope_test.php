@@ -19,6 +19,12 @@ class TenantContextService {
     public static ?int $empresa = null;
     public static function currentEmpresaId(): ?int { return self::$empresa; }
 }
+// Catálogo de empresas controlado pelo teste.null = nenhuma empresa única resolvida, que é o
+// estado em que o comportamento antigo (INSERT intacto sem sessão) tem de continuar valendo.
+class EmpresaCatalogService {
+    public static ?int $unica = null;
+    public static function empresaUnicaId(): ?int { return self::$unica; }
+}
 require_once hub_root().'/app/Services/TenantScopeService.php';
 
 $comEmpresa = static function (int $id, callable $fn) {
@@ -39,45 +45,52 @@ hub_check($checks,'Tabela global NÃO está no catálogo',
     && !TenantScopeService::isScoped('configuracoes_integracao') && !TenantScopeService::isScoped('empresas'));
 hub_check($checks,'Nome com crase/espaço é normalizado', TenantScopeService::isScoped('`fila_integracao`'));
 
-// ------------------------------------------- sem contexto: nada muda (instalação de empresa única)
+// Sem contexto: nenhuma leitura nem escrita operacional é autorizada.
 [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao WHERE status=?',['pendente']);
-hub_check($checks,'Sem empresa no contexto o SELECT fica intacto', $sql === 'SELECT * FROM fila_integracao WHERE status=?' && $p === ['pendente']);
-[$sql,$p] = TenantScopeService::applyToInsert('fila_integracao','INSERT INTO fila_integracao(tipo,referencia) VALUES(?,?)',['a','b']);
-hub_check($checks,'Sem empresa no contexto o INSERT fica intacto', $sql === 'INSERT INTO fila_integracao(tipo,referencia) VALUES(?,?)' && $p === ['a','b']);
+hub_check($checks,'Sem contexto, SELECT nega linhas', str_contains($sql,'AND 1=0') && $p === ['pendente']);
+$blocked = false;
+try { TenantScopeService::applyToInsert('fila_integracao','INSERT INTO fila_integracao(tipo) VALUES(?)',['x']); }
+catch (RuntimeException $e) { $blocked = str_contains($e->getMessage(),'TENANT_CONTEXT_REQUIRED'); }
+hub_check($checks,'Sem contexto, INSERT é bloqueado', $blocked);
+hub_check($checks,'whereStrict sem contexto também nega', TenantScopeService::whereStrict('fila_integracao')['sql'] === ' AND 1=0');
 
 // ---------------------------------------------------------------- SELECT
 $comEmpresa(7, static function () use (&$checks) {
+    [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao WHERE trace_id=? OR referencia=? ORDER BY id',['a','b']);
+    hub_check($checks,'OR não permite escapar do tenant', $sql === 'SELECT * FROM fila_integracao WHERE (trace_id=? OR referencia=?) AND (empresa_id = ?) ORDER BY id' && $p === ['a','b',7]);
+    [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao',"SELECT * FROM fila_integracao WHERE tipo='duas  palavras'",[]);
+    hub_check($checks,'Reescrita preserva espaços em literais',str_contains($sql,"'duas  palavras'"));
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao WHERE status=?',['pendente']);
     hub_check($checks,'SELECT com WHERE recebe o predicado e o parâmetro no fim',
-        $sql === 'SELECT * FROM fila_integracao WHERE status=? AND (empresa_id = ? OR empresa_id IS NULL)' && $p === ['pendente',7]);
+        $sql === 'SELECT * FROM fila_integracao WHERE status=? AND (empresa_id = ?)' && $p === ['pendente',7]);
 
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao',[]);
     hub_check($checks,'SELECT sem WHERE ganha um WHERE',
-        $sql === 'SELECT * FROM fila_integracao WHERE (empresa_id = ? OR empresa_id IS NULL)' && $p === [7]);
+        $sql === 'SELECT * FROM fila_integracao WHERE (empresa_id = ?)' && $p === [7]);
 
     // O caso que quebra implementação ingênua: placeholder DEPOIS do ponto de inserção.
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT * FROM fila_integracao WHERE status=? ORDER BY id DESC LIMIT ?',['erro',50]);
     hub_check($checks,'Predicado entra ANTES de ORDER BY/LIMIT',
-        $sql === 'SELECT * FROM fila_integracao WHERE status=? AND (empresa_id = ? OR empresa_id IS NULL) ORDER BY id DESC LIMIT ?');
+        $sql === 'SELECT * FROM fila_integracao WHERE status=? AND (empresa_id = ?) ORDER BY id DESC LIMIT ?');
     hub_check($checks,'Parâmetro é inserido na POSIÇÃO certa, não no fim (LIMIT ? continua por último)',
         $p === ['erro',7,50]);
 
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','SELECT status, COUNT(*) total FROM fila_integracao GROUP BY status',[]);
     hub_check($checks,'Predicado entra antes de GROUP BY',
-        $sql === 'SELECT status, COUNT(*) total FROM fila_integracao WHERE (empresa_id = ? OR empresa_id IS NULL) GROUP BY status' && $p === [7]);
+        $sql === 'SELECT status, COUNT(*) total FROM fila_integracao WHERE (empresa_id = ?) GROUP BY status' && $p === [7]);
 
     // Palavra reservada dentro de literal não pode ser confundida com cláusula.
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao',"SELECT * FROM fila_integracao WHERE tipo='order by teste' AND status=?",['ok']);
     hub_check($checks,'"order by" dentro de string não é tratado como cláusula',
-        str_ends_with($sql, "AND status=? AND (empresa_id = ? OR empresa_id IS NULL)") && $p === ['ok',7]);
+        str_ends_with($sql, "AND status=? AND (empresa_id = ?)") && $p === ['ok',7]);
 
     [$sql,$p] = TenantScopeService::applyToSelect('fila_integracao','UPDATE fila_integracao SET status=? WHERE id=?',['ok',9]);
     hub_check($checks,'UPDATE também recebe o predicado',
-        $sql === 'UPDATE fila_integracao SET status=? WHERE id=? AND (empresa_id = ? OR empresa_id IS NULL)' && $p === ['ok',9,7]);
+        $sql === 'UPDATE fila_integracao SET status=? WHERE id=? AND (empresa_id = ?)' && $p === ['ok',9,7]);
 
     [$sql,$p] = TenantScopeService::applyToSelect('pedidos_integracao','SELECT p.* FROM pedidos_integracao p WHERE p.status=?',['novo'],'p');
     hub_check($checks,'Alias é respeitado no predicado',
-        $sql === 'SELECT p.* FROM pedidos_integracao p WHERE p.status=? AND (p.empresa_id = ? OR p.empresa_id IS NULL)' && $p === ['novo',7]);
+        $sql === 'SELECT p.* FROM pedidos_integracao p WHERE p.status=? AND (p.empresa_id = ?)' && $p === ['novo',7]);
 
     hub_check($checks,'Tabela fora do catálogo não é reescrita',
         TenantScopeService::applyToSelect('usuarios','SELECT * FROM usuarios WHERE id=?',[1])[0] === 'SELECT * FROM usuarios WHERE id=?');
@@ -118,9 +131,9 @@ $comEmpresa(7, static function () use (&$checks) {
 
     // ------------------------------------------------------------ assertRow
     hub_check($checks,'assertRow aceita linha da própria empresa', TenantScopeService::assertRow('fila_integracao',['id'=>1,'empresa_id'=>7]));
-    hub_check($checks,'assertRow aceita linha legada (empresa_id NULL)', TenantScopeService::assertRow('fila_integracao',['id'=>1,'empresa_id'=>null]));
+    hub_check($checks,'assertRow rejeita linha legada (empresa_id NULL)', !TenantScopeService::assertRow('fila_integracao',['id'=>1,'empresa_id'=>null]));
     hub_check($checks,'assertRow RECUSA linha de outra empresa', !TenantScopeService::assertRow('fila_integracao',['id'=>1,'empresa_id'=>99]));
-    hub_check($checks,'assertRow ignora linha sem a coluna (consulta de colunas parciais)', TenantScopeService::assertRow('fila_integracao',['id'=>1]));
+    hub_check($checks,'assertRow rejeita linha sem a coluna', !TenantScopeService::assertRow('fila_integracao',['id'=>1]));
     hub_check($checks,'assertRow ignora resultado vazio', TenantScopeService::assertRow('fila_integracao', false));
 });
 
@@ -142,5 +155,39 @@ hub_check($checks,'Backfill só roda com UMA empresa cadastrada (não chuta com 
 hub_check($checks,'Verificador estático de escopo está presente na CI',
     is_file(hub_root().'/scripts/ci/tenant-scope-check.php')
     && str_contains(hub_read('.github/workflows/hub-ci.yml'),'tenant-scope-check.php'));
+
+// Ter uma empresa cadastrada não autoriza uma entrada externa sem vínculo.
+EmpresaCatalogService::$unica = 3;
+hub_check($checks,'Não infere empresa da instalação para escrita', TenantScopeService::empresaParaGravar() === null);
+EmpresaCatalogService::$unica = null;
+
+// O portão precisa cobrar a GRAVAÇÃO na própria sentença (achado I-02): a janela de ±6 linhas
+// alcançava outro método em arquivo denso e dava por coberta uma gravação crua.
+$portao = hub_read('scripts/ci/tenant-scope-check.php');
+hub_check($checks,'Portão tem régua estrita para gravação',
+    str_contains($portao,'$violacoesEscrita') && str_contains($portao,'REPLACE\\s+INTO'));
+hub_check($checks,'Gravações cruas corrigidas continuam corrigidas',
+    !str_contains(hub_read('app/Controllers/FilaController.php'),"\$pdo->prepare('INSERT INTO fila_integracao")
+    && str_contains(hub_read('app/Services/EstoqueVsmSchedulerService.php'),"TenantScopeService::run('estoque_saldos_cache'"));
+
+// Achado I-08: JOIN sem alias faz o predicado virar `empresa_id = ?` puro, e o banco recusa a
+// consulta inteira quando a outra tabela do JOIN também tem a coluna. Eram QUATRO consultas.
+hub_check($checks,'Portão cobra alias em consulta com JOIN',
+    str_contains($portao,'$violacoesJoin') && str_contains($portao,'in WHERE is ambiguous'));
+foreach ([
+    'app/Controllers/FiscalController.php'        => "LIMIT 50', [], 'i')",
+    'app/Controllers/DashboardController.php'     => "LIMIT 50', [], 'i')",
+    'app/Services/FiscalEnterpriseService.php'    => "WHERE x.id IS NULL', [], 'n')",
+] as $arquivo => $trecho) {
+    hub_check($checks,"Alias aplicado em {$arquivo}", str_contains(hub_read($arquivo), $trecho));
+}
+
+// Achado I-06: a tela Fila pedia uma coluna que fila_integracao não tem e devolvia 500.
+hub_check($checks,'Tela Fila não pede coluna inexistente',
+    !preg_match('/SELECT[^\']*atualizado_em[^\']*FROM fila_integracao/i', hub_read('app/Controllers/FilaController.php')));
+
+// Achado I-07: a asserção de texto não enxerga um 500, porque o Hub esconde a exceção de propósito.
+hub_check($checks,'E2E confere o STATUS da rota, não só o texto da tela',
+    str_contains(hub_read('tests/e2e/specs/visual-responsive.spec.js'),'resposta.status()'));
 
 hub_finish($checks);
