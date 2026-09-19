@@ -385,13 +385,49 @@ function install_admin_user(PDO $pdo, string $name, string $email, string $passw
   try {
     $existing=(int)$pdo->query('SELECT COUNT(*) FROM usuarios')->fetchColumn();
     if($existing!==0)throw new FriendlyInstallException('Instalação nova bloqueada: a tabela usuarios já contém registros. Use o fluxo separado de atualização/recuperação e preserve as contas existentes.');
-    $stmt = $pdo->prepare("INSERT INTO usuarios (nome,email,senha,perfil,ativo) VALUES (:nome,:email,:senha,'admin',1)");
-    $stmt->execute([':nome' => $name, ':email' => $email, ':senha' => $passwordHash]);
+    // O administrador precisa nascer VINCULADO à empresa única já semeada pelos módulos
+    // (empresas id=1, INSERT IGNORE), senão a primeira sessão autenticada bate no gate de
+    // isolamento (IntegrationTenantService::enforceRequest -> HTTP 409) e o dashboard nunca
+    // carrega numa instalação limpa, sem nenhum passo manual. A regra é a mesma das migrations
+    // 010/014 e de EmpresaCatalogService::empresaUnicaId(): COUNT(*)=1 então MIN(id).
+    // install.php é autônomo (não carrega o autoloader do Hub — lição I-21), então a existência
+    // da coluna é conferida por information_schema cru, sem depender de Database::columnExists.
+    $empresaId = null;
+    $totalEmpresas = (int)$pdo->query('SELECT COUNT(*) FROM empresas')->fetchColumn();
+    if ($totalEmpresas === 1) {
+      $empresaId = (int)$pdo->query('SELECT MIN(id) FROM empresas')->fetchColumn();
+    }
+    $usuariosTemEmpresa = install_column_exists($pdo, 'usuarios', 'empresa_id');
+    if ($empresaId !== null && $empresaId > 0 && $usuariosTemEmpresa) {
+      $stmt = $pdo->prepare("INSERT INTO usuarios (nome,email,senha,perfil,ativo,empresa_id) VALUES (:nome,:email,:senha,'admin',1,:empresa)");
+      $stmt->execute([':nome' => $name, ':email' => $email, ':senha' => $passwordHash, ':empresa' => $empresaId]);
+    } else {
+      $stmt = $pdo->prepare("INSERT INTO usuarios (nome,email,senha,perfil,ativo) VALUES (:nome,:email,:senha,'admin',1)");
+      $stmt->execute([':nome' => $name, ':email' => $email, ':senha' => $passwordHash]);
+    }
+    // Vincular a integração à mesma empresa única. O gate exige que
+    // configuracoes_integracao.integracao_empresa_id case com a empresa única; sem isto o 409
+    // persiste mesmo com o admin vinculado. Só grava se a coluna existir e o vínculo ainda estiver
+    // vazio ou já apontar para a mesma empresa — nunca sobrescreve um vínculo diferente.
+    if ($empresaId !== null && $empresaId > 0
+        && install_column_exists($pdo, 'configuracoes_integracao', 'integracao_empresa_id')) {
+      $bind = $pdo->prepare('UPDATE configuracoes_integracao SET integracao_empresa_id=:empresa '
+        . 'WHERE id=1 AND (integracao_empresa_id IS NULL OR integracao_empresa_id=:empresa2)');
+      $bind->execute([':empresa' => $empresaId, ':empresa2' => $empresaId]);
+    }
     $pdo->commit();
   } catch (Throwable $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     throw $e;
   }
+}
+function install_column_exists(PDO $pdo, string $table, string $column): bool {
+  // information_schema com placeholder é válido no Hub (prepares nativos recusam SHOW ... LIKE ?,
+  // não uma consulta comum — lição I-10). DATABASE() resolve o schema corrente da conexão.
+  $stmt = $pdo->prepare('SELECT COUNT(*) FROM information_schema.COLUMNS '
+    . 'WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+  $stmt->execute([$table, $column]);
+  return ((int)$stmt->fetchColumn()) > 0;
 }
 function split_schema_definitions(string $body): array {
   $items = []; $buffer = ''; $quote = null; $escape = false; $depth = 0; $length = strlen($body);
