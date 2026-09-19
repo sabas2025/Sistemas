@@ -575,7 +575,7 @@ ce5409580aeba0b8cc6eaf12113089a018a4ecc69857c253a266a0269b10b4a3  ./public/asset
 47aa03b17943e700a2df9bfd28d85ad728401b5bc15f28a60a8d7c83f31b0887  ./public/assets/vendor/bootstrap/bootstrap.bundle.min.js
 3d84d2eab03ffff3ae87328b0eb75a24e5a658cd1699eab332bceb3b56e1318c  ./public/assets/vendor/bootstrap/bootstrap.min.css
 da4e51e8c005921dc3d9b53e2c31a6354d337c7bdd24aa32dea5aa6b9994972a  ./public/index.php
-9b419c3dcac2bc4a455be497230aa8442691d5343185d389fff5b3173cfadd5f  ./public/install.php
+2222095239309d652ff7a055923e69874dd2a53a3b18682d860b01cd977de07b  ./public/install.php
 719c3e01f1ab7a32df55a4961829e132a179eb3c2c8d177c9fc306c9245de547  ./public/manifest.webmanifest
 62e1d9382370489941a67dab23d45a9583a7b6aa5ae46d9a8f3fc59f31b19d08  ./public/offline.html
 4148e59ebe5560a2a33101579ceac2d66ee0805acdaaeec9447397cbadd23762  ./public/pwa_telemetry.php
