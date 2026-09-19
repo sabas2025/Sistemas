@@ -5,6 +5,14 @@
  */
 class TenantContextService {
   public static function currentEmpresaId(): ?int {
+    // Credenciais de integração são globais nesta release: vínculo explícito single-company.
+    if (class_exists('IntegrationTenantService')) {
+      $external = PHP_SAPI === 'cli' || str_starts_with((string)($_GET['page'] ?? ''), 'api/');
+      if ($external) return IntegrationTenantService::boundEmpresaId();
+      $id = IntegrationTenantService::sessionEmpresaId();
+      if ($id !== null && $id !== IntegrationTenantService::singleEmpresaId()) throw new RuntimeException('TENANT_SCOPE_VIOLATION');
+      return $id;
+    }
     // P0-02 (reauditoria 2026-08-23): $_GET nunca é uma fonte confiável para "qual
     // empresa está ativa" - qualquer link/bookmark podia forjar o valor.
     // Esta classe é o SELETOR de contexto de sessão. Quem isola dado é o TenantScopeService,

@@ -8,12 +8,13 @@ App::setupErrors();
 
 $limit = (int)($argv[1] ?? 20);
 $db = Database::forTable('fila_estoque');
-$itens = $db->prepare("SELECT * FROM fila_estoque WHERE status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa<=NOW()) ORDER BY id ASC LIMIT ?");
+$itens = $db->prepare("SELECT * FROM fila_estoque WHERE empresa_id=".(int)IntegrationTenantService::boundEmpresaId()." AND status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa<=NOW()) ORDER BY id ASC LIMIT ?");
 $itens->bindValue(1, max(1,min(200,$limit)), PDO::PARAM_INT);
 $itens->execute();
 $rows = $itens->fetchAll();
 
 foreach ($rows as $r) {
+  if (!TenantScopeService::assertRow('fila_estoque',$r,'worker_estoque')) continue;
   $id = (int)$r['id'];
   try {
     $db->prepare("UPDATE fila_estoque SET status='processando', tentativas=tentativas+1, atualizado_em=NOW() WHERE id=?")->execute([$id]);

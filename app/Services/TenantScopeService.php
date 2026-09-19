@@ -1,31 +1,8 @@
 <?php
 /**
- * Melhoria 1 da seção 8 (relatório V104.49.3-R6): isolamento de dados por empresa.
- *
- * Até a R6, `empresas` e `filiais` existiam no schema, `TenantContextService` guardava a empresa
- * ativa na sessão e `commercial.tenant_scope_required` BLOQUEAVA rotas operacionais sem empresa
- * selecionada - mas NENHUMA consulta filtrava por empresa. Ou seja: a tela sugeria um isolamento
- * que o banco não tinha. Era a maior lacuna estrutural do sistema, e silenciosa.
- *
- * Este serviço é a camada de isolamento. `TenantContextService` responde "qual empresa está
- * ativa"; este aqui responde "como aplicar isso a uma consulta".
- *
- * ## Contrato
- *
- * - `where()` devolve o predicado e os parâmetros a acrescentar numa consulta.
- * - `stamp()` carimba `empresa_id` num array de INSERT.
- * - Tabela fora do catálogo devolve predicado vazio: o catálogo é explícito, nunca adivinhado.
- * - **Sem empresa no contexto, o predicado é vazio** - a instalação de empresa única, que é o caso
- *   de hoje, continua funcionando exatamente como antes. O isolamento passa a valer quando há
- *   empresa selecionada, e `commercial.tenant_scope_required` garante que rotas operacionais não
- *   sejam alcançadas sem ela.
- *
- * ## Como isto é verificado
- *
- * `scripts/ci/tenant-scope-check.php` varre o código e reprova consulta a tabela do catálogo que
- * não passe por este serviço nem esteja numa exceção justificada. Sem essa checagem, a próxima
- * consulta escrita à mão voltaria a vazar entre empresas sem ninguém perceber - que foi exatamente
- * como a lacuna original se manteve por tanto tempo.
+ * R7 build 20260917.1: escopo fechado. Sem contexto, leitura não retorna linhas e escrita falha.
+ * Linhas NULL ficam fora do fluxo normal até classificação comprovada.
+ * A instalação continua limitada a uma empresa; credenciais globais impedem liberar multicliente.
  */
 class TenantScopeService {
   /**
@@ -89,24 +66,8 @@ class TenantScopeService {
     catch (Throwable $e) { return null; }
   }
 
-  /**
-   * Empresa a CARIMBAR numa gravação. Deliberadamente diferente de `currentEmpresaId()`.
-   *
-   * A leitura continua valendo só pela sessão: alargar `where()` para a empresa única poderia
-   * ESCONDER linhas já carimbadas com outra empresa, e tela que perde dado sem aviso é pior do que
-   * a lacuna que se quer fechar. A gravação é o contrário — sem resposta a linha nasce NULL, ou
-   * seja, visível a todo mundo. Por isso o recurso à empresa única vive só deste lado.
-   *
-   * Ordem: sessão primeiro (um usuário operando pelo painel decide pela empresa dele); sem sessão
-   * — webhook do Tiny, item de fila, worker, cron —, a única empresa cadastrada, quando é uma só.
-   */
-  public static function empresaParaGravar(): ?int {
-    $daSessao = self::currentEmpresaId();
-    if ($daSessao !== null) return $daSessao;
-    if (!class_exists('EmpresaCatalogService')) return null;
-    try { return EmpresaCatalogService::empresaUnicaId(); }
-    catch (Throwable $e) { return null; }
-  }
+  /** Não infere proprietário pelo número de empresas: o contexto externo vem do vínculo autenticado. */
+  public static function empresaParaGravar(): ?int { return self::currentEmpresaId(); }
 
   /**
    * Predicado de isolamento para acrescentar a um WHERE já existente.
@@ -117,14 +78,10 @@ class TenantScopeService {
   public static function where(string $table, string $alias = ''): array {
     if (!self::isScoped($table)) return ['sql' => '', 'params' => []];
     $empresa = self::currentEmpresaId();
-    if ($empresa === null) return ['sql' => '', 'params' => []];
+    if ($empresa === null) return ['sql' => ' AND 1=0', 'params' => []];
     $prefixo = $alias !== '' ? rtrim($alias, '.').'.' : '';
-    // Linhas antigas, gravadas antes da migration de isolamento, têm empresa_id NULL. Elas
-    // pertencem à instalação inteira e continuam visíveis - do contrário, ligar o isolamento faria
-    // todo o histórico desaparecer da tela sem aviso. O backfill da migration 20260914_010 resolve
-    // isso quando existe uma única empresa; use whereStrict() onde herdar o legado seria errado.
     return [
-      'sql' => ' AND ('.$prefixo.self::COLUMN.' = ? OR '.$prefixo.self::COLUMN.' IS NULL)',
+      'sql' => ' AND ('.$prefixo.self::COLUMN.' = ?)',
       'params' => [$empresa],
     ];
   }
@@ -137,7 +94,7 @@ class TenantScopeService {
   public static function whereStrict(string $table, string $alias = ''): array {
     if (!self::isScoped($table)) return ['sql' => '', 'params' => []];
     $empresa = self::currentEmpresaId();
-    if ($empresa === null) return ['sql' => '', 'params' => []];
+    if ($empresa === null) return ['sql' => ' AND 1=0', 'params' => []];
     $prefixo = $alias !== '' ? rtrim($alias, '.').'.' : '';
     return ['sql' => ' AND '.$prefixo.self::COLUMN.' = ?', 'params' => [$empresa]];
   }
@@ -150,7 +107,8 @@ class TenantScopeService {
   public static function stamp(string $table, array $data): array {
     if (!self::isScoped($table)) return $data;
     $empresa = self::empresaParaGravar();
-    if ($empresa === null) return $data;
+    if ($empresa === null) throw new RuntimeException('TENANT_CONTEXT_REQUIRED: empresa não resolvida.');
+    if (isset($data[self::COLUMN]) && (int)$data[self::COLUMN] !== $empresa) throw new RuntimeException('TENANT_SCOPE_VIOLATION');
     $data[self::COLUMN] = $empresa;
     return $data;
   }
@@ -164,10 +122,10 @@ class TenantScopeService {
   public static function assertRow(string $table, $row, string $contexto = ''): bool {
     if (!is_array($row) || !self::isScoped($table)) return true;
     $empresa = self::currentEmpresaId();
-    if ($empresa === null) return true;
-    if (!array_key_exists(self::COLUMN, $row)) return true;
+    if ($empresa === null) return false;
+    if (!array_key_exists(self::COLUMN, $row)) return false;
     $linha = $row[self::COLUMN];
-    if ($linha === null || (int)$linha === $empresa) return true;
+    if ($linha !== null && (int)$linha === $empresa) return true;
     if (class_exists('SecurityHealthService')) {
       SecurityHealthService::degrade('tenant_scope', 'Linha de outra empresa alcançada em '.$table.'.', ['tabela'=>$table,'contexto'=>$contexto]);
     }
@@ -220,7 +178,7 @@ class TenantScopeService {
 
   /** Posição, fora de string/identificador, da primeira ocorrência de um dos padrões dados. */
   private static function findClauseOffset(string $sql, array $palavras): ?int {
-    $aspas = ''; $len = strlen($sql);
+    $aspas = ''; $len = strlen($sql); $nivel = 0;
     for ($i = 0; $i < $len; $i++) {
       $c = $sql[$i];
       if ($aspas !== '') {
@@ -229,6 +187,9 @@ class TenantScopeService {
         continue;
       }
       if ($c === "'" || $c === '"' || $c === '`') { $aspas = $c; continue; }
+      if ($c === '(') { $nivel++; continue; }
+      if ($c === ')') { $nivel--; continue; }
+      if ($nivel !== 0) continue;
       foreach ($palavras as $palavra) {
         $tam = strlen($palavra);
         if (strncasecmp(substr($sql, $i, $tam), $palavra, $tam) !== 0) continue;
@@ -285,7 +246,7 @@ class TenantScopeService {
     if ($where === null) {
       // Sem WHERE: o predicado vira o WHERE, mas ainda antes de GROUP/ORDER/LIMIT.
       $prefixo = $alias !== '' ? rtrim($alias, '.').'.' : '';
-      $clausula = ' WHERE ('.$prefixo.self::COLUMN.' = ? OR '.$prefixo.self::COLUMN.' IS NULL) ';
+      $clausula = ' WHERE '.substr($escopo['sql'], 5).' ';
       $corte = $fim ?? strlen($sql);
     } else {
       $clausula = $escopo['sql'].' ';
@@ -294,9 +255,16 @@ class TenantScopeService {
     }
 
     $posicao = self::countPlaceholders($sql, $corte);
-    $novoSql = rtrim(substr($sql, 0, $corte)).$clausula.substr($sql, $corte);
+    $inicio = rtrim(substr($sql, 0, $corte));
+    if ($where !== null) {
+      $condicao = trim(substr($sql,$where+5,$corte-$where-5));
+      // SQL AND tem precedência sobre OR: sem parênteses o primeiro ramo escapava do tenant.
+      if (self::findClauseOffset($condicao,['OR']) !== null) $inicio = substr($sql,0,$where+5).' ('.$condicao.')';
+    }
+    $novoSql = $inicio.$clausula.substr($sql, $corte);
     array_splice($params, $posicao, 0, $escopo['params']);
-    return [preg_replace('/\s+/', ' ', trim($novoSql)), $params];
+    // Não normalizar espaços dentro de strings SQL (JSON/texto podem depender deles).
+    return [trim($novoSql), $params];
   }
 
   /**
@@ -315,7 +283,7 @@ class TenantScopeService {
     // e o INSERT saía intacto — era assim que webhook e fila gravavam empresa_id NULL (H-01).
     if (!self::isScoped($table)) return [$sql, $params];
     $empresa = self::empresaParaGravar();
-    if ($empresa === null) return [$sql, $params];
+    if ($empresa === null) throw new RuntimeException('TENANT_CONTEXT_REQUIRED: escrita sem empresa bloqueada.');
     if (preg_match('/\b'.preg_quote(self::COLUMN, '/').'\b/i', $sql)) return [$sql, $params];
 
     // INSERT INTO tabela ( colunas ) VALUES ( ... )

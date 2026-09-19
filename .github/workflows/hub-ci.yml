@@ -108,6 +108,16 @@ jobs:
           HUB_TEST_DB_PASS: root
           HUB_TEST_DB_NAME: hub_ci_modules
         run: php scripts/ci/mysql-modular-runtime-regression.php
+      - name: Upgrade R7 e MyOuro em banco real (único e modular)
+        env:
+          HUB_TEST_DB_HOST: 127.0.0.1
+          HUB_TEST_DB_PORT: 3306
+          HUB_TEST_DB_USER: root
+          HUB_TEST_DB_PASS: root
+          HUB_R7_TEST_CONFIRM: '1'
+        run: |
+          php scripts/ci/r7-upgrade-runtime.php single
+          php scripts/ci/r7-upgrade-runtime.php modular
   # Reauditoria 2026-09-14 (achado A-03): o job não subia servidor nem banco, não definia
   # HUB_BASE_URL (o default do playwright.config.js apontava para um host REMOTO de produção),
   # usava "@playwright/test": latest sem lockfile e deixava os testes autenticados serem pulados

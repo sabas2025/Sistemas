@@ -220,7 +220,7 @@ hub_check($checks,'Workflow de CI passa HUB_CI_E2E_CONFIRM ao script destrutivo'
 // =====================================================================================
 $runner = hub_read('scripts/ci/enterprise-tests.sh');
 hub_check($checks,'Suíte Enterprise executa todos os testes mesmo com falhas (A-01)',
-    str_contains($runner, 'if php "$test_file"; then') && str_contains($runner, 'failed_files'));
+    str_contains($runner, 'if php "$ROOT/scripts/ci/run-strict-test.php" "$test_file"; then') && str_contains($runner, 'failed_files'));
 $workflow = hub_read('.github/workflows/hub-ci.yml');
 hub_check($checks,'E2E do CI provisiona ambiente próprio e define HUB_BASE_URL (A-03)',
     str_contains($workflow, 'provision-e2e-environment.php')

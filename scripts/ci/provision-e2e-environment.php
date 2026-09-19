@@ -118,6 +118,8 @@ if ($adminCount !== 1) {
 // marca e desligada aqui - no provisionamento, nao no teste. A regra de negocio continua intacta
 // para instalacao real.
 $pdo->prepare('UPDATE usuarios SET deve_trocar_senha=0 WHERE email=?')->execute([E2E_ADMIN_EMAIL]);
+$pdo->prepare('UPDATE usuarios SET empresa_id=1 WHERE email=?')->execute([E2E_ADMIN_EMAIL]);
+$pdo->exec('UPDATE configuracoes_integracao SET integracao_empresa_id=1 WHERE id=1');
 
 // F-01/F-02: indicador que mente e pior que indicador ausente. Conferir o que acabou de ser
 // escrito, para que um schema futuro que renomeie ou repopule a coluna falhe AQUI, alto e claro,

@@ -1,6 +1,6 @@
-# HUB Tiny/VSM V104.49.3-R5 — pacote completo
+# HUB Tiny/VSM — R7 build 20260917.1
 
-Release final de 22/08/2026. Este pacote contém o código completo, instalador modular, banco de dados, migrations históricas preservadas, PWA e correções acumuladas até a V104.49.3-R5.
+**Procedimento atual:** leia `UPGRADE-R7-20260917.md` e `RELATORIO-IMPLEMENTACAO-R7-20260917.md` antes de instalar. Esta compilação exige vínculo explícito da empresa, bloqueia multicliente e adiciona MyOuro somente consulta. Não é uma certificação de produção. As seções abaixo preservam instruções históricas da R5; em caso de divergência, prevalece o guia R7 de 17/09/2026.
 
 ## Instalação nova
 

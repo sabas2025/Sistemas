@@ -18,6 +18,7 @@ $vsmReady = trim((string)($config['vsm_url'] ?? '')) !== '' && trim((string)($co
 $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((string)($config['tiny_webhook_secret'] ?? '')) !== '';
 ?>
 <div class="integration-page integration-config-page">
+<div class="alert alert-info">Nova conexão independente: <a href="index.php?page=myouro-configuracoes">MyOuro GraphQL — Consultas e vínculo da empresa</a>. Não substitua a URL REST VSM por /graphql.</div>
 <div class="integration-hero integration-hero--config">
   <div>
     <span class="integration-eyebrow"><i class="bi bi-sliders"></i> Central de configurações</span>

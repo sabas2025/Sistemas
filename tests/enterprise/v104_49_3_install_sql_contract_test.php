@@ -77,8 +77,8 @@ if($faltando===[]){
     }
 
     // I-20: afirmar o N do conjunto antes de afirmar o vazio. Verde sobre nada não é verde.
-    hub_check($checks,'O contrato reconhece as 135 tabelas dos módulos', $tabelas===135, $tabelas.' tabela(s)');
-    hub_check($checks,'O contrato reconhece as 1.550 colunas dos módulos', $colunas===1550, $colunas.' coluna(s)');
+    hub_check($checks,'O contrato reconhece as 136 tabelas (incluindo MyOuro)', $tabelas===136, $tabelas.' tabela(s)');
+    hub_check($checks,'O contrato reconhece as 1.562 colunas (MyOuro e vínculo)', $colunas===1562, $colunas.' coluna(s)');
     hub_check($checks,'Nenhuma coluna é rejeitada pelo contrato canônico do instalador',
         $rejeitadas===[], $rejeitadas===[] ? '' : count($rejeitadas).' rejeitada(s): '.implode(', ',array_slice($rejeitadas,0,6)));
 }

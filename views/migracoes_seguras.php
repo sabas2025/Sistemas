@@ -8,6 +8,7 @@
 </div>
 <?php if(!empty($_SESSION['flash_error'])): ?><div class="alert alert-warning"><?=h($_SESSION['flash_error']); unset($_SESSION['flash_error']);?></div><?php endif; ?>
 <div class="card shadow-sm"><div class="card-body">
+  <div class="alert alert-warning"><b>Procedimento atual:</b> leia <code>UPGRADE-R7-20260917.md</code> e execute <code>php scripts/upgrade-r7.php --dry-run</code> no terminal. A simulação não altera o banco. A migration BIGINT 012 requer janela separada, workers parados e restauração de backup testada. Solicitar uma migração nesta tela não a executa.</div>
   <h2 class="h5">Arquivos de migração encontrados</h2>
   <div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Arquivo</th><th>Status</th><th>Ação recomendada</th></tr></thead><tbody>
   <?php foreach($files as $f): ?><tr><td><code><?=h($f)?></code></td><td><span class="badge bg-info">versionado</span></td><td>Aplicar no módulo indicado no cabeçalho, após backup assinado e fora do horário crítico.</td></tr><?php endforeach; ?>

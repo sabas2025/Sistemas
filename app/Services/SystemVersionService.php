@@ -11,30 +11,34 @@
 class SystemVersionService {
   public const VERSION = 'V104.49.3';
   public const VERSION_NUMBER = '104.49.3';
-  public const CODENAME = 'R7 — Isolamento multiempresa e melhorias estruturais aplicadas';
+  public const CODENAME = 'R7 — Revisão de release e MyOuro de consulta; multicliente bloqueado';
   public const RELEASE = 'R7';
   // Mantido para reconhecer instalações e registros históricos da R4.
   public const SCHEMA_VERSION = 'v104_49_2_enterprise_map_recovery_r4';
   public const INSTALL_SQL = 'database/install_final_current.sql';
   public const INSTALL_CURRENT_SQL = 'database/install_final_current.sql';
   public const REPAIR_CURRENT_SQL = 'database/repair_current.sql';
-  public const RELEASE_DATE = '2026-09-14';
+  public const RELEASE_DATE = '2026-09-17';
+  public const BUILD = '20260917.1';
+  public const BASELINE_LAST_MIGRATION = '20260713_007_enterprise_map_recovery.sql';
+  public static function artifactVersion(): string { return self::VERSION.'-'.self::RELEASE.'+'.self::BUILD; }
 
   public static function version(): string { return self::VERSION; }
-  public static function label(): string { return self::VERSION; }
-  public static function fullLabel(): string { return self::VERSION . ' — ' . self::CODENAME; }
+  public static function label(): string { return self::artifactVersion(); }
+  public static function fullLabel(): string { return self::artifactVersion() . ' — ' . self::CODENAME; }
   public static function installSql(): string { return self::INSTALL_CURRENT_SQL; }
   public static function repairSql(): string { return self::REPAIR_CURRENT_SQL; }
   public static function migration(): string { return self::SCHEMA_VERSION; }
   public static function schemaMessage(string $context = 'schema'): string {
-    return 'Executar Central Técnica > Enterprise Core (Simular e depois Aplicar) ou aplicar, nesta ordem, database/migrations/20260712_001_queue_oauth_concurrency.sql, 20260712_002_schema_runtime_vsm_contract.sql, 20260712_003_missing_core_tables.sql, 20260712_004_vsm_security_selftest_recovery.sql e 20260713_007_enterprise_map_recovery.sql. A V104.49.3-R5 valida tabelas, colunas, tipos, valores padrão e índices críticos sem DDL em requisições operacionais.';
+    return 'Schema pendente em '.$context.'. Consulte UPGRADE-R7-20260917.md e execute php scripts/upgrade-r7.php --dry-run. A tela Migrações Seguras registra a solicitação; não aplica SQL. BIGINT exige janela e restauração testada. Release '.self::artifactVersion().'.';
   }
   public static function updateBlockedMessage(): string {
     return 'Update legado bloqueado na ' . self::VERSION . '. Use Central Técnica > Enterprise Core (Simular e Aplicar), Migrações Seguras ou Validar Banco. Para uma instalação nova, use o instalador oficial; não use repair_current.sql de versões anteriores.';
   }
   public static function info(): array {
     return [
-      'version' => self::VERSION,
+      'version' => self::artifactVersion(),
+      'build' => self::BUILD,
       'number' => self::VERSION_NUMBER,
       'codename' => self::CODENAME,
       'release' => self::RELEASE,

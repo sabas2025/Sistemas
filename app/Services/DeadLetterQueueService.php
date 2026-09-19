@@ -2,6 +2,7 @@
 class DeadLetterQueueService {
   public static function enviar(array $item, array $retorno=[], ?string $codigoErro=null, ?string $motivo=null): void {
     try {
+      if (!TenantScopeService::assertRow('fila_integracao',$item,'dlq.enviar')) throw new RuntimeException('TENANT_SCOPE_VIOLATION: item sem proprietário autorizado.');
       $pdo = Database::forTable('fila_morta');
       $classificacao = class_exists('ErrorClassificationService') ? ErrorClassificationService::classify($codigoErro, $retorno, $motivo) : ['categoria'=>'operacional','severidade'=>'media','retryable'=>1,'owner_area'=>'operacao','acao'=>'Analisar manualmente.'];
       $hasEnterprise = Database::columnExists('fila_morta','categoria_erro') && Database::columnExists('fila_morta','acao_recomendada_dlq');
@@ -52,10 +53,15 @@ class DeadLetterQueueService {
 
   public static function reprocessar(int $dlqId): void {
     $pdo = Database::forTable('fila_morta');
-    $st = $pdo->prepare('SELECT * FROM fila_morta WHERE id=? LIMIT 1');
+    if ($pdo !== Database::forTable('fila_integracao')) throw new RuntimeException('DLQ e fila precisam compartilhar a conexão do módulo fila.');
+    $pdo->beginTransaction();
+    try {
+    $st = $pdo->prepare('SELECT * FROM fila_morta WHERE id=? LIMIT 1 FOR UPDATE');
     $st->execute([$dlqId]);
     $dlq = $st->fetch();
     if (!$dlq) throw new RuntimeException('Registro da fila morta não encontrado.');
+    if (!TenantScopeService::assertRow('fila_morta',$dlq,'dlq.reprocessar')) throw new RuntimeException('TENANT_SCOPE_VIOLATION');
+    if (($dlq['status'] ?? '') !== 'aberto') throw new RuntimeException('Registro já reprocessado ou fechado.');
     // Achado I-13: a linha reprocessada nascia com empresa_id NULL — visível a todas as empresas.
     // O dono não precisa ser adivinhado: a própria linha da fila morta sabe de quem ela é. A
     // condição de coluna segue o desenho de enviar() acima, para banco anterior à migration 010.
@@ -68,6 +74,8 @@ class DeadLetterQueueService {
       ->execute($params);
     $novoId = (int)Database::forTable('fila_integracao')->lastInsertId();
     $pdo->prepare('UPDATE fila_morta SET status="reprocessado", atualizado_em=NOW() WHERE id=?')->execute([$dlqId]);
+    $pdo->commit();
+    } catch (Throwable $e) { if ($pdo->inTransaction()) $pdo->rollBack(); throw $e; }
     Audit::event('fila_morta.reprocessar','sucesso',['entidade'=>'fila_integracao','entidade_id'=>$novoId,'mensagem'=>'Item da fila morta reenviado para fila principal.']);
   }
 }

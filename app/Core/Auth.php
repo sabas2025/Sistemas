@@ -7,6 +7,11 @@ class Auth {
 
   public static function requireLogin(): void {
     if(!self::check()) redirect('index.php?page=login');
+    if (class_exists('IntegrationTenantService') && PHP_SAPI !== 'cli') {
+      // Revalida vínculo/perfil/inativação a cada requisição autenticada, não só no login.
+      try { IntegrationTenantService::sessionEmpresaId(); }
+      catch (Throwable $e) { $_SESSION=[]; session_destroy(); redirect('index.php?page=login&expired=1'); }
+    }
     $cfg = class_exists('App') ? App::config() : [];
     $sec = $cfg['security'] ?? [];
     $now = time();

@@ -1,11 +1,12 @@
 <?php
-// V104.49.3-R5 (2026-08-22) - instalador protegido por autorização temporária fora da raiz pública.
+// Instalador protegido; identidade da release vem de SystemVersionService.
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 $root = dirname(__DIR__);
 require_once $root.'/app/Services/InstallDatabaseProbe.php';
+require_once $root.'/app/Services/SystemVersionService.php';
 $configPath = $root . '/config/config.php';
 $lockPath = $root . '/storage/install.lock';
 $authorizationPath = $root . '/storage/install-authorization.json';
@@ -215,7 +216,7 @@ function publish_install_artifacts(string $configPath, string $root, array $conf
   $contents=[
     $fimPath=>$fim.PHP_EOL,
     $configPath=>export_config($config),
-    $lockPath=>'installed_at='.date('c').PHP_EOL.'version='.trim((string)@file_get_contents($root.'/VERSAO.txt')).PHP_EOL.'release_date=2026-09-14'.PHP_EOL.'mode=production_ready'.PHP_EOL,
+    $lockPath=>'installed_at='.date('c').PHP_EOL.'version='.SystemVersionService::artifactVersion().PHP_EOL.'release_date='.SystemVersionService::RELEASE_DATE.PHP_EOL.'mode=production_ready'.PHP_EOL,
   ];
   $snapshots=[];
   foreach(array_keys($contents) as $path){
@@ -800,7 +801,7 @@ if (!$locked && !$httpsBlocked && $installAuthorized && $requestMethod === 'POST
     }
     $installSteps[] = 'Gate pós-instalação aprovado: '.$schemaGate['tables'].' tabelas, '.$schemaGate['columns'].' colunas e '.$schemaGate['indexes'].' índices, com tipos, nulabilidade, defaults, ordem/unicidade, engine, charset e collation declarada verificados.';
     $cfg = [
-      'app_name'=>'Hub de Integração Enterprise', 'app_version'=>'V104.49.3-R5', 'release_date'=>'2026-08-22', 'installation_id'=>bin2hex(random_bytes(16)), 'base_url'=>$data['base_url'], 'app_env'=>$data['app_env'],
+      'app_name'=>'Hub de Integração Enterprise', 'app_version'=>SystemVersionService::artifactVersion(), 'release_date'=>SystemVersionService::RELEASE_DATE, 'installation_id'=>bin2hex(random_bytes(16)), 'base_url'=>$data['base_url'], 'app_env'=>$data['app_env'],
       'security'=>[
         'block_search_engines'=>true,
         'force_https'=>true,

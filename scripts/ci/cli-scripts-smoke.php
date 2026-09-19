@@ -31,6 +31,10 @@ $root = dirname(__DIR__, 2);
  *   excluido — não é exercitado; exige motivo
  */
 $catalogo = [
+    'upgrade-r7.php' => [
+        'modo' => 'direto', 'args' => ['--help'],
+        'nota' => 'help não acessa banco nem escreve; aplicação só com flags explícitas',
+    ],
     'build-classmap.php' => [
         'modo' => 'direto',
         'args' => ['--check'],

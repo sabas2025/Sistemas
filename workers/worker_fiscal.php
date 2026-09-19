@@ -8,12 +8,13 @@ App::setupErrors();
 
 $limit = (int)($argv[1] ?? 20);
 $db = Database::forTable('fila_fiscal');
-$st = $db->prepare("SELECT * FROM fila_fiscal WHERE status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa<=NOW()) ORDER BY FIELD(prioridade,'critica','alta','normal','baixa'), id ASC LIMIT ?");
+$st = $db->prepare("SELECT * FROM fila_fiscal WHERE empresa_id=".(int)IntegrationTenantService::boundEmpresaId()." AND status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa<=NOW()) ORDER BY FIELD(prioridade,'critica','alta','normal','baixa'), id ASC LIMIT ?");
 $st->bindValue(1, max(1,min(200,$limit)), PDO::PARAM_INT);
 $st->execute();
 $itens = $st->fetchAll();
 
 foreach ($itens as $item) {
+  if (!TenantScopeService::assertRow('fila_fiscal',$item,'worker_fiscal')) continue;
   $id = (int)$item['id'];
   $notaId = (int)($item['nota_fiscal_id'] ?? 0);
   $integracaoId = (int)($item['nfe_integracao_id'] ?? 0);

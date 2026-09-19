@@ -1,7 +1,7 @@
 {
-  "version": "V104.49.3-R5",
-  "total_tables": 135,
-  "unique_tables": 135,
+  "version": "V104.49.3-R7+20260917.1",
+  "total_tables": 136,
+  "unique_tables": 136,
   "duplicates": [],
   "tables": [
     "audit_daily_signatures",
@@ -78,6 +78,7 @@
     "mapper_versions",
     "metricas_api",
     "module_health_snapshots",
+    "myouro_conexoes",
     "nfe_integracao",
     "nfe_status_historico",
     "nfe_xml",

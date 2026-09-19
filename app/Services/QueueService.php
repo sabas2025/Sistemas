@@ -136,7 +136,8 @@ class QueueService {
   }
 
   private static function selectNextPending(PDO $pdo): ?array {
-    $base = "SELECT * FROM fila_integracao WHERE status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa <= NOW()) ORDER BY FIELD(prioridade,'critica','alta','normal','baixa'), id ASC LIMIT 1";
+    $empresa = IntegrationTenantService::boundEmpresaId();
+    $base = "SELECT * FROM fila_integracao WHERE empresa_id=".(int)$empresa." AND status='pendente' AND (proxima_tentativa IS NULL OR proxima_tentativa <= NOW()) ORDER BY FIELD(prioridade,'critica','alta','normal','baixa'), id ASC LIMIT 1";
     $cfg = class_exists('App') ? App::config() : [];
     if (!empty($cfg['enterprise']['queue_skip_locked_enabled'])) {
       try { $row = $pdo->query($base . ' FOR UPDATE SKIP LOCKED')->fetch(); return $row ?: null; }
@@ -204,7 +205,7 @@ class QueueService {
       $st=$pdo->prepare('SELECT * FROM fila_integracao WHERE id=? LIMIT 1 FOR UPDATE');
       $st->execute([$id]);
       $previous=$st->fetch() ?: [];
-      if (!$previous) { $reason='Item não encontrado.'; $pdo->rollBack(); }
+      if (!$previous || !TenantScopeService::assertRow('fila_integracao',$previous,'reprocessar')) { $reason='Item não encontrado ou fora da empresa autorizada.'; $pdo->rollBack(); }
       else {
         $status=(string)($previous['status'] ?? '');
         $eligible=in_array($status,['erro','falha_definitiva','ignorado'],true);

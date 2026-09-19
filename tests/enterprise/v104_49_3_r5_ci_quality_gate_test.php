@@ -26,7 +26,7 @@ $installProbe=hub_read('app/Services/InstallDatabaseProbe.php');
 hub_check($checks,'Release R7 e data final estão declaradas',
     str_contains($version,"VERSION = 'V104.49.3'")
     && str_contains($version,"RELEASE = 'R7'")
-    && str_contains($version,"RELEASE_DATE = '2026-09-14'"));
+    && str_contains($version,"RELEASE_DATE = '2026-09-17'") && str_contains($version,"BUILD = '20260917.1'"));
 
 hub_check($checks,'Status do schema valida colunas por tipo, nulabilidade e default',
     str_contains($schema,'requiredColumnContracts')
