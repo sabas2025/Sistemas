@@ -114,6 +114,7 @@ return [
   'LlmCostGuardService' => 'app/Services/LlmCostGuardService.php',
   'LlmFallbackService' => 'app/Services/LlmFallbackService.php',
   'LlmGatewayService' => 'app/Services/LlmGatewayService.php',
+  'LlmHttpClientService' => 'app/Services/LlmHttpClientService.php',
   'LlmPolicyService' => 'app/Services/LlmPolicyService.php',
   'LlmStructuredOutputService' => 'app/Services/LlmStructuredOutputService.php',
   'Logger' => 'app/Services/Logger.php',
