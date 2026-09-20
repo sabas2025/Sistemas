@@ -116,6 +116,7 @@ return [
   'LlmGatewayService' => 'app/Services/LlmGatewayService.php',
   'LlmHttpClientService' => 'app/Services/LlmHttpClientService.php',
   'LlmPolicyService' => 'app/Services/LlmPolicyService.php',
+  'LlmRealExecutionService' => 'app/Services/LlmRealExecutionService.php',
   'LlmStructuredOutputService' => 'app/Services/LlmStructuredOutputService.php',
   'Logger' => 'app/Services/Logger.php',
   'LoginController' => 'app/Controllers/LoginController.php',
