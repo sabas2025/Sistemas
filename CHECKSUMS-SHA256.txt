@@ -559,8 +559,8 @@ b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/asset
 1db764ab9d13fd6a64bad7d758841db741f6d34f2f0eeeab46287c3cd1546462  ./public/assets/img/shortcut-operacoes-192.png
 f1f93069b677b912242a79c4668249a95938978f95c50e1e52e8a91346e09b54  ./public/assets/integration-center.css
 5ddc69a42c5890c5bd0c09129b3c9a625a1c81ba74e3d206567c188a7e52aa8a  ./public/assets/integration-center.min.css
-7dc202bcf600d973a593346a1d402b2f79ab8157e593f3b349203f7454b3bc92  ./public/assets/login.css
-240b83a3ba21ac3460ed0ff9141083ea640006b6f0de5c18c02698ff2ece8b97  ./public/assets/login.min.css
+a5cd347716ad21b6443d2724a3cfaeef75fb987a596868c2d42be3ba72b970d4  ./public/assets/login.css
+f8ee5d5b2c9aeea8649d3ccc5fbdd1e76887dd61166417fb9eaa7e0e9d9b487c  ./public/assets/login.min.css
 8a05403a14fd82f19a34446c7bb28b54ec517bb4e16d9974f8a5be5e037d99a9  ./public/assets/minimalist-enterprise.css
 c17788dcbf819508f5a7cf33d2ff332d061b0c77aefeb3352caf12e65c4eb93c  ./public/assets/minimalist-enterprise.min.css
 a9aca923c993a7d97f92960b56684b797ff7f404d4245dd92536d9b805b168f2  ./public/assets/minimalist-ui.js
