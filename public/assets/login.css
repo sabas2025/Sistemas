@@ -1,5 +1,12 @@
 /* Login futurista - Hub de Integração */
 
+/* Unifica a tipografia das telas públicas (login, trocar-senha, 404) com a do
+   painel. Elas não carregam minimalist-enterprise.css, então sem esta regra o
+   body herdava a pilha "Inter" do app.css; aqui usamos a MESMA pilha system-ui
+   do painel (minimalist-enterprise.css). Carrega depois do app.css, então vence;
+   inputs/botões seguem herdando via a regra font-family:inherit do app.css. */
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+
 .totp-qr-box{
   display:flex;
   justify-content:center;
