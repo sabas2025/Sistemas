@@ -7,12 +7,44 @@ class LlmCostGuardService {
 
   public static function estimateTokens(string $text): int { return max(1, (int)ceil(strlen($text) / 4)); }
 
+  /**
+   * B3 (2026-09-20): tabela de preço por modelo (achado A-LLM-01). Preço em USD por 1.000 tokens,
+   * derivado das tarifas por 1M da Anthropic: haiku-4-5 $1/$5, sonnet-5 $2/$10, opus-5 $5/$25.
+   * A config `llm.pricing` (opcional) pode sobrescrever/estender; ausência usa estes defaults.
+   * Modelo desconhecido cai na heurística genérica conservadora (comportamento anterior).
+   * @return array<string,array{0:float,1:float}> [in_per_1k, out_per_1k]
+   */
+  private static function pricingTable(): array {
+    $defaults = [
+      'claude-haiku-4-5' => [0.001, 0.005],
+      'claude-sonnet-5'  => [0.002, 0.010],
+      'claude-opus-5'    => [0.005, 0.025],
+      'claude-opus-4-8'  => [0.005, 0.025],
+    ];
+    $cfg = class_exists('App') ? App::config() : (function_exists('cfg') ? cfg() : []);
+    $override = $cfg['llm']['pricing'] ?? null;
+    if (is_array($override)) {
+      foreach ($override as $model => $rates) {
+        if (is_array($rates) && isset($rates[0], $rates[1])) {
+          $defaults[strtolower((string)$model)] = [(float)$rates[0], (float)$rates[1]];
+        }
+      }
+    }
+    return $defaults;
+  }
+
   public static function estimateCost(int $tokensInput, int $tokensOutput, string $provider, string $model): float {
-    // Estimativa conservadora genérica. Em produção real, substituir por tabela de preços atualizada por modelo.
-    $per1kIn = 0.005; $per1kOut = 0.015;
-    $p = strtolower($provider.' '.$model);
-    if (str_contains($p, 'llama') || str_contains($p, 'local')) { $per1kIn = 0.0; $per1kOut = 0.0; }
-    if (str_contains($p, 'mini') || str_contains($p, 'flash')) { $per1kIn = 0.001; $per1kOut = 0.004; }
+    $key = strtolower(trim($model));
+    $table = self::pricingTable();
+    if (isset($table[$key])) {
+      [$per1kIn, $per1kOut] = $table[$key];
+    } else {
+      // Fallback genérico conservador quando o modelo não está na tabela.
+      $per1kIn = 0.005; $per1kOut = 0.015;
+      $p = strtolower($provider.' '.$model);
+      if (str_contains($p, 'llama') || str_contains($p, 'local')) { $per1kIn = 0.0; $per1kOut = 0.0; }
+      if (str_contains($p, 'mini') || str_contains($p, 'flash')) { $per1kIn = 0.001; $per1kOut = 0.004; }
+    }
     return round(($tokensInput / 1000 * $per1kIn) + ($tokensOutput / 1000 * $per1kOut), 6);
   }
 
