@@ -17,7 +17,7 @@ $ambientes = ['homologacao'=>'Homologação','producao'=>'Produção'];
 </div>
 
 <div class="alert alert-warning border-0 shadow-sm">
-  <b>Regra de segurança:</b> a IA não altera banco, Tiny, VSM, pedidos, estoque, fiscal, XML, produção, logs ou configurações automaticamente. Nesta versão ela apenas valida, audita e cria solicitação para aprovação humana.
+  <b>Regra de segurança:</b> a IA não altera banco, Tiny, VSM, pedidos, estoque, fiscal, XML, produção, logs ou configurações automaticamente. Chamada externa real só ocorre por <b>ação humana</b>, apenas em <b>homologação</b>, com uma aprovação <b>aprovada</b>, dentro do limite de custo — e o texto tem de conferir com o prompt aprovado. Produção permanece bloqueada nesta versão.
 </div>
 
 <div class="row g-3 mb-3">
@@ -138,6 +138,32 @@ $ambientes = ['homologacao'=>'Homologação','producao'=>'Produção'];
     </div>
   </form>
 </div>
+
+<div class="card-soft mb-3 border-warning">
+  <h5><i class="bi bi-lightning-charge"></i> Execução real em homologação (chamada externa)</h5>
+  <p class="small text-muted mb-2">Faz <b>uma</b> chamada real ao provedor, apenas em <b>homologação</b>, e só com uma aprovação <b>aprovada</b> e não expirada. Cole exatamente o texto aprovado: se o hash não conferir, é bloqueado. Requer <code>enabled</code>, <code>allow_external_calls</code>, chave no cofre e custo dentro do limite.</p>
+  <?php if(!$canAdminLlm): ?>
+    <p class="small text-danger mb-0">Requer permissão de administração da Governança LLM.</p>
+  <?php else: ?>
+  <form method="post" class="d-flex flex-column gap-2">
+    <?=Csrf::input()?>
+    <input type="hidden" name="acao_llm" value="execute_homologacao">
+    <input name="approval_id" type="number" min="1" class="form-control" placeholder="ID da aprovação aprovada" required>
+    <textarea name="prompt_teste" class="form-control" rows="4" placeholder="Cole exatamente o prompt que foi aprovado..." required></textarea>
+    <button class="btn btn-warning" type="submit" onclick="return confirm('Isto fará uma chamada REAL ao provedor em homologação. Continuar?');">Executar em homologação</button>
+  </form>
+  <?php endif; ?>
+</div>
+
+<?php if(!empty($resultadoExec)): ?>
+<div class="alert alert-<?=!empty($resultadoExec['ok'])?'success':'danger'?>">
+  <b>Execução real:</b> <?= !empty($resultadoExec['ok']) ? 'concluída' : 'não realizada' ?>
+  <?php if(!empty($resultadoExec['blocked'])): ?><br><b>Bloqueios:</b> <?=e(implode(' · ', $resultadoExec['blocked']))?><?php endif; ?>
+  <?php if(!empty($resultadoExec['erro']) && empty($resultadoExec['blocked'])): ?><br><b>Erro:</b> <?=e((string)$resultadoExec['erro'])?><?php endif; ?>
+  <?php if(!empty($resultadoExec['text'])): ?><pre class="json-box mt-2"><?=e((string)$resultadoExec['text'])?></pre><?php endif; ?>
+  <div class="small text-muted mt-1">Tokens <?=e((string)($resultadoExec['usage']['input_tokens']??0))?> in / <?=e((string)($resultadoExec['usage']['output_tokens']??0))?> out · custo ~$<?=e(number_format((float)($resultadoExec['cost']??0),4))?> · aprovação <?=e((string)($resultadoExec['approval_uuid']??'—'))?></div>
+</div>
+<?php endif; ?>
 
 <?php if($resultadoPrompt): ?>
 <div class="alert alert-<?=$resultadoPrompt['allowed']?'success':'danger'?>">

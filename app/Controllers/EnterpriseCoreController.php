@@ -88,6 +88,13 @@ class EnterpriseCoreController extends BaseModuleController {
           $resultadoAcao = LlmApprovalService::decide((int)($_POST['approval_id'] ?? 0), (string)($_POST['decision'] ?? ''), (string)($_POST['decision_reason'] ?? ''));
           $_SESSION[$resultadoAcao['success'] ? 'form_success' : 'form_error'] = $resultadoAcao['message'] ?? 'Decisão registrada.';
           redirect('index.php?page=llm-governance');
+        } elseif ($acao === 'execute_homologacao') {
+          $resultadoAcao = LlmRealExecutionService::executeHomologacao((int)($_POST['approval_id'] ?? 0), (string)($_POST['prompt_teste'] ?? ''));
+          $_SESSION[!empty($resultadoAcao['ok']) ? 'form_success' : 'form_error'] = !empty($resultadoAcao['ok'])
+            ? ('Chamada real em homologação concluída ('.(int)($resultadoAcao['usage']['input_tokens'] ?? 0).' in / '.(int)($resultadoAcao['usage']['output_tokens'] ?? 0).' out, custo ~$'.number_format((float)($resultadoAcao['cost'] ?? 0), 4).').')
+            : ('Execução real não realizada: '.(implode(' · ', $resultadoAcao['blocked'] ?? []) ?: (string)($resultadoAcao['erro'] ?? 'bloqueada')));
+          $_SESSION['llm_exec_resultado'] = $resultadoAcao;
+          redirect('index.php?page=llm-governance');
         } else {
           $resultadoPrompt = LlmGatewayService::validatePrompt((string)($_POST['prompt_teste'] ?? ''), (string)($_POST['prompt_key'] ?? 'teste_governanca'));
         }
@@ -101,7 +108,9 @@ class EnterpriseCoreController extends BaseModuleController {
     $policy = $readiness['config'] ?? LlmPolicyService::policy();
     $approvals = $readiness['approvals'] ?? [];
     $usage = $readiness['usage'] ?? [];
+    $resultadoExec = $_SESSION['llm_exec_resultado'] ?? null;
+    unset($_SESSION['llm_exec_resultado']);
     $pageTitle = 'Governança LLM';
-    $this->view('llm_governance', compact('pageTitle','readiness','resultadoPrompt','resultadoAcao','policy','approvals','usage'));
+    $this->view('llm_governance', compact('pageTitle','readiness','resultadoPrompt','resultadoAcao','policy','approvals','usage','resultadoExec'));
   }
 }
