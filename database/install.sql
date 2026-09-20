@@ -115,6 +115,7 @@ CREATE TABLE IF NOT EXISTS configuracoes_integracao (
   tiny_v3_manual_access_token TEXT NULL,
   tiny_v3_manual_refresh_token TEXT NULL,
   vsm_url VARCHAR(255) DEFAULT 'https://conectavenda.homolog.vsm.com.br',
+  vsm_url_consulta VARCHAR(255) DEFAULT '',
   vsm_token TEXT NULL,
   vsm_api_principal VARCHAR(40) DEFAULT 'pedidos-integradora',
   vsm_api_loja VARCHAR(40) DEFAULT 'desativado',

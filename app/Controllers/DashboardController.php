@@ -819,7 +819,7 @@ class DashboardController {
 
 
   private function garantirEstruturaConfiguracoesVsm(): void {
-    $required=['vsm_api_principal','vsm_api_loja','vsm_swagger_integradora','vsm_swagger_loja','vsm_waf_agressivo','vsm_api_observacao','vsm_ambiente','vsm_producao_liberada','vsm_ultimo_teste_ok','vsm_ultimo_teste_em','vsm_host_producao_liberado','vsm_producao_liberada_em','vsm_producao_liberada_por'];
+    $required=['vsm_url_consulta','vsm_api_principal','vsm_api_loja','vsm_swagger_integradora','vsm_swagger_loja','vsm_waf_agressivo','vsm_api_observacao','vsm_ambiente','vsm_producao_liberada','vsm_ultimo_teste_ok','vsm_ultimo_teste_em','vsm_host_producao_liberado','vsm_producao_liberada_em','vsm_producao_liberada_por'];
     $missing=[]; foreach($required as $column) if(!Database::columnExists('configuracoes_integracao',$column)) $missing[]=$column;
     if($missing){
       try { Audit::event('configuracoes.vsm_api_profile_schema.pendente','alerta',['mensagem'=>'Estrutura VSM incompleta; nenhuma alteração DDL foi executada durante a requisição.','codigo_erro'=>'VSM_API_PROFILE_MIGRATION_REQUIRED','contexto'=>['colunas_ausentes'=>$missing],'acao_recomendada'=>'Executar Central Técnica > Migrações Seguras (V104.49.3).']); }
@@ -843,6 +843,7 @@ class DashboardController {
     // Por padrão deixamos vazio e o parâmetro scope só é enviado se o usuário preencher um valor aceito pelo Tiny.
     $config['tiny_v3_scopes'] = trim((string)($config['tiny_v3_scopes'] ?? ''));
     $config['vsm_url'] = $config['vsm_url'] ?: 'https://conectavenda.homolog.vsm.com.br';
+    $config['vsm_url_consulta'] = (string)($config['vsm_url_consulta'] ?? '');
     $config['vsm_api_principal'] = $config['vsm_api_principal'] ?: 'pedidos-integradora';
     $config['vsm_api_loja'] = $config['vsm_api_loja'] ?: 'desativado';
     $config['vsm_swagger_integradora'] = $config['vsm_swagger_integradora'] ?: 'https://conectavenda.homolog.vsm.com.br/swagger-ui/index.html?urls.primaryName=pedidos-integradora';
@@ -882,6 +883,7 @@ class DashboardController {
       'tiny_v3_redirect_uri' => $this->normalizeTinyV3RedirectUri(trim((string)($_POST['tiny_v3_redirect_uri'] ?? ($atual['tiny_v3_redirect_uri'] ?? '')))),
       'tiny_v3_scopes' => trim((string)($_POST['tiny_v3_scopes'] ?? ($atual['tiny_v3_scopes'] ?? ''))),
       'vsm_url' => trim($_POST['vsm_url'] ?? '') ?: 'https://conectavenda.homolog.vsm.com.br',
+      'vsm_url_consulta' => trim((string)($_POST['vsm_url_consulta'] ?? ($atual['vsm_url_consulta'] ?? ''))),
       'vsm_token' => Secrets::keepIfMasked((string)($_POST['vsm_token'] ?? ''), $atual['vsm_token'] ?? ''),
       'vsm_api_principal' => in_array(($_POST['vsm_api_principal'] ?? 'pedidos-integradora'), ['pedidos-integradora','pedidos-loja'], true) ? $_POST['vsm_api_principal'] : 'pedidos-integradora',
       'vsm_api_loja' => in_array(($_POST['vsm_api_loja'] ?? 'desativado'), ['desativado','pedidos-loja'], true) ? $_POST['vsm_api_loja'] : 'desativado',
@@ -988,7 +990,7 @@ class DashboardController {
       $vsmSets=[]; $vsmValues=[];
       // P0-04: vsm_ultimo_teste_ok/vsm_ultimo_teste_em entram aqui para que a invalidação
       // calculada acima ($vsmAlvoAlterado) seja realmente persistida quando URL/token mudam.
-      foreach(['vsm_api_principal','vsm_api_loja','vsm_swagger_integradora','vsm_swagger_loja','vsm_waf_agressivo','vsm_api_observacao','vsm_ambiente','vsm_producao_liberada','vsm_host_producao_liberado','vsm_ultimo_teste_ok','vsm_ultimo_teste_em'] as $campo){
+      foreach(['vsm_url_consulta','vsm_api_principal','vsm_api_loja','vsm_swagger_integradora','vsm_swagger_loja','vsm_waf_agressivo','vsm_api_observacao','vsm_ambiente','vsm_producao_liberada','vsm_host_producao_liberado','vsm_ultimo_teste_ok','vsm_ultimo_teste_em'] as $campo){
         if($this->columnExistsForUpdate('configuracoes_integracao',$campo)){
           $vsmSets[] = $campo.'=?';
           $vsmValues[] = $dadosSalvar[$campo] ?? $dados[$campo] ?? null;

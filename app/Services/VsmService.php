@@ -1,24 +1,41 @@
 <?php
 class VsmService {
-  private string $url; private string $token; private string $endpointBaixa; private string $endpointPedido;
+  // Duas APIs VSM ativas, sem principal/secundária:
+  //  - $url          = API de GRAVAÇÃO (vsm_url): enviarPedido() e enviarBaixaEstoque().
+  //  - $urlConsulta  = API de CONSULTA (vsm_url_consulta): consultarEstoque().
+  // Quando vsm_url_consulta está vazia, a consulta reaproveita a base de gravação
+  // (retrocompatível: instalação que não separa as duas continua idêntica ao anterior).
+  private string $url; private string $urlConsulta; private string $token; private string $endpointBaixa; private string $endpointPedido;
   public function __construct(?array $cfg=null){
     $cfg=$cfg ?: IntegrationConfig::get();
     $this->url = rtrim((string)($cfg['vsm_url'] ?? cfg('vsm.url')), '/');
     if ($this->url !== '') {
       $this->url = VsmEndpointSecurityService::validateBaseUrl($this->url);
     }
+    $this->urlConsulta = self::baseConsulta($this->url, (string)($cfg['vsm_url_consulta'] ?? ''));
+    if ($this->urlConsulta !== '' && $this->urlConsulta !== $this->url) {
+      $this->urlConsulta = VsmEndpointSecurityService::validateBaseUrl($this->urlConsulta);
+    }
     $this->token = (string)($cfg['vsm_token'] ?? '');
     $this->endpointBaixa = (string)($cfg['vsm_endpoint_baixa_estoque'] ?? '/api/estoque/baixa');
     $this->endpointPedido = (string)($cfg['vsm_endpoint_pedido'] ?? '/api/pedidos');
   }
-  private function request(string $method, string $endpoint, array $payload=[], int $timeout=30, ?string $idempotencyKey=null): array {
+
+  /** Resolve a base da API de CONSULTA: usa vsm_url_consulta se informada, senão cai na de gravação. Puro. */
+  public static function baseConsulta(string $urlGravacao, string $urlConsultaRaw): string {
+    $c = rtrim(trim($urlConsultaRaw), '/');
+    return $c !== '' ? $c : rtrim(trim($urlGravacao), '/');
+  }
+  private function request(string $method, string $endpoint, array $payload=[], int $timeout=30, ?string $idempotencyKey=null, ?string $baseUrl=null): array {
     $trace = RequestContext::id();
-    if(!$this->url) return ['erro'=>'URL da VSM não configurada','codigo_erro'=>'VSM_URL_MISSING','trace_id'=>$trace];
+    // Base da operação: gravação usa $this->url (default); consulta injeta $this->urlConsulta.
+    $base = ($baseUrl !== null && $baseUrl !== '') ? $baseUrl : $this->url;
+    if(!$base) return ['erro'=>'URL da VSM não configurada','codigo_erro'=>'VSM_URL_MISSING','trace_id'=>$trace];
     if(!CircuitBreakerService::permitir('vsm')) return ['erro'=>'Circuit breaker VSM aberto. Aguarde nova tentativa automática.','codigo_erro'=>'VSM_CIRCUIT_OPEN','trace_id'=>$trace];
     $endpoint = VsmEndpointSecurityService::sanitizePath($endpoint);
     $method = strtoupper($method);
     if (!in_array($method, ['GET','POST','PUT','PATCH'], true)) $method = 'POST';
-    $url = $this->url.'/'.ltrim($endpoint,'/');
+    $url = $base.'/'.ltrim($endpoint,'/');
     if ($method === 'GET' && $payload) $url .= (str_contains($url,'?')?'&':'?').http_build_query($payload);
     $rawBody = $method === 'GET' ? '' : json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     $headers = ['Content-Type: application/json', 'X-Trace-ID: '.$trace];
@@ -45,7 +62,7 @@ class VsmService {
       $inicio = microtime(true);
       $ch=curl_init($url);
       $opts=[CURLOPT_HTTPHEADER=>$headers,CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>max(5,min(120,$timeout)),CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_MAXREDIRS=>0,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS|CURLPROTO_HTTP,CURLOPT_REDIR_PROTOCOLS=>CURLPROTO_HTTPS];
-      $resolveEntry=VsmEndpointSecurityService::curlResolveEntry($this->url); if($resolveEntry!==null)$opts[CURLOPT_RESOLVE]=[$resolveEntry];
+      $resolveEntry=VsmEndpointSecurityService::curlResolveEntry($base); if($resolveEntry!==null)$opts[CURLOPT_RESOLVE]=[$resolveEntry];
       if ($method !== 'GET') { $opts[CURLOPT_CUSTOMREQUEST]=$method; $opts[CURLOPT_POSTFIELDS]=$rawBody; }
       curl_setopt_array($ch,$opts);
       $body=curl_exec($ch); $err=curl_error($ch); $http=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
@@ -84,6 +101,7 @@ class VsmService {
     $payload = json_decode($json, true);
     if (!is_array($payload)) $payload = ['sku'=>$sku, 'trace_id'=>RequestContext::id()];
     $timeout = (int)($cfg['consulta_vsm_timeout_segundos'] ?? 30);
-    return $this->request($method, $endpoint, $payload, $timeout);
+    // Consulta vai para a API de CONSULTA (vsm_url_consulta); vazia → base de gravação.
+    return $this->request($method, $endpoint, $payload, $timeout, null, $this->urlConsulta);
   }
 }
