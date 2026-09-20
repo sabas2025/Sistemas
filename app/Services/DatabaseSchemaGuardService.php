@@ -82,6 +82,7 @@ class DatabaseSchemaGuardService {
   public static function criticalColumns(): array {
     return [
       'configuracoes_integracao' => [
+        'vsm_url_consulta' => "VARCHAR(255) DEFAULT ''",
         'vsm_api_principal' => "VARCHAR(40) DEFAULT 'pedidos-integradora'",
         'vsm_api_loja' => "VARCHAR(40) DEFAULT 'desativado'",
         'vsm_swagger_integradora' => "VARCHAR(255) DEFAULT 'https://conectavenda.homolog.vsm.com.br/swagger-ui/index.html?urls.primaryName=pedidos-integradora'",

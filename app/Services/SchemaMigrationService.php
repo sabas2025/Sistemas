@@ -104,6 +104,7 @@ class SchemaMigrationService {
         ['configuracoes_integracao','queue_processing_timeout_minutes','INT DEFAULT 30'],
         ['configuracoes_integracao','queue_lease_minutes','INT DEFAULT 5'],
         ['configuracoes_integracao','queue_lease_by_type_json','LONGTEXT NULL'],
+        ['configuracoes_integracao','vsm_url_consulta',"VARCHAR(255) DEFAULT ''"],
         ['configuracoes_integracao','vsm_api_principal',"VARCHAR(40) DEFAULT 'pedidos-integradora'"],
         ['configuracoes_integracao','vsm_api_loja',"VARCHAR(40) DEFAULT 'desativado'"],
         ['configuracoes_integracao','vsm_swagger_integradora',"VARCHAR(255) NULL"],

@@ -13,6 +13,7 @@ class IntegrationConfig {
       'tiny_v3_url'=>cfg('tiny.v3_url'),
       'tiny_v3_token'=>'',
       'vsm_url'=>cfg('vsm.url') ?: 'https://conectavenda.homolog.vsm.com.br',
+      'vsm_url_consulta'=>'',
       'vsm_token'=>'',
       'vsm_api_principal'=>'pedidos-integradora',
       'vsm_api_loja'=>'desativado',
