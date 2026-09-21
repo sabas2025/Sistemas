@@ -899,9 +899,23 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   gravava `fila_estoque` e `estoque_movimentos` com `empresa_id` **NULL** antes, **1** depois. Pela
   tela Fila, por HTTP: usuário sem empresa vê as duas linhas; usuário da empresa 1 vê as duas;
   usuário da empresa 2 **não vê** a linha da empresa 1 — antes veria, porque ela seria NULL.
-  **Continua em aberto com DUAS OU MAIS empresas:** ali a entrada sem sessão não tem como decidir, o
-  serviço devolve `null` e a linha nasce NULL, como antes. Resolver exige a decisão adiada (token de
-  webhook por empresa? empresa por conexão Tiny/VSM?) — e o payload da VSM não carrega empresa.
+  **Continua em aberto com DUAS OU MAIS empresas.** Correção do relato anterior desta linha, medida no
+  código e travada em `RELATORIO-DESENHO-H01-MULTIEMPRESA-2026-09-21.md`: com 2+ empresas a entrada sem
+  sessão **não grava NULL — recusa explicitamente**. `IntegrationTenantService::boundEmpresaId()` exige
+  `COUNT(empresas ativas)=1`; com duas ela **lança** `TENANT_SINGLE_COMPANY_REQUIRED`, que
+  `enforceRequest()` mapeia para **HTTP 409**, e `applyToInsert()` lançaria `TENANT_CONTEXT_REQUIRED`
+  antes de qualquer INSERT. Recusar é o correto e fica preservado.
+  **DECISÃO DE PRODUTO (2026-09-21): quando for suportar 2+ empresas, o modelo é a Opção A — identidade
+  de conexão por empresa** (desenho com Opções A/B/C, impacto e risco no relatório acima; a Opção B por
+  CNPJ é insuficiente porque a VSM não manda empresa). A implementação está **bloqueada em 3
+  pré-requisitos, todos em aberto em 2026-09-21** (o responsável respondeu "não sei/confirmar" aos três):
+  (1) **roteamento** do webhook — segredo por empresa (recomendado) vs URL por empresa; (2) **fato
+  externo da VSM** — se a VSM consegue assinar HMAC por empresa (sem isso o lado VSM não fecha, e
+  forçá-lo arriscaria recusar webhook legítimo da VSM); (3) **credenciais de saída** próprias por
+  empresa vs compartilhadas. **Não escrever código antes de resolver os três** — construir agora seria
+  inventar a forma da tabela/config (proibição: nunca inventar configuração). Pergunta exata para a VSM:
+  *"o webhook de vocês pode assinar cada empresa do integrador com um segredo/chave HMAC distinto, ou a
+  assinatura é global por integração?"*
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.

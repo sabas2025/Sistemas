@@ -751,7 +751,7 @@ dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comerci
 dc46bbcacff294eb6c4a61912473bcd3e99c7ee7d58ca75a7f3847505139fc90  ./app/Services/PedidoMapper.php
 dc5d70344dda6d3df3289b67ca75779516f928bb90ee85e6e9a8510de3aa1269  ./RELATORIO-V104-2FA-QRCODE-SEGURO.md
 dd9dfb7082b9e87782b0698d6f39c855f7e1b73462548f52600bac9d704cf3f3  ./views/security_center.php
-de04275b08c5893ac9c8ef0323d14f6923b74ef4a35c8abe63942f072220cd59  ./CLAUDE.md
+8d5b4c874efb6dccbe1562aafcd4ded2ee95381ca58ddae44aeca40766e26745  ./CLAUDE.md
 de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/assets/img/icon-128.png
 de7d52653dac4b653d8827d6d682b8e4e7ff42a26193d87a438f793b9951dd16  ./app/Services/IntegrationSecurityService.php
 dea0650790df068203ede6aa7d57075605bc04110ea18103de0e4d5a6c553d42  ./app/Services/DataRetentionService.php
