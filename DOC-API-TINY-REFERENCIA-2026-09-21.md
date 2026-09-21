@@ -16,10 +16,16 @@
 > **Não trate a Parte A como se fosse a documentação oficial:** ela é o comportamento do Hub, que
 > pode divergir do que a Tiny publica — cruzar as duas é justamente o objetivo da validação (Fase 5).
 
-**Links de origem pedidos (a preencher na Parte B):**
-1. Visão geral da API — `https://tiny.com.br/api-docs/api` *(pendente — enviar PDF/print)*
-2. Limites da API v2 — `https://tiny.com.br/api-docs/api2-limites-api` — ✅ **PREENCHIDO** (PDF fornecido 2026-09-21)
-3. Criando um aplicativo (API v3 / OAuth) — `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo` *(pendente — enviar PDF/print)*
+**Fontes usadas (PDFs fornecidos pelo responsável, capturados 2026-09-21):**
+- ✅ Limites da API **v2** — `https://tiny.com.br/api-docs/api2-limites-api` (§B.2)
+- ✅ **v3** Criando um aplicativo — `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo` (§B.3)
+- ✅ **v3** Autenticação e autorização — `https://api-docs.erp.olist.com/documentacao/comecando/autenticacao` (§B.3)
+- ✅ **v3** Limites de requisição — `https://api-docs.erp.olist.com/documentacao/comecando/limites-de-consulta` (§B.4)
+- ✅ **v3** Webhooks — `https://api-docs.erp.olist.com/documentacao/webhooks/webhooks` (§B.5)
+- ✅ **v3** Integração de Clientes — `https://api-docs.erp.olist.com/documentacao/clientes/orientacoes` (§B.6)
+- ✅ **v3** Homologação de Parceiros — `https://api-docs.erp.olist.com/documentacao/parceiros/homologacao` (§B.6)
+- ⏳ **v2** Visão geral / lista de endpoints — `https://tiny.com.br/api-docs/api` *(pendente — único ainda não enviado)*
+- ⏳ **v3/v2** Números exatos do rate limit por plano *(a doc v3 remete à "documentação do usuário do ERP")*
 
 ---
 
@@ -134,18 +140,56 @@ header **`x-limit-api`** a quantidade de chamadas permitidas por minuto para aqu
 > `Alterar Produto` — que o Hub chama no fluxo de produto (VSM→Tiny) — contam como **lote**, cujo
 > teto é **5/min**, muito abaixo do limite geral (30/60/120). E o Hub **não lê `x-limit-api`**.
 
-## B.3 — Criando um aplicativo (API v3 / OAuth 2.0)
-**Fonte:** `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo`
+## B.3 — Criando um aplicativo + Autenticação (API v3 / OAuth 2.0) ✅ PREENCHIDO
+**Fontes:** `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo` e
+`.../comecando/autenticacao` (PDFs fornecidos 2026-09-21).
 
-- Passo a passo de criação do aplicativo: *Não identificado com as evidências disponíveis.*
-- Client ID / Client Secret (onde obter): *Não identificado com as evidências disponíveis.*
-- Redirect URI (exigências): *Não identificado com as evidências disponíveis.*
-- Escopos disponíveis / exigidos (strings): *Não identificado com as evidências disponíveis.*
-- Authorization URL: *Não identificado com as evidências disponíveis.*
-- Token URL: *Não identificado com as evidências disponíveis.*
-- Tempo de vida do access token: *Não identificado com as evidências disponíveis.*
-- Tempo de vida do refresh token / rotaciona?: *Não identificado com as evidências disponíveis.*
-- Rate limit da V3 (se houver): *Não identificado com as evidências disponíveis.*
+- **Tipo de aplicativo:** na v3, **apenas aplicativo Privado** está disponível (Público "em breve").
+- **Uso próprio (conta própria):** **não** exige homologação; gera as chaves (`client_id`/`client_secret`) direto no painel do ERP.
+- **Comercialização para terceiros:** homologação **obrigatória** (ver B.6). Cada vendedor instala o app na própria conta; o parceiro gere as credenciais.
+- **Permissões:** marcadas no login do app; marcar o **mínimo** necessário; se mudar depois, o usuário refaz o login.
+- **URL de redirecionamento:** informada no painel do app (campo *URL de redirecionamento*).
+
+**OAuth 2 / OpenID Connect (Keycloak `realms/tiny`):**
+| Item | Valor oficial |
+|---|---|
+| Authorization URL | `https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth` (`?client_id=&redirect_uri=&scope=openid&response_type=code`) |
+| Token URL | `https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token` |
+| Grant inicial | `authorization_code` (+ `client_id`, `client_secret`, `redirect_uri`, `code`) |
+| Grant de renovação | `refresh_token` (+ `client_id`, `client_secret`, `refresh_token`) |
+| Header de uso | `Authorization: Bearer {access_token}` |
+| **Access token — validade** | **4 horas** |
+| **Refresh token — validade** | **1 dia** |
+| Escopo | inclui `openid` |
+
+## B.4 — Limites de requisição V3 ✅ PREENCHIDO
+**Fonte:** `https://api-docs.erp.olist.com/documentacao/comecando/limites-de-consulta` (PDF fornecido).
+
+- Limite **por minuto**, **por CONTA — não por aplicativo** (vários apps ativos **compartilham** o mesmo limite).
+- **Diferenciado leitura vs escrita:** mais chamadas em **leitura** (`GET`) do que em **escrita** (`POST`/`PUT`/`DELETE`).
+- Ao exceder: retorna **erro**; deve-se aguardar a liberação.
+- Cabeçalhos de controle retornados:
+  - `X-RateLimit-Limit` — limite total por minuto (exemplo mostrado: 120)
+  - `X-RateLimit-Remaining` — disponível no minuto atual
+  - `X-RateLimit-Reset` — segundos até o reset
+- **Números exatos por plano:** *Não identificado — a página remete à "documentação do usuário do ERP, sessão Limites disponíveis", não incluída nos PDFs.*
+
+## B.5 — Webhooks V3 (Olist → integrador) ✅ PREENCHIDO
+**Fonte:** `https://api-docs.erp.olist.com/documentacao/webhooks/webhooks` (PDF fornecido).
+
+- Instala-se o app **"Webhooks"** (planos específicos) e configuram-se as URLs em
+  *Configurações → Aba Geral → Outras configurações → Webhooks*.
+- **Confirmação:** o endpoint deve retornar **HTTP 200**; se o integrado não retornar o status, **o payload é reenviado**.
+- **Reenvio:** até **10 vezes**, com atraso **progressivo, +5 min a cada tentativa**.
+- **Não** é possível criar webhooks específicos por aplicativo (no momento).
+- **Webhooks disponíveis:** venda criada/alterada; pedido enviado (status "enviado"); lançamento de estoque; nota fiscal autorizada.
+
+## B.6 — Homologação de parceiros ✅ PREENCHIDO
+**Fonte:** `https://api-docs.erp.olist.com/documentacao/parceiros/homologacao` + `.../clientes/orientacoes` (PDFs).
+
+- **Só precisa homologar** quem vai **comercializar/distribuir** a solução a terceiros. Uso na própria conta: **não** precisa.
+- 4 etapas: identidade visual · agendar reunião · **testes de autenticação (OAuth2, incluindo renovação de token)** · testes de rotas (endpoints, tratamento de erro).
+- Contato técnico: `erp.partners@olist.com` (seg–sex, 09h–18h Brasília).
 
 ---
 
@@ -183,6 +227,49 @@ pedidos/min NÃO é limitada pelo teto por-minuto do Tiny V2** — esse teto pes
 Sem ler `x-limit-api`, o Hub não sabe o teto da empresa (varia por plano: 0/20/30/60/120). Ele só
 descobre o limite **ao estourá-lo**. Ler o header permitiria ajustar o ritmo **antes** do erro.
 **Registrado, não aplicado** — mesma condição do T-01 (exige evidência de volume).
+
+## Achado T-03 — refresh token V3 dura 1 DIA e o Hub não o renova proativamente
+
+- **Identificação:** o token de atualização (refresh) da V3 expira em **1 dia** (B.3); a renovação do Hub é **sob demanda**, não agendada.
+- **Evidência:**
+  - Doc oficial (B.3): access token **4 h**, refresh token **1 dia**.
+  - Código: `TinyV3TokenService::refresh()` só é chamado (a) automaticamente dentro de `accessToken()` quando o token está expirado **e há uma chamada acontecendo**, e (b) manualmente pelo botão em `DashboardController.php:1243` (`refresh(true)`).
+  - Código: **não existe worker/cron de refresh** (`ls workers/ | grep token` → nenhum).
+- **Gravidade:** **Média** — quebra o fluxo V3 após ociosidade; sem perda de dado, mas exige **reconexão OAuth manual**.
+- **Causa raiz:** a renovação depende de tráfego de saída V3. Se o Hub ficar **> 1 dia sem chamar a V3** (fim de semana quieto, instalação que usa V2 como operacional, período de baixa), o refresh token morre; a próxima renovação falha e só o OAuth manual reconecta.
+- **Escopo:** afeta instalações que usam a **V3 como caminho operacional**. O default do Hub é `tiny.version='v2'` — onde a V3 não opera, o ponto é inócuo.
+- **Correção recomendada (registrar, decidir com o responsável):** um **cron leve** que chame `refresh()` dentro da janela de 1 dia (ex.: a cada 6–12 h) quando a V3 estiver ativa, mantendo o refresh token vivo. Reusar o **lock** que o serviço já tem. **Não** aplicar sem confirmar que a V3 é o caminho operacional do cliente.
+- **Risco da correção:** baixo — uma chamada de refresh a mais por janela; o lock evita concorrência.
+- **Como testar:** simular ociosidade > 1 dia (relógio/registro) e confirmar que o cron renovou antes da expiração do refresh.
+- **Como reverter:** desagendar o cron.
+- **Status:** **confirmado** que não há renovação proativa; **aplicar depende da decisão** (a V3 é operacional neste cliente?).
+
+## Achado T-04 — webhook do Olist espera HTTP 200; o Hub responde 202 no pedido aceito
+
+- **Identificação:** o pedido aceito responde **202**, mas a doc de webhooks manda retornar **200** para confirmar.
+- **Evidência:**
+  - Doc oficial (B.5): *"o webhook deverá retornar o status HTTP 200"*; se não retornar, **reenvia até 10×, +5 min progressivo**.
+  - Código: `ApiController.php:170` faz `http_response_code(202)` e `responderTiny(true, …)` responde 202 no pedido aceito (achado I-14).
+- **Gravidade:** **Provável / Média-baixa** — depende de a Olist tratar `202` como sucesso ou exigir `200` exato.
+- **Impacto (se exigir 200 exato):** cada pedido legítimo seria **reenviado até 10×**; a idempotência do Hub (`pedido_origem_id`, 1 linha para N reenvios) **impede duplicação**, mas há reprocessamento e a Olist nunca "confirma" a entrega.
+- **Correção recomendada:** **confirmar com a Olist** se `202` conta como sucesso; se exigir `200`, devolver `200` no caso aceito (o `202` foi escolha do Hub, não contrato). O `422` do pedido bloqueado também será reenviado 10× — avaliar se um bloqueio de validação deve responder `200` (aceito e descartado) para não gerar reenvio inútil. **Decisão de produto** (muda quando o Tiny reenvia).
+- **Risco da correção:** baixo no código; a decisão de qual código devolver é de contrato/produto.
+- **Como testar:** enviar webhook e observar se a Olist reenvia após 202/422.
+- **Status:** **provável** — precisa de confirmação do comportamento real da Olist.
+
+## Achado T-05 (informativo) — limite V3 é por CONTA e o Hub não lê `X-RateLimit-*`
+Igual ao T-01/T-02, mas na V3: o limite é **por conta, compartilhado entre apps**, e diferencia
+leitura/escrita. O Hub **não lê** `X-RateLimit-Limit/Remaining/Reset`. Se a conta tiver outro app
+ativo, o orçamento é dividido — e o Hub não sabe disso. **Registrado, não aplicado.**
+
+## Confirmações POSITIVAS do cruzamento (o Hub bate com a doc)
+- **URLs de OAuth idênticas à doc:** o seed do instalador já grava
+  `accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth` e `/token` (`core.sql:397`). ✅
+- **Host `accounts.tiny.com.br` na allowlist** (`tiny_allowed_hosts`). ✅
+- **Grants corretos:** `authorization_code` na entrada e `refresh_token` na renovação, com `client_id`/`client_secret`. ✅
+- **`Authorization: Bearer` + guarda de token cifrada + refresh automático sob demanda.** ✅
+- **Validade do access token:** o Hub honra o `expires_in` que a Tiny devolver (4 h); o default 3600 é só **fallback** conservador (renova antes). ✅
+- **Reenvio de webhook (10×, +5 min):** casa com a idempotência do Hub por `pedido_origem_id` (I-14) — reenvio não duplica. ✅
 
 ---
 

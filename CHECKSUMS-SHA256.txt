@@ -403,7 +403,7 @@
 7b498d80dd588dbd84166fa146929b228ca1d70063a3ba8cf6fe24fa92dabb2c  ./app/Services/LoginRateLimitFallbackService.php
 7b55317469cfbf95ef4b6bc9e189ca32fbbb34d74a1c21b56f9fc1404efe2c7d  ./app/Services/Audit.php
 7b65c9191a897a9cba9d477c492514d58b6db04b184ab3af668ba3af54d035ad  ./app/Services/SystemVersionService.php
-fcc9022a20c7e036bf8c0545b612a4d5c554003a67416c18bc5400c5b799e08d  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
+a3435e10b6f10acce8e406aecc447e3f7b6c431a5b490401ac144a049e7db473  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 7b9a7319c29d162110b55e969e6bfc95ca66da066d3ccd234636a7c221811477  ./database/install_final_v104_22.sql
 7bcd270834a787c6b2b11a53e26e9d59b8e61fe5e4e7a2c490fe160eda736cdb  ./app/Controllers/DivergenceMonitorController.php
 7bfaba286704c33aea78ecfa6da15b8f8dbceaf0da004aec45a6cdcb74580edb  ./database/legacy/install_final_v104_5.sql
