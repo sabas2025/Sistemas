@@ -9,16 +9,33 @@ class ReconciliationService {
     return ['sku'=>$sku,'tiny'=>$tiny,'vsm'=>$vsm,'diferenca'=>$diff,'status'=>$status];
   }
   public static function reconciliarSku(string $sku): array {
-    $tiny = TinyFactory::make();
-    $vsm = new VsmService();
-    $tinyRet = $tiny->consultarProduto($sku);
-    $info = class_exists('ProdutoTinyPreflightService') ? ProdutoTinyPreflightService::analisarRetornoPesquisa($tinyRet, $sku) : ['estoque'=>null];
-    $estoqueTiny = isset($info['estoque']) ? (float)$info['estoque'] : 0.0;
-    $vsmRet = $vsm->consultarEstoque($sku);
-    $estoqueVsm = 0.0;
-    if (isset($vsmRet['estoque'])) $estoqueVsm = (float)$vsmRet['estoque'];
-    elseif (isset($vsmRet['saldo'])) $estoqueVsm = (float)$vsmRet['saldo'];
-    elseif (isset($vsmRet['dados']['estoque'])) $estoqueVsm = (float)$vsmRet['dados']['estoque'];
+    // Achado L-01 (2026-09-21): a consulta real depende de Tiny e VSM. VsmService::consultarEstoque()
+    // LANÇA quando o host está indisponível (o lado Tiny devolve array de erro), e o controller
+    // chamava sem try/catch — o operador via a tela de Recuperação genérica, sem registro nem
+    // mensagem. Um provedor externo fora não pode virar erro fatal: capturamos, auditamos e
+    // sinalizamos 'indisponivel'. NÃO registramos comparação — números inválidos gerariam um falso
+    // 'divergente'. O caminho de sucesso é idêntico ao anterior.
+    try {
+      $tiny = TinyFactory::make();
+      $vsm = new VsmService();
+      $tinyRet = $tiny->consultarProduto($sku);
+      $info = class_exists('ProdutoTinyPreflightService') ? ProdutoTinyPreflightService::analisarRetornoPesquisa($tinyRet, $sku) : ['estoque'=>null];
+      $estoqueTiny = isset($info['estoque']) ? (float)$info['estoque'] : 0.0;
+      $vsmRet = $vsm->consultarEstoque($sku);
+      $estoqueVsm = 0.0;
+      if (isset($vsmRet['estoque'])) $estoqueVsm = (float)$vsmRet['estoque'];
+      elseif (isset($vsmRet['saldo'])) $estoqueVsm = (float)$vsmRet['saldo'];
+      elseif (isset($vsmRet['dados']['estoque'])) $estoqueVsm = (float)$vsmRet['dados']['estoque'];
+    } catch (Throwable $e) {
+      Audit::event('reconciliacao.sku.indisponivel','alerta',[
+        'codigo_erro'=>'RECONCILE_PROVIDER_UNAVAILABLE',
+        'mensagem'=>'Reconciliação real não pôde consultar Tiny/VSM.',
+        'causa_provavel'=>'Provedor externo indisponível (rede, credencial ou endpoint de consulta).',
+        'acao_recomendada'=>'Confira o token Tiny e o endpoint de consulta de estoque da VSM, ou use a comparação manual.',
+        'contexto'=>['sku'=>$sku,'erro'=>$e->getMessage()],
+      ]);
+      return ['sku'=>$sku,'status'=>'indisponivel','erro'=>$e->getMessage()];
+    }
     $res = self::registrarManual($sku, $estoqueTiny, $estoqueVsm, 'api_real', ['retorno_tiny'=>$tinyRet,'retorno_vsm'=>$vsmRet]);
     Audit::event('reconciliacao.sku.real','sucesso',[ 'mensagem'=>'Reconciliação real executada para SKU.', 'contexto'=>['sku'=>$sku], 'retorno'=>['tiny'=>$tinyRet,'vsm'=>$vsmRet,'resultado'=>$res] ]);
     return $res + ['retorno_tiny'=>$tinyRet,'retorno_vsm'=>$vsmRet];
