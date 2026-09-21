@@ -144,7 +144,6 @@
 29ed51d741ca355ed3dd24aa087a5fc612455fe6a22016bb5d30b7045d7ce7b1  ./views/central_homologacao.php
 2a98a1e5518ece6a3dd07e592602aa63ad5080cbcea30df0a67969d9b95bbfa7  ./RELATORIO-VIABILIDADE-LLM-VPS-2026-09-20.md
 2b1411ef15071024ebd75df4cfc3b310791ec2dc6019fd9826f33b1c698cd6fb  ./database/legacy/incrementais_v104_8/update_v104_4_vsm_fluxos_csp_legado.sql
-2b1b2f60aa06da0ff00a9ba6169ba387bc9b10c2d391e2613ecea42952d0f673  ./app/Services/TinyV3Service.php
 2b5c29ecbcf53e65bcf60e7cd2cfc10731ad91b8a484a737d4ac6be0d19f793c  ./tests/enterprise/v104_49_3_db_down_5xx_test.php
 2b5fdeebc9ae079b43da0c37bf17cbd153cd4cec763b25c23cc67637c70ad4fc  ./tests/enterprise/v104_48_1_password_policy_test.php
 2bb15e1888ad8a2d3e41153ce4904236163a3a8d1863a1ce10c832cd82e22abb  ./UPGRADE-R7-20260917.md
@@ -158,7 +157,6 @@
 2df65761d3a6cd06b24f93f1ed76bddbedf6c7c9b6e3ca7f1f45b192122d9db3  ./views/reconciliacao.php
 2e695fbb16d02d5aabd4f0e9f45461299407ada9c794ced6742707e3fa64c5c3  ./tests/enterprise/v104_48_1_backup_security_test.php
 2f0673621f82b3174788bb883b0b63aa8ba2ac0dbab17d52e0643bf31474561f  ./RELATORIO-AUDITORIA-WEBHOOK-AUTH-2026-09-21.md
-2f640ccb15bc7429745faa1d3402218942fb4245f71f809dd1141c691fa1665d  ./storage/cache/classmap.php
 2f9d8ca3f5f3f1df1ae425f3c01e3832b28028300f57d634ccf85d8c0ecf5e8b  ./workers/README-WORKERS.md
 2fb823d9e94d841d6acd643c61dc23a0b22551303f70a79a686ae46412ed6af2  ./RELATORIO-V94-SEGURANCA-EXTREMA.md
 301ff77e27005fdabb37edec79f6d836dc8bbd59800a068eae98cfe5b0be23dc  ./app/Services/VsmEnvironmentService.php
@@ -237,6 +235,7 @@
 48fe3a69517e5b33a3b8d9e447980e803918f51e5cab430b26be65212c255501  ./RELATORIO-V83-CENTRO-OPERACOES-DASHBOARD-DIVERGENCIAS.md
 498dee1de797a02cdee82ba179aca26acdc396484f90e11867075bd15adeec0d  ./views/auditoria_codigo.php
 4a44664b3daa720895f159ac5b40777dfddc530a1c99bb9b84e91af683227244  ./app/Services/NotificationService.php
+4a53aa851f69e8d62f9de34f2edaf034e9f9f5c2d7d0e499ecc98270241b9876  ./tests/enterprise/v104_49_3_tiny_rate_limit_observer_test.php
 4a765c68dc847ef5884af93821877bb038474efe7dd4a62eea310312e5fee3a1  ./app/Connectors/VsmConnector.php
 4a871577c8e49e2a2fb0d7dff3286fdd26ad9542a6e9acfabd324526208dd870  ./app/Services/MultiDbMigrationService.php
 4abc3491918afef10e047fbb7a2d46618c4b752a8f62e99bcf6f158cd4f95dd7  ./views/metricas.php
@@ -265,6 +264,7 @@
 52201bb18225918b2e81dfe3629f8eaecab0f0e4d196e3a040c593f821d60051  ./RELATORIO-V76-INSTALADOR-HOSPEDAGEM-MYSQL.md
 52397a0236856cc8426d7d3aeb156c5a4786c1f6f60c991fa9110a15b829d47f  ./RELATORIO-V73-HOMOLOGACAO-TINY-V2.md
 5283f6ecb1213defa22d30cb28af0bdc22f904cf4ab2e3b29338dcb114a2bfe2  ./app/Controllers/XmlNfeController.php
+52e9eceeaa49d30ec97e849246baeff4d8b794b3144ca8b91b14af7114f09255  ./storage/cache/classmap.php
 531501255b23a720164afd3502d5cb07b029bc78cd5df9a10e6f633770c91442  ./database/install.sql
 531501255b23a720164afd3502d5cb07b029bc78cd5df9a10e6f633770c91442  ./database/install_final_current.sql
 535ab56c7fe5f1b3f750e8269f2da7ac64dcf598473eef500fed616c00cd5aea  ./views/commercial_production_ready.php
@@ -348,7 +348,6 @@
 689e73e9a5b610d28d6ae79ebfee712b5eb5d3f8c09a15b2eb22935298b0d281  ./app/Services/QueueService.php
 68fc197980ab1862249de2d842b6fa1050be3d25b357efdf0246e7b000fb8a54  ./app/Controllers/FiscalController.php
 690bec5fa56d9dbf00b9c7107a082d2339549af1fe213eee5b625d685daf6ba9  ./database/legacy/docs_sql_antigos/legacy_updates_manifest_v104_4.json
-69354f400418c4d585d5a0d320cc922783f6b9789af84355368b21f7ef098476  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 693c242d14f17df21c8acf8a98ee56a4b0e47e199cda5c3457e23d7e41719150  ./views/baixas_estoque.php
 697588097df542f0f1009495979959da6b9fa5054898d236b4820b869d1ad50a  ./database/manual_reset_2fa_primeiro_acesso_v104_27.sql
 6a83fbf65550a73e9f9d60ba8c8aec5cf24ee7598a8b95dbfd46b52ef6a4bb78  ./RELATORIO-RELEASE-MAIN-V104.49.3-R7-2026-09-19.md
@@ -468,7 +467,6 @@
 8b6c6b41bd66c6c73d4ea51852b37abba951e49b58a5891ab577e8c66cc30717  ./views/evidencias_homologacao.php
 8bbab0906917873ca99756e5cf5b4279c87c98ade15a90649a77dc3448a86d2c  ./database/install_final_v104_25.sql
 8c45a6af1020d427c758fd17b1d6e828953c3d8395f0e5a13278ed46e9512d21  ./public/assets/img/icon-512.png
-8c5a44bcc749175972ff3151cde7d066a236419c90c81d8b16b1f787979b4225  ./app/Services/TinyV2Service.php
 8cd5f18768032555183119747de75a360ee8a494b1fa556dc4be78e29013336b  ./RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md
 8d5b4c874efb6dccbe1562aafcd4ded2ee95381ca58ddae44aeca40766e26745  ./CLAUDE.md
 8d764c805b34551bb6e6337e35f04b33355727b4e9cb6f2352f602228d8a0448  ./public/assets/img/icon-maskable-512.png
@@ -561,6 +559,7 @@ a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/leg
 a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/legacy/sql_ate_v104_15/install_final_v104_8.sql
 a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/legacy/sql_ate_v104_15/install_final_v104_9.sql
 a9049eb1a7d22ca889af122dd0c6322d35f70cb2ff78cbfe1a12213e0d67885e  ./RELATORIO-V91-CORRECAO-ORQUESTRACAO-FLUXOS-ATIVOS.md
+a91686028b998cd08592e6c76c49f1d2ccce6e19ed604af9fde3a6304ed9e6c2  ./app/Services/TinyV3Service.php
 a93f72f78edb0589a5991a3548a0f0f699a662ae290c9ba80ef8d207efd1ec45  ./app/Services/CodeAuditService.php
 a96c306dfe8e879cff5afb4e8203b752578d89dab0083f8eaa19cdcd8d97b9aa  ./views/pwa_status.php
 a98f33c00859aadc24ae2d49083950448acc47a2c3efdd94cd9c9ceb818788a2  ./app/Services/EstoqueEnterpriseService.php
@@ -622,6 +621,7 @@ b8b7dba6cba6e7dc8cbbfc206f54b9e490da7496970b5fb6bd89727537b2221e  ./workers/work
 b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/assets/img/shortcut-homologacao-192.png
 b91debbf5987b3bb7f3b72a46bc3561b50113b4648ed6569120e3b947f28f342  ./app/Services/LicenseRemoteCacheService.php
 b9e2d0dbb24f513ce8070f1161d483d1252a031481442608656e8fd6bea6118b  ./database/legacy/docs_sql_antigos/README-SQL-V104.7.md
+ba27e51e7372fbf73aa9b2217a04c8bd751b457282d0fce052e15db18c70d0ef  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 ba2c561e0356835485b406e30ab7380db99718cf029cade39d2c1dee5ae5c4e0  ./database/legacy/incrementais_v104_8/update_v104_2_fluxo_nfe_vsm_tiny.sql
 ba331ba626599070b84f2e65194fc972b2f6b68eddbd2bd66bac9f759f08a824  ./RELATORIO-V86-PWA-HUB-INTEGRACAO.md
 ba48c59f30efedcf5fbfa5d3117e66abfa635db6c4c94c75df2f1b058001469c  ./tests/enterprise/v104_49_3_llm_phase_b2_b5_test.php
@@ -656,6 +656,7 @@ c18e5e78b61e3aafd20fa3aacae7d1bf900c39af2f1962f67f8fb2ad003bc07f  ./RELATORIO-V1
 c29c81d79ed5620906068682fee768f9e65de84fce456998769cf382b7705799  ./app/Services/RetryPolicyService.php
 c2a4e15fc1577fc29f4faaebdaf64068c1250e12bf4a58229c8aa1003c5434e0  ./tests/enterprise/v104_37_responsive_test.php
 c350d58f435e48ab71c54fe3e0af7574392dad0e3baef458bd5be752dc7a3d1b  ./docs/comercial/02-manual-instalacao.md
+c35b7f9fe6143b479eded95b5802d20d73c74acf143ff3df70bafce0415457d8  ./app/Services/TinyV2Service.php
 c37436f8aaad7eef814e4eb50fff257681efe89733589a95bf10e2d700dfd6b7  ./scripts/diagnose-http-500.php
 c377baec6f4163f07929bc296c43181157e29e6888518d5d7b7c687f4cda87e7  ./LEIA-ME-HOTFIX-SCHEMA-R2.txt
 c432895aa3cf589ad4e66526bc5c1c4086ab218d68a08e0bee7c4ce8fc95ee5d  ./app/Services/VsmOpenApiContractService.php
@@ -749,6 +750,7 @@ db3c433460515ae7eb5e67c4c3b8cd32739edb509dff6b9c53fea178bd23b530  ./app/Controll
 db45ebce304f72d3bd3d2fc373461fc837820a16d1c6b1fd54587a1085ff38fb  ./app/Services/FastRouteDispatcherService.php
 db491bf1339289c523d0ca48a95a02049c95c74d1840bf313309ce980c2a159e  ./RELATORIO-V104.3-FUNCOES-FLUXOS-CHECKBOXES.md
 db491bf1339289c523d0ca48a95a02049c95c74d1840bf313309ce980c2a159e  ./docs/RELATORIO-V104.3-FUNCOES-FLUXOS-CHECKBOXES.md
+dbb421d6c81a0127bc63a9c81150c8785dc9629f17694635059d87473fea9265  ./app/Services/TinyRateLimitObserverService.php
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comercial/09-servidor-licenciamento.md
 dc46bbcacff294eb6c4a61912473bcd3e99c7ee7d58ca75a7f3847505139fc90  ./app/Services/PedidoMapper.php

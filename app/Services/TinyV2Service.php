@@ -34,10 +34,11 @@ class TinyV2Service implements TinyClientInterface {
     for($attempt=1; $attempt <= $attempts; $attempt++){
       RetryPolicyService::sleep($attempt);
       $ch=curl_init($requestUrl);
-      curl_setopt_array($ch,$securityOptions+[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>http_build_query($data),CURLOPT_HTTPHEADER=>IntegrationSecurityService::traceHeaders(),CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>30,CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2]);
+      $capHeaders=[]; // T-02: observabilidade do limite (x-limit-api), sem throttle
+      curl_setopt_array($ch,$securityOptions+[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>http_build_query($data),CURLOPT_HTTPHEADER=>IntegrationSecurityService::traceHeaders(),CURLOPT_RETURNTRANSFER=>true,CURLOPT_HEADERFUNCTION=>TinyRateLimitObserverService::headerCapture($capHeaders),CURLOPT_TIMEOUT=>30,CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2]);
       $started=microtime(true); $body=curl_exec($ch); $err=curl_error($ch); $http=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch); $tempoMs=(int)round((microtime(true)-$started)*1000);
       $json=json_decode((string)$body,true);
-      $last=['body'=>$body,'err'=>$err,'http'=>$http,'ms'=>$tempoMs,'json'=>$json,'attempt'=>$attempt];
+      $last=['body'=>$body,'err'=>$err,'http'=>$http,'ms'=>$tempoMs,'json'=>$json,'attempt'=>$attempt,'headers'=>$capHeaders];
       if (!RetryPolicyService::shouldRetry($http, $err ?: null, $json) || $attempt === $attempts) break;
       Audit::event('tiny.v2.retry','alerta',['mensagem'=>'Retry Tiny V2 com backoff exponencial','contexto'=>['endpoint'=>$endpoint,'tentativa'=>$attempt,'http'=>$http,'erro'=>$err,'trace_id'=>$trace]]);
     }
@@ -65,8 +66,11 @@ class TinyV2Service implements TinyClientInterface {
     // resposta do provedor sem máscara - os dois caminhos de erro acima já usavam
     // SensitiveDataService. pedido.obter.php e nota.fiscal.incluir.xml.php devolvem dado pessoal
     // do cliente e XML de NF-e, que iam em claro para auditoria_eventos.retorno.
-    Audit::event('tiny.v2.response',$tinyFalhou?'erro':'sucesso',['mensagem'=>'Resposta recebida do Tiny V2','retorno'=>['http_code'=>$http,'json'=>SensitiveDataService::mask($json),'tentativas'=>$attempt]]);
+    // T-02 (observabilidade, sem throttle): registra o teto por minuto que o Tiny informou no header.
+    $limiteApi = TinyRateLimitObserverService::v2($last['headers'] ?? []);
+    Audit::event('tiny.v2.response',$tinyFalhou?'erro':'sucesso',['mensagem'=>'Resposta recebida do Tiny V2','retorno'=>['http_code'=>$http,'json'=>SensitiveDataService::mask($json),'tentativas'=>$attempt,'limite_api'=>$limiteApi]]);
     $json['trace_id']=$trace; $json['tentativas']=$attempt;
+    if($limiteApi!==null) $json['limite_api']=$limiteApi;
     return $json;
   }
 
