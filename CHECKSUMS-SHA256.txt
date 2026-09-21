@@ -403,6 +403,7 @@
 7b498d80dd588dbd84166fa146929b228ca1d70063a3ba8cf6fe24fa92dabb2c  ./app/Services/LoginRateLimitFallbackService.php
 7b55317469cfbf95ef4b6bc9e189ca32fbbb34d74a1c21b56f9fc1404efe2c7d  ./app/Services/Audit.php
 7b65c9191a897a9cba9d477c492514d58b6db04b184ab3af668ba3af54d035ad  ./app/Services/SystemVersionService.php
+7b7749c54af84ce4c8242d4b6a0e8058df645dbb2be1b6132c567fd10e13cbbf  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 7b9a7319c29d162110b55e969e6bfc95ca66da066d3ccd234636a7c221811477  ./database/install_final_v104_22.sql
 7bcd270834a787c6b2b11a53e26e9d59b8e61fe5e4e7a2c490fe160eda736cdb  ./app/Controllers/DivergenceMonitorController.php
 7bfaba286704c33aea78ecfa6da15b8f8dbceaf0da004aec45a6cdcb74580edb  ./database/legacy/install_final_v104_5.sql
@@ -468,6 +469,7 @@
 8c45a6af1020d427c758fd17b1d6e828953c3d8395f0e5a13278ed46e9512d21  ./public/assets/img/icon-512.png
 8c5a44bcc749175972ff3151cde7d066a236419c90c81d8b16b1f787979b4225  ./app/Services/TinyV2Service.php
 8cd5f18768032555183119747de75a360ee8a494b1fa556dc4be78e29013336b  ./RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md
+8d5b4c874efb6dccbe1562aafcd4ded2ee95381ca58ddae44aeca40766e26745  ./CLAUDE.md
 8d764c805b34551bb6e6337e35f04b33355727b4e9cb6f2352f602228d8a0448  ./public/assets/img/icon-maskable-512.png
 8da74ebde9127f0b2df36d5ec9df1afe5173c6ae776259200a6ffac63641da19  ./database/update_v104_20_instalador_seguro_mysql.sql
 8de6aa94e741b56fd09befcaed8abea7f8cd9da873a9b0adcbbaa0d04d0eeeb9  ./app/Services/SecurityHealthService.php
@@ -751,7 +753,6 @@ dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comerci
 dc46bbcacff294eb6c4a61912473bcd3e99c7ee7d58ca75a7f3847505139fc90  ./app/Services/PedidoMapper.php
 dc5d70344dda6d3df3289b67ca75779516f928bb90ee85e6e9a8510de3aa1269  ./RELATORIO-V104-2FA-QRCODE-SEGURO.md
 dd9dfb7082b9e87782b0698d6f39c855f7e1b73462548f52600bac9d704cf3f3  ./views/security_center.php
-8d5b4c874efb6dccbe1562aafcd4ded2ee95381ca58ddae44aeca40766e26745  ./CLAUDE.md
 de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/assets/img/icon-128.png
 de7d52653dac4b653d8827d6d682b8e4e7ff42a26193d87a438f793b9951dd16  ./app/Services/IntegrationSecurityService.php
 dea0650790df068203ede6aa7d57075605bc04110ea18103de0e4d5a6c553d42  ./app/Services/DataRetentionService.php
