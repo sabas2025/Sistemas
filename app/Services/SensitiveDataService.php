@@ -16,7 +16,7 @@ class SensitiveDataService {
       $out = [];
       foreach ($value as $k => $v) {
         $key = strtolower((string)$k);
-        $out[$k] = self::isSensitiveKey($key) ? self::maskScalar($v) : self::mask($v);
+        $out[$k] = self::isSensitiveKey($key) ? self::maskSensitiveValue($v) : self::mask($v);
       }
       return $out;
     }
@@ -44,6 +44,23 @@ class SensitiveDataService {
       if (str_contains($key, $needle)) return true;
     }
     return false;
+  }
+
+  /**
+   * Achado K-01 (2026-09-21): sob uma chave sensível o valor pode ser um ARRAY aninhado
+   * (ex.: `itens`, `endereco`). Antes, mask() chamava maskScalar() direto, e `(string)$array`
+   * disparava "Array to string conversion" no worker e mascarava tudo como a string "Array",
+   * perdendo a estrutura. Aqui a máscara desce recursivamente e mascara cada folha como
+   * sensível, preservando o formato. Family do G-01 (tipo em caminho de mascaramento).
+   */
+  private static function maskSensitiveValue(mixed $v): mixed {
+    if (is_array($v)) {
+      $out = [];
+      foreach ($v as $k => $vv) $out[$k] = self::maskSensitiveValue($vv);
+      return $out;
+    }
+    if (is_object($v)) return self::maskSensitiveValue(json_decode(json_encode($v), true));
+    return self::maskScalar($v);
   }
 
   private static function maskScalar(mixed $v): string {

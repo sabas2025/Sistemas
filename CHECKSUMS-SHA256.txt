@@ -23,6 +23,7 @@ ccb342bd1c1416b1ddf7bd4bcbd6fbc3c1a6bbb01009ab1c0865a63cc8a7e15b  ./RELATORIO-CA
 bbff82ef5439f85adc87e8530d3dbde29fb03399b6c2938c6dd56464ac7cd84e  ./RELATORIO-CORRECAO-G03-2026-09-14.md
 898dcd298ce3bc6d750162d0caa71eff87a30ef55f4f1a3a941df18c938f86f8  ./RELATORIO-CORRECAO-WARNINGS-COMPACT.txt
 ff93485039f4f51624a58ab846e3501746a5cf5c9e4796db254cede2efb97ccd  ./RELATORIO-CORRECOES-G01-G02-2026-09-14.md
+65c4173cc18fde53bc3c31effbd88cb79906b1967d4756592a73080ce2cabaf4  ./RELATORIO-E2E-FLUXOS-2026-09-21.md
 f54aeab4d3e2d5f035c6d8e73af78367b128f851b4c24540748be8a1b2ee4921  ./RELATORIO-FINAL-V104.49.3-R5-AUDITORIA-E-CORRECOES-2026-08-22.md
 5c79dbfc554e9382b7244ebbb559dafd280f2a6dd73362053c8c5bbf8b387665  ./RELATORIO-GUIA-TELAS-DO-HUB-2026-09-20.md
 027c83effdf03810ac9307f7be804834d39b01954b2732c80a7bc8af27e63706  ./RELATORIO-HOTFIX-HTTP-500-HUB-V104.48.1.md
@@ -333,7 +334,7 @@ c9113e1e17a449c6df673e0b57300961ab0ddc1b3d81ffa62f867571c91a1254  ./app/Services
 8de6aa94e741b56fd09befcaed8abea7f8cd9da873a9b0adcbbaa0d04d0eeeb9  ./app/Services/SecurityHealthService.php
 0805dad9b57bdf87b7719f153dca09d268fc86d41df262f86d7cfbc6ac113705  ./app/Services/SecurityScoreService.php
 d8798df420712241c18cc0db784f06821fabe519697d2656928a2246f647622e  ./app/Services/SelfTestService.php
-ac61000c309937109cee274ebd335584bce7146a72a86c6ee50b82273d67735b  ./app/Services/SensitiveDataService.php
+cabb7d9b02a0d672eac2f63bcde2d3444ee03facd93b2a662dec8feb022c8c24  ./app/Services/SensitiveDataService.php
 816da3c155fc60c896f78f23d08718194ceeef26f6d7014a6a3e99e383bf8dd2  ./app/Services/SensitiveHeaderRedactor.php
 896ce82fdabda3a417abb8f7e0b9ea88763a6c1a02207a6962d5736448b46a94  ./app/Services/ShellCommandService.php
 d189680dc9b43a27df73a9dec6539bef097537f2251259b72251cf5c34f12222  ./app/Services/SimpleCache.php
@@ -685,6 +686,7 @@ da2144e3ef76673f6a5a0b75822f411bd0afb9633e453bf0f65c38b589db55ca  ./tests/enterp
 e693f96047b3665eec97bb0c3183a0c85936a82ad6b15af962ab3a003b110db4  ./tests/enterprise/v104_49_3_llm_phase_b1_b3_test.php
 ba48c59f30efedcf5fbfa5d3117e66abfa635db6c4c94c75df2f1b058001469c  ./tests/enterprise/v104_49_3_llm_phase_b2_b5_test.php
 e66b527c18aa10796e4ae8960ebe45da46e3abd8df8c2924b70158f2bf3eceec  ./tests/enterprise/v104_49_3_mariadb_type_contract_test.php
+02d0c66266c0908817839ae3f3b633a971363b34d0ca9882463d1abd14441af6  ./tests/enterprise/v104_49_3_mask_array_k01_test.php
 cb9a7f7e77e48dbb36be2dc2ea0bb827fe3a0f53d708712dde20bd798075f9c4  ./tests/enterprise/v104_49_3_paridade_indices_test.php
 3904b01b60f4cefdf39a4b536b4bec879ba1fedc6f3fe66f73a34aa98f00f6b2  ./tests/enterprise/v104_49_3_r5_ci_quality_gate_test.php
 4312c57589ba4710172eeedf8af17357c802b7fe3a5d724b6db112dfcbe6b48d  ./tests/enterprise/v104_49_3_r5_vsm_governance_test.php
