@@ -1869,7 +1869,11 @@ class DashboardController {
   private function reconciliacaoExecutar(): void {
     PermissionService::require('reconciliacao','executar'); Csrf::validate();
     $sku=trim($_POST['sku'] ?? ''); $tinyRaw=trim((string)($_POST['estoque_tiny'] ?? '')); $vsmRaw=trim((string)($_POST['estoque_vsm'] ?? ''));
-    if($sku!=='' && $tinyRaw==='' && $vsmRaw==='') { ReconciliationService::reconciliarSku($sku); }
+    if($sku!=='' && $tinyRaw==='' && $vsmRaw==='') {
+      // L-01: reconciliarSku degrada com elegância se o provedor externo estiver fora.
+      $r=ReconciliationService::reconciliarSku($sku);
+      if(($r['status'] ?? '')==='indisponivel') redirect('index.php?page=reconciliacao&erro=provedor_indisponivel');
+    }
     elseif($sku!=='') { ReconciliationService::registrarManual($sku,(float)$tinyRaw,(float)$vsmRaw,'painel'); }
     redirect('index.php?page=reconciliacao');
   }
