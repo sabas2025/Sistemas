@@ -17,9 +17,9 @@
 > pode divergir do que a Tiny publica — cruzar as duas é justamente o objetivo da validação (Fase 5).
 
 **Links de origem pedidos (a preencher na Parte B):**
-1. Visão geral da API — `https://tiny.com.br/api-docs/api` *(inacessível: egress bloqueado)*
-2. Limites da API v2 — `https://tiny.com.br/api-docs/api2-limites-api` *(inacessível: egress bloqueado)*
-3. Criando um aplicativo (API v3 / OAuth) — `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo` *(inacessível: egress bloqueado)*
+1. Visão geral da API — `https://tiny.com.br/api-docs/api` *(pendente — enviar PDF/print)*
+2. Limites da API v2 — `https://tiny.com.br/api-docs/api2-limites-api` — ✅ **PREENCHIDO** (PDF fornecido 2026-09-21)
+3. Criando um aplicativo (API v3 / OAuth) — `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo` *(pendente — enviar PDF/print)*
 
 ---
 
@@ -107,18 +107,32 @@
 - Lista de recursos/endpoints: *Não identificado com as evidências disponíveis.*
 - Formato de requisição/resposta: *Não identificado com as evidências disponíveis.*
 
-## B.2 — Limites da API V2
-**Fonte:** `https://tiny.com.br/api-docs/api2-limites-api`
+## B.2 — Limites da API V2 ✅ PREENCHIDO
+**Fonte:** `https://tiny.com.br/api-docs/api2-limites-api` (PDF fornecido pelo responsável, capturado 2026-09-21).
 
-- Número de requisições permitido e janela (ex.: X/min, Y/dia): *Não identificado com as evidências disponíveis.*
-- O limite é por token, por conta ou por IP: *Não identificado com as evidências disponíveis.*
-- Resposta/código ao exceder o limite: *Não identificado com as evidências disponíveis.*
-- Tempo de espera / retry-after documentado: *Não identificado com as evidências disponíveis.*
+**O limite é por EMPRESA e varia conforme o plano contratado.** A cada requisição, o Tiny retorna no
+header **`x-limit-api`** a quantidade de chamadas permitidas por minuto para aquela empresa.
 
-> **Por que este é o campo mais importante:** o Hub hoje **reage** ao limite (recua 5/15/30 min),
-> mas **não pré-limita** a frequência dos workers. Com o número oficial aqui, dá para confirmar se a
-> frequência combinada dos workers respeita o teto na meta de 500 pedidos/min — ou se precisa de um
-> pré-throttle no `RateLimitService`.
+**Limites de chamadas (por minuto):**
+| Plano | Chamadas/min | Chamadas de serviços em lote/min |
+|---|---|---|
+| Começar | **0** | **0** |
+| Crescer | **30** | **5** |
+| Evoluir | **60** | **5** |
+| Potencializar | **120** | **5** |
+| Descontinuados (Free, Teen, Premium, Profissional) | **20** | **5** |
+
+- **Requisições concorrentes:** considerar como **1/4** do limite total.
+- **Serviços SEMPRE contabilizados como chamada em lote** (indiferente da quantidade de registros):
+  Incluir Contato, Alterar Contato, Incluir/Alterar Grupo de Tag, Incluir/Alterar Tag,
+  **Incluir Produto**, **Alterar Produto**.
+- **Limites de registros:** 20 registros por lote de envio; **100 registros resultantes por chamada**.
+- Resposta/código HTTP ao exceder o limite: *Não identificado — a página fornecida não descreve a resposta de estouro.*
+- Retry-after documentado: *Não identificado — não consta na página fornecida.*
+
+> **Cruzamento com o Hub → ver "Achado T-01" abaixo.** O ponto crítico é que `Incluir Produto` e
+> `Alterar Produto` — que o Hub chama no fluxo de produto (VSM→Tiny) — contam como **lote**, cujo
+> teto é **5/min**, muito abaixo do limite geral (30/60/120). E o Hub **não lê `x-limit-api`**.
 
 ## B.3 — Criando um aplicativo (API v3 / OAuth 2.0)
 **Fonte:** `https://api-docs.erp.olist.com/documentacao/comecando/criando-um-aplicativo`
@@ -132,6 +146,43 @@
 - Tempo de vida do access token: *Não identificado com as evidências disponíveis.*
 - Tempo de vida do refresh token / rotaciona?: *Não identificado com as evidências disponíveis.*
 - Rate limit da V3 (se houver): *Não identificado com as evidências disponíveis.*
+
+---
+
+# PARTE C — Cruzamento com o Hub (achados da Fase 5)
+
+## Esclarecimento sobre a meta de 500 pedidos/min
+O fluxo de **Pedido é Tiny → Hub → VSM**: o Hub **recebe** o pedido por webhook e o envia à **VSM**,
+não ao Tiny. Ele **não chama** `pedido.incluir.php` no caminho do pedido. Portanto **a meta de 500
+pedidos/min NÃO é limitada pelo teto por-minuto do Tiny V2** — esse teto pesa sobre as chamadas de
+**saída** ao Tiny (sincronização de produto, estoque, NF-e e mudança de status).
+
+## Achado T-01 — Hub não lê `x-limit-api` e trata `Incluir/Alterar Produto` como chamada comum
+
+- **Identificação:** rate limit do Tiny V2 é tratado de forma **reativa** e **sem distinguir chamadas de lote**.
+- **Evidência:**
+  - Doc oficial (B.2): `Incluir Produto` e `Alterar Produto` **sempre** contam como **lote**, teto **5/min**; o Tiny informa o teto real no header **`x-limit-api`**.
+  - Código: o Hub **não lê `x-limit-api`** em lugar nenhum (`app/`, `workers/` — busca vazia).
+  - Código: `ApiController.php:693` chama `criarProduto()`/`atualizarProduto()` → `TinyV2Service.php:98-99` → `produto.incluir.php`/`produto.alterar.php` (as duas chamadas de **lote**).
+- **Arquivo/método:** `TinyV2Service::criarProduto/atualizarProduto`; consumidor `ApiController.php:693`; **ausência** de leitor de `x-limit-api`.
+- **Gravidade:** **Média** (afeta throughput do fluxo de PRODUTO; **não** há perda de dado — o Hub recua ao receber o erro).
+- **Causa raiz:** o controle de limite é reativo (`TINY_RATE_LIMIT` → recuo 5/15/30 min) e não modela o teto de **lote** (5/min), muito menor que o geral (30/60/120).
+- **Impacto:** a sincronização de produto (VSM→Tiny) fica efetivamente limitada a **~5 criações/alterações por minuto**; acima disso o Tiny recusa e o Hub recua — a sincronização atrasa. No plano **Começar** o limite de lote é **0**: nenhum produto sincroniza.
+- **Cenário de falha:** carga inicial ou lote grande de produtos novos/alterados da VSM enfileira >5/min → estouro do limite de lote → recuo repetido → fila de produto represada.
+- **Correção recomendada (NÃO aplicar sem evidência de volume — fase 10):**
+  (a) ler `x-limit-api` e **pré-throttlar** proativamente pela fachada `RateLimitService`;
+  (b) modelar `produto.incluir/alterar` como classe **lote** com teto próprio de 5/min no agendamento do worker de produto;
+  (c) avaliar o **serviço de lote** do Tiny (envio de até 20 registros por chamada) para reduzir nº de chamadas.
+- **Risco da correção:** baixo-médio — pré-throttle mal calibrado atrasa sincronização legítima; nunca deve **bloquear** chamada legítima (regra inegociável).
+- **Compatibilidade:** aditiva; preserva o comportamento reativo atual como rede de segurança.
+- **Como testar:** exercitar o worker de produto com N>5 itens/min contra Tiny (real ou mock) e confirmar respeito ao 5/min sem estouro.
+- **Como reverter:** remover o pré-throttle; volta ao comportamento reativo atual.
+- **Status:** **confirmado** que o gap existe no código; **impacto sob a operação real: A CONFIRMAR** — depende da frequência/volume real do worker de produto (dado pendente do responsável).
+
+## Ponto informativo T-02 — o Hub reage, mas "às cegas" quanto ao plano
+Sem ler `x-limit-api`, o Hub não sabe o teto da empresa (varia por plano: 0/20/30/60/120). Ele só
+descobre o limite **ao estourá-lo**. Ler o header permitiria ajustar o ritmo **antes** do erro.
+**Registrado, não aplicado** — mesma condição do T-01 (exige evidência de volume).
 
 ---
 
