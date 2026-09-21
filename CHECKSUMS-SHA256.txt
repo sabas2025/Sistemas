@@ -159,6 +159,7 @@
 2e695fbb16d02d5aabd4f0e9f45461299407ada9c794ced6742707e3fa64c5c3  ./tests/enterprise/v104_48_1_backup_security_test.php
 2f0673621f82b3174788bb883b0b63aa8ba2ac0dbab17d52e0643bf31474561f  ./RELATORIO-AUDITORIA-WEBHOOK-AUTH-2026-09-21.md
 2f640ccb15bc7429745faa1d3402218942fb4245f71f809dd1141c691fa1665d  ./storage/cache/classmap.php
+2f9d8ca3f5f3f1df1ae425f3c01e3832b28028300f57d634ccf85d8c0ecf5e8b  ./workers/README-WORKERS.md
 2fb823d9e94d841d6acd643c61dc23a0b22551303f70a79a686ae46412ed6af2  ./RELATORIO-V94-SEGURANCA-EXTREMA.md
 301ff77e27005fdabb37edec79f6d836dc8bbd59800a068eae98cfe5b0be23dc  ./app/Services/VsmEnvironmentService.php
 3029c0ce264c80e644b89604add870f88b6a098fd173ef1cb880785c7edd8193  ./public/assets/img/favicon-32.png
@@ -244,7 +245,6 @@
 4bdc5948b5771114cbfb7c9dc4e74dba45d3d27db0ba59b56b681e0c81fa05e1  ./app/Controllers/ApiVsmWebhookController.php
 4d04ca903414eea89ea5ef2a936a28104770b76c6e4f82cbbb173acc827cd2a4  ./views/integracoes.php
 4d059fa566f281b802f266a6464bf12860cbd0ad60cab9875b6cbe50ee3e89e9  ./RELATORIO-V104.6-CORRECAO-ORQUESTRACAO-DUPLICATE-COLUMN.md
-4d406003995fac9649cf718f166751cb076e15d6aa3e985f57a812be7b9173a5  ./workers/README-WORKERS.md
 4d8ae8ac7cd3f139be6911e68a00c21914693c341dc1ffe39655b521fd16cb1f  ./public/assets/vendor/bootstrap-icons/bootstrap-icons.css
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
 4e9e44611141673748accd1c86bf8f42299300ae4c5fd6769cc65c3c627a8109  ./app/Services/SchemaRuntimePolicyService.php
@@ -348,6 +348,7 @@
 689e73e9a5b610d28d6ae79ebfee712b5eb5d3f8c09a15b2eb22935298b0d281  ./app/Services/QueueService.php
 68fc197980ab1862249de2d842b6fa1050be3d25b357efdf0246e7b000fb8a54  ./app/Controllers/FiscalController.php
 690bec5fa56d9dbf00b9c7107a082d2339549af1fe213eee5b625d685daf6ba9  ./database/legacy/docs_sql_antigos/legacy_updates_manifest_v104_4.json
+69354f400418c4d585d5a0d320cc922783f6b9789af84355368b21f7ef098476  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 693c242d14f17df21c8acf8a98ee56a4b0e47e199cda5c3457e23d7e41719150  ./views/baixas_estoque.php
 697588097df542f0f1009495979959da6b9fa5054898d236b4820b869d1ad50a  ./database/manual_reset_2fa_primeiro_acesso_v104_27.sql
 6a83fbf65550a73e9f9d60ba8c8aec5cf24ee7598a8b95dbfd46b52ef6a4bb78  ./RELATORIO-RELEASE-MAIN-V104.49.3-R7-2026-09-19.md
@@ -366,6 +367,7 @@
 6e5b1e9684220db2bc4f00b55da69ff20a48ef362f52cb33293e6b0d62e36f98  ./app/Services/LegacyInventoryService.php
 6e78d0efa31984a60cc32bda6105fa99da4cae1477ff38f52aa356aa5882a968  ./workers/worker_consulta_estoque_vsm.php
 6e933fe598cb9d821ce189f602f149f89ecb1f22d0162acdb73e1f0a3560864e  ./tests/e2e/specs/authenticated-smoke.spec.js
+6ea2c80f493dc23e91e42008b5d391456f07dd3ae76fa419e856a4fcff5cba60  ./workers/worker_tiny_v3_refresh.php
 6eb8ae4ca227d3c9382dc56f00bed920b831dda191d5e2d2a24b4143ac233fdc  ./RELATORIO-V96-CONSOLIDACAO-CODIGO-BANCO.md
 6f935b767bd01deac0c16853d0820de2a8f5f9b56fd70e186b282a77bdf27b72  ./RELATORIO-V71-DASHBOARD-EXECUTIVO-ALERTAS.txt
 6f98ada28f280bbb0fe3d6977f422c56b4fce02dbd53a78b0c7ed25b96291142  ./database/legacy/incrementais_v104_8/update_v104_7_schema_guard.sql
@@ -403,7 +405,6 @@
 7b498d80dd588dbd84166fa146929b228ca1d70063a3ba8cf6fe24fa92dabb2c  ./app/Services/LoginRateLimitFallbackService.php
 7b55317469cfbf95ef4b6bc9e189ca32fbbb34d74a1c21b56f9fc1404efe2c7d  ./app/Services/Audit.php
 7b65c9191a897a9cba9d477c492514d58b6db04b184ab3af668ba3af54d035ad  ./app/Services/SystemVersionService.php
-a3435e10b6f10acce8e406aecc447e3f7b6c431a5b490401ac144a049e7db473  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 7b9a7319c29d162110b55e969e6bfc95ca66da066d3ccd234636a7c221811477  ./database/install_final_v104_22.sql
 7bcd270834a787c6b2b11a53e26e9d59b8e61fe5e4e7a2c490fe160eda736cdb  ./app/Controllers/DivergenceMonitorController.php
 7bfaba286704c33aea78ecfa6da15b8f8dbceaf0da004aec45a6cdcb74580edb  ./database/legacy/install_final_v104_5.sql

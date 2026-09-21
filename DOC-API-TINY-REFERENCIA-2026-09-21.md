@@ -238,11 +238,20 @@ descobre o limite **ao estourá-lo**. Ler o header permitiria ajustar o ritmo **
 - **Gravidade:** **Média** — quebra o fluxo V3 após ociosidade; sem perda de dado, mas exige **reconexão OAuth manual**.
 - **Causa raiz:** a renovação depende de tráfego de saída V3. Se o Hub ficar **> 1 dia sem chamar a V3** (fim de semana quieto, instalação que usa V2 como operacional, período de baixa), o refresh token morre; a próxima renovação falha e só o OAuth manual reconecta.
 - **Escopo:** afeta instalações que usam a **V3 como caminho operacional**. O default do Hub é `tiny.version='v2'` — onde a V3 não opera, o ponto é inócuo.
-- **Correção recomendada (registrar, decidir com o responsável):** um **cron leve** que chame `refresh()` dentro da janela de 1 dia (ex.: a cada 6–12 h) quando a V3 estiver ativa, mantendo o refresh token vivo. Reusar o **lock** que o serviço já tem. **Não** aplicar sem confirmar que a V3 é o caminho operacional do cliente.
-- **Risco da correção:** baixo — uma chamada de refresh a mais por janela; o lock evita concorrência.
-- **Como testar:** simular ociosidade > 1 dia (relógio/registro) e confirmar que o cron renovou antes da expiração do refresh.
-- **Como reverter:** desagendar o cron.
-- **Status:** **confirmado** que não há renovação proativa; **aplicar depende da decisão** (a V3 é operacional neste cliente?).
+- **Correção APLICADA (Fase 1, 2026-09-21):** worker `workers/worker_tiny_v3_refresh.php` — renova o
+  token dentro da janela de 1 dia (`refresh(true)`), reusando o **lock** do serviço. **Aditivo e
+  guardado:** se a V3 não estiver configurada ou sem token salvo, **não faz nada** (exit 0); nunca
+  bloqueia chamada. Agendar no cron a cada 6 h **apenas quando a V3 for o caminho operacional**.
+- **Risco:** baixo — uma chamada de refresh a mais por janela; o lock evita concorrência; sem config é no-op.
+- **Validação (MariaDB 10.11 real, 4 ramos):**
+  (1) V3 não configurada → **no-op, exit 0**;
+  (2) configurada + access token expirado → **atravessa as guardas e renova** (sem rede: exit 1, correto);
+  (3) token saudável (renovado agora) → **no-op, exit 0** (não martela);
+  (4) preventivo (não expirado, última renovação há 15 h > 12 h) → **renova** (sem rede: exit 1).
+  Portões: php-lint, classmap (250) e 55 testes enterprise **verdes**.
+- **Como reverter:** desagendar/apagar o worker (o comportamento sob demanda atual permanece intacto).
+- **Status:** **corrigido e validado.** Resta ação do operador: **agendar o cron** quando a V3 for operacional
+  (o worker é inócuo até lá).
 
 ## Achado T-04 — webhook do Olist espera HTTP 200; o Hub responde 202 no pedido aceito
 

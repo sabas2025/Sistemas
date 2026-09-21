@@ -73,6 +73,16 @@ php workers/worker_xml_nfe.php
 php workers/worker_backup.php
 ```
 
+### Renovação do token Tiny V3 — só quando a V3 for operacional (achado T-03)
+
+```cron
+0 */6 * * * php /caminho/workers/worker_tiny_v3_refresh.php >> /var/log/hub-tiny-v3-refresh.log 2>&1
+```
+
+O refresh token da V3 dura **apenas 1 dia** (doc oficial). Sem este cron, um Hub que fique >1 dia
+sem chamar a V3 perde a conexão e exige OAuth manual. É **aditivo e guardado**: sem V3 configurada
+ou sem token salvo, sai 0 sem fazer nada. **Não agende** onde o Hub opera em V2 (`tiny.version='v2'`).
+
 ### Retenção — obrigatório em produção
 
 ```cron
