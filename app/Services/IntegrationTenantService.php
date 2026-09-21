@@ -46,6 +46,13 @@ class IntegrationTenantService {
       if (!str_starts_with($page, 'api/') && PHP_SAPI !== 'cli' && Auth::check()) {
         if (self::sessionEmpresaId() !== self::singleEmpresaId()) throw new RuntimeException('TENANT_CONTEXT_REQUIRED: atribua uma empresa ao usuário e entre novamente.');
       }
+    } catch (PDOException $e) {
+      // Falha de INFRAESTRUTURA (banco fora/indisponível) NÃO é conflito de tenant. PDOException é
+      // subclasse de RuntimeException, então o catch abaixo a tratava como erro de negócio: devolvia
+      // 409 (que Tiny/VSM leem como duplicado e não reenviam, perdendo o evento) e ecoava o SQLSTATE
+      // cru no corpo. Deixe-a propagar para o tratador global de public/index.php, que mapeia a queda
+      // de conexão para 503 + tela de Recuperação (sem vazar mensagem) — sinal que o remetente reenvia.
+      throw $e;
     } catch (RuntimeException $e) {
       http_response_code(409);
       header('Content-Type: text/plain; charset=UTF-8');
