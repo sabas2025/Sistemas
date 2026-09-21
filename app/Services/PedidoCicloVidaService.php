@@ -110,6 +110,15 @@ class PedidoCicloVidaService {
     if(!empty($cfg['pedido_retorno_vsm_exigir_xml']) && !$xml) $erros[]='Retorno VSM sem XML.';
     if($xml && !$xmlInfo['ok']) $erros[]=$xmlInfo['erro'] ?: 'XML inválido.';
     if(!empty($cfg['pedido_retorno_vsm_exigir_chave_nfe']) && !$chave) $erros[]='Chave NF-e ausente.';
+    // Achado M-01 (2026-09-21): o validador de chave NF-e (44 dígitos + dígito verificador módulo-11)
+    // existia em XmlNfeHomologationService::validarChaveNfe(), mas NÃO era chamado no intake real —
+    // uma chave com DV inválido era gravada como validado=1. Validamos SÓ quando a chave está
+    // presente (chave ausente segue a regra de exigir_chave_nfe acima), para não bloquear retorno
+    // legítimo que não traz a chave.
+    if($chave !== '' && class_exists('XmlNfeHomologationService')) {
+      $chk = XmlNfeHomologationService::validarChaveNfe($chave);
+      if(empty($chk['ok'])) $erros[]=(string)($chk['mensagem'] ?? 'Chave NF-e inválida (tamanho ou dígito verificador).');
+    }
     $validado=empty($erros);
     $hash=$xml ? hash('sha256',$xml) : null;
     $xmlId=null;
