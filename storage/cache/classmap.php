@@ -215,6 +215,7 @@ return [
   'TinyFactory' => 'app/Services/TinyFactory.php',
   'TinyHomologacaoController' => 'app/Controllers/TinyHomologacaoController.php',
   'TinyHomologationDiagnosisService' => 'app/Services/TinyHomologationDiagnosisService.php',
+  'TinyRateLimitObserverService' => 'app/Services/TinyRateLimitObserverService.php',
   'TinyV2ErrorCatalogService' => 'app/Services/TinyV2ErrorCatalogService.php',
   'TinyV2HomologationService' => 'app/Services/TinyV2HomologationService.php',
   'TinyV2ObservabilityService' => 'app/Services/TinyV2ObservabilityService.php',

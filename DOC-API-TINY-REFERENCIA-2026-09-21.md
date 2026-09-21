@@ -223,10 +223,12 @@ pedidos/min NÃO é limitada pelo teto por-minuto do Tiny V2** — esse teto pes
 - **Como reverter:** remover o pré-throttle; volta ao comportamento reativo atual.
 - **Status:** **confirmado** que o gap existe no código; **impacto sob a operação real: A CONFIRMAR** — depende da frequência/volume real do worker de produto (dado pendente do responsável).
 
-## Ponto informativo T-02 — o Hub reage, mas "às cegas" quanto ao plano
-Sem ler `x-limit-api`, o Hub não sabe o teto da empresa (varia por plano: 0/20/30/60/120). Ele só
-descobre o limite **ao estourá-lo**. Ler o header permitiria ajustar o ritmo **antes** do erro.
-**Registrado, não aplicado** — mesma condição do T-01 (exige evidência de volume).
+## Ponto informativo T-02 — o Hub reage, mas "às cegas" quanto ao plano — OBSERVABILIDADE ADICIONADA (Fase 1.5)
+Sem ler `x-limit-api`, o Hub não sabia o teto da empresa (varia por plano: 0/20/30/60/120). **Corrigido
+(observabilidade):** `TinyRateLimitObserverService` captura `x-limit-api` via `CURLOPT_HEADERFUNCTION` e
+o `TinyV2Service` registra o teto na trilha (`tiny.v2.response.retorno.limite_api`) e no retorno.
+**Só leitura — não impõe throttle.** O pré-limite ativo (T-01) segue pendente de evidência de volume,
+mas agora essa evidência é **medida pelo próprio Hub** em vez de estimada.
 
 ## Achado T-03 — refresh token V3 dura 1 DIA e o Hub não o renova proativamente
 
@@ -266,10 +268,11 @@ descobre o limite **ao estourá-lo**. Ler o header permitiria ajustar o ritmo **
 - **Como testar:** enviar webhook e observar se a Olist reenvia após 202/422.
 - **Status:** **provável** — precisa de confirmação do comportamento real da Olist.
 
-## Achado T-05 (informativo) — limite V3 é por CONTA e o Hub não lê `X-RateLimit-*`
-Igual ao T-01/T-02, mas na V3: o limite é **por conta, compartilhado entre apps**, e diferencia
-leitura/escrita. O Hub **não lê** `X-RateLimit-Limit/Remaining/Reset`. Se a conta tiver outro app
-ativo, o orçamento é dividido — e o Hub não sabe disso. **Registrado, não aplicado.**
+## Achado T-05 — limite V3 é por CONTA e o Hub não lia `X-RateLimit-*` — OBSERVABILIDADE ADICIONADA (Fase 1.5)
+O limite V3 é **por conta, compartilhado entre apps**, e diferencia leitura/escrita. **Corrigido
+(observabilidade):** `TinyRateLimitObserverService::v3()` normaliza `X-RateLimit-Limit/Remaining/Reset`
+e o `TinyV3Service` registra o orçamento na trilha (`tiny.v3.response.retorno.rate_limit`) e no retorno.
+**Só leitura — não impõe throttle.** Enforcement segue como T-01 (pendente de evidência de volume).
 
 ## Confirmações POSITIVAS do cruzamento (o Hub bate com a doc)
 - **URLs de OAuth idênticas à doc:** o seed do instalador já grava

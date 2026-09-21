@@ -39,13 +39,14 @@ class TinyV3Service implements TinyClientInterface {
       RetryPolicyService::sleep($attempt);
       $ch=curl_init($url);
       $headers=['Authorization: Bearer '.$token,'Accept: application/json','Content-Type: application/json','X-Trace-ID: '.$trace];
-      $opts=$securityOptions+[CURLOPT_CUSTOMREQUEST=>strtoupper($method),CURLOPT_HTTPHEADER=>$headers,CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>30,CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2];
+      $capHeaders=[]; // T-05: observabilidade do limite (X-RateLimit-*), sem throttle
+      $opts=$securityOptions+[CURLOPT_CUSTOMREQUEST=>strtoupper($method),CURLOPT_HTTPHEADER=>$headers,CURLOPT_RETURNTRANSFER=>true,CURLOPT_HEADERFUNCTION=>TinyRateLimitObserverService::headerCapture($capHeaders),CURLOPT_TIMEOUT=>30,CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2];
       if(in_array(strtoupper($method),['POST','PUT','PATCH'],true)) $opts[CURLOPT_POSTFIELDS]=json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
       curl_setopt_array($ch,$opts);
       $start=microtime(true); $body=curl_exec($ch); $err=curl_error($ch); $http=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
       $ms=(int)round((microtime(true)-$start)*1000);
       $json = $body==='' ? [] : json_decode((string)$body,true);
-      $last=['body'=>$body,'err'=>$err,'http'=>$http,'ms'=>$ms,'json'=>$json,'attempt'=>$attempt];
+      $last=['body'=>$body,'err'=>$err,'http'=>$http,'ms'=>$ms,'json'=>$json,'attempt'=>$attempt,'headers'=>$capHeaders];
       if (!RetryPolicyService::shouldRetry($http, $err ?: null, $json) || $attempt === $attempts) break;
       Audit::event('tiny.v3.retry','alerta',['mensagem'=>'Retry Tiny V3 com backoff exponencial','contexto'=>['path'=>$path,'tentativa'=>$attempt,'http'=>$http,'erro'=>$err,'trace_id'=>$trace]]);
     }
@@ -67,8 +68,12 @@ class TinyV3Service implements TinyClientInterface {
     $this->logEndpoint($path, strtoupper($method), $http, $ok, $ms, $trace, $payload, (string)$body, $ok ? null : 'HTTP '.$http);
     MetricsService::registrar('tiny_v3',$path,$http,$ms,$ok,$ok?null:'TINY_V3_HTTP_ERROR');
     if($ok) CircuitBreakerService::sucesso('tiny_v3'); else CircuitBreakerService::falha('tiny_v3','HTTP '.$http);
-    Audit::event('tiny.v3.response',$ok?'sucesso':'erro',['mensagem'=>'Resposta recebida do Tiny V3','retorno'=>['http_code'=>$http,'tempo_ms'=>$ms,'json'=>SensitiveDataService::mask($json),'tentativas'=>$attempt]]);
-    return ['http_code'=>$http,'ok'=>$ok,'data'=>$json,'trace_id'=>$trace,'tentativas'=>$attempt];
+    // T-05 (observabilidade, sem throttle): registra o orçamento de limite que o Tiny informou nos headers.
+    $rateLimit = TinyRateLimitObserverService::v3($last['headers'] ?? []);
+    Audit::event('tiny.v3.response',$ok?'sucesso':'erro',['mensagem'=>'Resposta recebida do Tiny V3','retorno'=>['http_code'=>$http,'tempo_ms'=>$ms,'json'=>SensitiveDataService::mask($json),'tentativas'=>$attempt,'rate_limit'=>$rateLimit]]);
+    $ret=['http_code'=>$http,'ok'=>$ok,'data'=>$json,'trace_id'=>$trace,'tentativas'=>$attempt];
+    if($rateLimit!==null) $ret['rate_limit']=$rateLimit;
+    return $ret;
   }
 
   private function logEndpoint(string $endpoint, string $metodo, int $httpCode, bool $sucesso, int $tempoMs, string $trace, array $requestBody=[], ?string $responseBody=null, ?string $erro=null): void {
