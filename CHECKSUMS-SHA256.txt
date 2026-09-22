@@ -606,7 +606,7 @@ b2fb040a14f6df76dd4c2bcf16e1f1386d17a1d58be34b0453c35a78d45922b6  ./RELATORIO-V1
 b30543a9f1c6706de83619005f4e082d56d73392b47506f397c6ec938b825ec5  ./views/config_diagnostic.php
 b35cc06acc9af30e8ccdb6f276a1445dfad3d39f1a44f9b9b80c574d7c0c9462  ./database/update_v104_25_enterprise_hardening_tiny_vsm.sql
 b3943048e1640f87a7b101bf52af38b817e1a32503a2b68016edc72aa73d736d  ./database/modules/fiscal.sql
-b3a9a16c12214527764e1b11662f5c636e606ce207d92ab16936bc05b87839a5  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
+6df4bd409040ca9826a3f3dd74cc8d884bc5be0dc8796ab84bcbd8e9b99917ce  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 b3bc30ec07c21e6b0e96f01564e2ecdeaab7a439c1d18015ed8aee4a87d485bb  ./app/Services/LegacyRouteGuardService.php
 b4577edaaff126be9a6764e43abe1b03444cbf868da6e7b2ce5fd56eafa4f003  ./RELATORIO-AUDITORIA-FISCAL-NFE-2026-09-21.md
 b48027c5a5504d5c197ce0984e748935cdeb4754b64154cd9ef1329c0403e410  ./views/estoque_consultas_vsm.php
