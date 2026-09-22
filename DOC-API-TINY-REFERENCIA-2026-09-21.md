@@ -172,7 +172,15 @@ header **`x-limit-api`** a quantidade de chamadas permitidas por minuto para aqu
   - `X-RateLimit-Limit` — limite total por minuto (exemplo mostrado: 120)
   - `X-RateLimit-Remaining` — disponível no minuto atual
   - `X-RateLimit-Reset` — segundos até o reset
-- **Números exatos por plano:** *Não identificado — a página remete à "documentação do usuário do ERP, sessão Limites disponíveis", não incluída nos PDFs.*
+- **Números exatos por plano** (fonte: Central de Ajuda Olist, `ajuda.olist.com`, print fornecido 2026-09-22):
+  | Plano | Leitura (GET) /min | Escrita (POST/PUT/DELETE) /min |
+  |---|---|---|
+  | Construa e Crescer · Planos Parceiros | **30** | **30** |
+  | Evoluir e Impulsione | **60** | **60** |
+  | Domine | **120** | **100** |
+  | Protagonize e Potencializar | **140** | **100** |
+  - *"Ao ultrapassar o limite, a chamada retornará um erro."* · *"o limite é por CONTA, não por aplicativo — vários apps compartilham o mesmo limite."*
+  - Comparar com o **V2** (§B.2): lá o teto geral é por plano também, mas `Incluir/Alterar Produto` conta como **lote (5/min)** — constraint separado (achado T-01).
 
 ## B.5 — Webhooks V3 (Olist → integrador) ✅ PREENCHIDO
 **Fonte:** `https://api-docs.erp.olist.com/documentacao/webhooks/webhooks` (PDF fornecido).
