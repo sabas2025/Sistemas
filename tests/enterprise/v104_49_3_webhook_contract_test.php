@@ -71,8 +71,10 @@ hub_check($checks, 'Status de erro sempre com success=false: '.(implode(' | ', $
 // O ponto exato do I-14, travado por nome: o argumento passou a seguir a validação.
 hub_check($checks, 'O webhook de pedido Tiny faz o corpo seguir a validação',
     str_contains($codigo, "\$this->responderTiny(\$validacao['ok'],["));
-hub_check($checks, 'O código HTTP do webhook de pedido NÃO foi alterado (202/422 preservados)',
-    str_contains($codigo, "\$validacao['ok']?202:422"));
+// DECISÃO DE PRODUTO (2026-09-22): validado-aguardando-aprovação passou de 202 -> 200 (ack, a doc da
+// Olist pede 200 para confirmar); bloqueado MANTÉM 422 (a Olist reenvia, idempotência dedup).
+hub_check($checks, 'O código HTTP do webhook de pedido segue a decisão: 200 no aceito, 422 no bloqueado',
+    str_contains($codigo, "\$validacao['ok']?200:422"));
 
 // As seis rotas de webhook Tiny continuam declaradas e classificadas como superfície de entrada —
 // o achado C-01 mostrou que tratá-las como rota de painel derruba o rate limit para 20/min.
