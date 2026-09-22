@@ -621,7 +621,7 @@ b8b7dba6cba6e7dc8cbbfc206f54b9e490da7496970b5fb6bd89727537b2221e  ./workers/work
 b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/assets/img/shortcut-homologacao-192.png
 b91debbf5987b3bb7f3b72a46bc3561b50113b4648ed6569120e3b947f28f342  ./app/Services/LicenseRemoteCacheService.php
 b9e2d0dbb24f513ce8070f1161d483d1252a031481442608656e8fd6bea6118b  ./database/legacy/docs_sql_antigos/README-SQL-V104.7.md
-ba27e51e7372fbf73aa9b2217a04c8bd751b457282d0fce052e15db18c70d0ef  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
+3323579c04d3189470c79ef2941541c6224a2b83908a3c560c6f9efbc1aedd72  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 ba2c561e0356835485b406e30ab7380db99718cf029cade39d2c1dee5ae5c4e0  ./database/legacy/incrementais_v104_8/update_v104_2_fluxo_nfe_vsm_tiny.sql
 ba331ba626599070b84f2e65194fc972b2f6b68eddbd2bd66bac9f759f08a824  ./RELATORIO-V86-PWA-HUB-INTEGRACAO.md
 ba48c59f30efedcf5fbfa5d3117e66abfa635db6c4c94c75df2f1b058001469c  ./tests/enterprise/v104_49_3_llm_phase_b2_b5_test.php

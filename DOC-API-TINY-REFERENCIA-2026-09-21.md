@@ -255,18 +255,35 @@ mas agora essa evidência é **medida pelo próprio Hub** em vez de estimada.
 - **Status:** **corrigido e validado.** Resta ação do operador: **agendar o cron** quando a V3 for operacional
   (o worker é inócuo até lá).
 
-## Achado T-04 — webhook do Olist espera HTTP 200; o Hub responde 202 no pedido aceito
+## Achado T-04 — códigos HTTP do webhook de pedido vs. a exigência de 200 da Olist
 
-- **Identificação:** o pedido aceito responde **202**, mas a doc de webhooks manda retornar **200** para confirmar.
-- **Evidência:**
-  - Doc oficial (B.5): *"o webhook deverá retornar o status HTTP 200"*; se não retornar, **reenvia até 10×, +5 min progressivo**.
-  - Código: `ApiController.php:170` faz `http_response_code(202)` e `responderTiny(true, …)` responde 202 no pedido aceito (achado I-14).
-- **Gravidade:** **Provável / Média-baixa** — depende de a Olist tratar `202` como sucesso ou exigir `200` exato.
-- **Impacto (se exigir 200 exato):** cada pedido legítimo seria **reenviado até 10×**; a idempotência do Hub (`pedido_origem_id`, 1 linha para N reenvios) **impede duplicação**, mas há reprocessamento e a Olist nunca "confirma" a entrega.
-- **Correção recomendada:** **confirmar com a Olist** se `202` conta como sucesso; se exigir `200`, devolver `200` no caso aceito (o `202` foi escolha do Hub, não contrato). O `422` do pedido bloqueado também será reenviado 10× — avaliar se um bloqueio de validação deve responder `200` (aceito e descartado) para não gerar reenvio inútil. **Decisão de produto** (muda quando o Tiny reenvia).
-- **Risco da correção:** baixo no código; a decisão de qual código devolver é de contrato/produto.
-- **Como testar:** enviar webhook e observar se a Olist reenvia após 202/422.
-- **Status:** **provável** — precisa de confirmação do comportamento real da Olist.
+> **Correção de relato (2026-09-21):** uma versão anterior desta linha dizia "o pedido aceito responde
+> 202". **Impreciso.** Ao reler `ApiController::webhookTinyPedido` e `responderTiny` (default **200**),
+> o quadro real é o abaixo — o **caminho feliz já responde 200 e cumpre a doc**. (O `202` da
+> `ApiController.php:170` é de OUTRO fluxo, VSM→Tiny produto pendente, não deste webhook.)
+
+- **Evidência da doc (B.5):** *"o webhook deverá retornar o status HTTP 200"*; se não retornar, a Olist
+  **reenvia até 10×, +5 min progressivo**.
+- **Códigos reais do webhook de pedido do Tiny** (`ApiController::webhookTinyPedido`):
+  | Situação | Código | Linha | Conforme (200)? |
+  |---|---|---|---|
+  | Aceito e **auto-enfileirado** para a VSM (caminho feliz padrão) | **200** | `:294` (`responderTiny(true,…)`, default 200) | ✅ já conforme |
+  | Validado, **aguardando aprovação manual** | **202** | `:303-310` (`…?202:422`) | ⚠️ só nessa config |
+  | **Bloqueado** por validação | **422** | `:303-310` | reenvia (dedup) |
+  | Segurança / payload / enfileiramento | 401 / 400 / 500 | `:282,283,295` | reenvia (bom p/ 500) |
+- **Gravidade:** **Baixa / Informativa** — o caminho principal já cumpre a doc; o desvio existe só na
+  config de aprovação manual (202) e no bloqueio (422).
+- **Impacto (se a Olist exigir 200 exato):** nas duas situações de desvio, a Olist reenviaria até 10×; a
+  idempotência (`pedido_origem_id`, 1 linha para N reenvios) **impede duplicação**, mas há reprocessamento.
+- **O que NÃO é testável aqui:** a reação da Olist ao 202/422 roda **no servidor da Olist** — sem rede
+  nem conta de teste, não há como observá-la. A doc é a única fonte, e ela diz 200.
+- **Decisão de produto (do responsável), explicitamente marcada no código (`ApiController.php:297-301`)
+  e no CLAUDE.md — *"mudar o código HTTP altera quando o Tiny reenvia"*:**
+  (a) pedido **pendente de aprovação** → manter `202` ou devolver `200` (ack, sem reenvio)?
+  (b) pedido **bloqueado** → manter `422` (Olist reenvia) ou `200` (ack, para de reenviar um bloqueio)?
+- **Se decidida:** a mudança é pequena e localizada; o lado do Hub (código devolvido + idempotência no
+  reenvio) é validável contra banco real. A reação da Olist continua fora de alcance.
+- **Status:** **não é defeito** — caminho feliz conforme; o resto é decisão de produto pendente.
 
 ## Achado T-05 — limite V3 é por CONTA e o Hub não lia `X-RateLimit-*` — OBSERVABILIDADE ADICIONADA (Fase 1.5)
 O limite V3 é **por conta, compartilhado entre apps**, e diferencia leitura/escrita. **Corrigido
