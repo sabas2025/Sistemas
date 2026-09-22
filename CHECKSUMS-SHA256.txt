@@ -247,6 +247,7 @@
 4d8ae8ac7cd3f139be6911e68a00c21914693c341dc1ffe39655b521fd16cb1f  ./public/assets/vendor/bootstrap-icons/bootstrap-icons.css
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
 4e9e44611141673748accd1c86bf8f42299300ae4c5fd6769cc65c3c627a8109  ./app/Services/SchemaRuntimePolicyService.php
+4ecd1d377b078fe4da0974df14aa4521ecba5df7b19fdc06b7d657c716cdd408  ./app/Controllers/ApiController.php
 4f4c372e19cd6564c39eb3cf1c00be7f9bae6a2095ae553a2c526ffa011a85ae  ./app/Services/QrCodeService.php
 4f5ae2b0ba0a4d0eee6dd5743e54a8f5e1237efdfb0ba2b330017430c632d13b  ./views/fila_morta.php
 4fdda93711e35239887d21a489ab11313e4e4e94693f100c2f90f690890cbad2  ./RELATORIO-V97-BLINDAGEM-SEGURANCA-CODIGO-BANCO.md
@@ -527,7 +528,6 @@
 9f4990d4c0a25edb5b5aea0e94837b831f0495c191e4fa194c33e7bc94df598b  ./database/legacy/install_final_v104_4.sql
 9fb2c844cc0f0445e4ae957c2dabe62b6b8916d14177d0d5144ce2393d9f6d16  ./docs/LICENCIAMENTO-COMERCIAL-V104.16.md
 9fdcc8deaf0537676d45c1a974ddd6d4b24c2bffaf0e25814d7ff6a44bce7234  ./app/Services/EnterpriseQualityGateService.php
-a03fcd972b7a558322487341e1f92bb0ef71ea397156378f4aaba93890886a99  ./app/Controllers/ApiController.php
 a0bd26604eaa82da832af602038fff26c2ab3cf66f426f383d6e16478662717e  ./database/migrations/20260914_010_tenant_isolation.sql
 a160db52b33342110e861a212d55f9f870e0e049f17f6e0a7616d26f6cc46146  ./app/Controllers/CommercialHardeningController.php
 a185ad031d27b1ff6cbba496788ffd34bbb63892f83ff93b6c051c533261cdcb  ./views/produtos_pendencias.php
@@ -605,6 +605,7 @@ b2fb040a14f6df76dd4c2bcf16e1f1386d17a1d58be34b0453c35a78d45922b6  ./RELATORIO-V1
 b30543a9f1c6706de83619005f4e082d56d73392b47506f397c6ec938b825ec5  ./views/config_diagnostic.php
 b35cc06acc9af30e8ccdb6f276a1445dfad3d39f1a44f9b9b80c574d7c0c9462  ./database/update_v104_25_enterprise_hardening_tiny_vsm.sql
 b3943048e1640f87a7b101bf52af38b817e1a32503a2b68016edc72aa73d736d  ./database/modules/fiscal.sql
+b3a9a16c12214527764e1b11662f5c636e606ce207d92ab16936bc05b87839a5  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 b3bc30ec07c21e6b0e96f01564e2ecdeaab7a439c1d18015ed8aee4a87d485bb  ./app/Services/LegacyRouteGuardService.php
 b4577edaaff126be9a6764e43abe1b03444cbf868da6e7b2ce5fd56eafa4f003  ./RELATORIO-AUDITORIA-FISCAL-NFE-2026-09-21.md
 b48027c5a5504d5c197ce0984e748935cdeb4754b64154cd9ef1329c0403e410  ./views/estoque_consultas_vsm.php
@@ -621,7 +622,6 @@ b8b7dba6cba6e7dc8cbbfc206f54b9e490da7496970b5fb6bd89727537b2221e  ./workers/work
 b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/assets/img/shortcut-homologacao-192.png
 b91debbf5987b3bb7f3b72a46bc3561b50113b4648ed6569120e3b947f28f342  ./app/Services/LicenseRemoteCacheService.php
 b9e2d0dbb24f513ce8070f1161d483d1252a031481442608656e8fd6bea6118b  ./database/legacy/docs_sql_antigos/README-SQL-V104.7.md
-3323579c04d3189470c79ef2941541c6224a2b83908a3c560c6f9efbc1aedd72  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 ba2c561e0356835485b406e30ab7380db99718cf029cade39d2c1dee5ae5c4e0  ./database/legacy/incrementais_v104_8/update_v104_2_fluxo_nfe_vsm_tiny.sql
 ba331ba626599070b84f2e65194fc972b2f6b68eddbd2bd66bac9f759f08a824  ./RELATORIO-V86-PWA-HUB-INTEGRACAO.md
 ba48c59f30efedcf5fbfa5d3117e66abfa635db6c4c94c75df2f1b058001469c  ./tests/enterprise/v104_49_3_llm_phase_b2_b5_test.php
@@ -741,7 +741,6 @@ da2144e3ef76673f6a5a0b75822f411bd0afb9633e453bf0f65c38b589db55ca  ./tests/enterp
 da494fec1b8f871b8170546e49abaea247b907a6b27077081e643c82af3066e5  ./app/Services/OperationCenterService.php
 da49a8b863345f37aea5fa0b87dc67098d13d2fb2afdd220440da539c88ce869  ./database/legacy/install_final_v99.sql
 da4e51e8c005921dc3d9b53e2c31a6354d337c7bdd24aa32dea5aa6b9994972a  ./public/index.php
-da8417258744a1e85ab67eece410578b4bcee32b6bb16544ac29d3087976b9ed  ./tests/enterprise/v104_49_3_webhook_contract_test.php
 da9f9c847e2428bc7dfd35be5b1681dd9ceaa6502e708c5656245fd463af7f96  ./RELATORIO-V104.32-ENTERPRISE-CORE-GRANDE-PORTE.md
 da9f9c847e2428bc7dfd35be5b1681dd9ceaa6502e708c5656245fd463af7f96  ./docs/RELATORIO-V104.32-ENTERPRISE-CORE-GRANDE-PORTE.md
 dab1b77cc1b7f384fd4cd79bc14302fe6112d99e75b6843467f783e560b71816  ./app/Services/TinyV2ErrorCatalogService.php
@@ -750,6 +749,7 @@ db3c433460515ae7eb5e67c4c3b8cd32739edb509dff6b9c53fea178bd23b530  ./app/Controll
 db45ebce304f72d3bd3d2fc373461fc837820a16d1c6b1fd54587a1085ff38fb  ./app/Services/FastRouteDispatcherService.php
 db491bf1339289c523d0ca48a95a02049c95c74d1840bf313309ce980c2a159e  ./RELATORIO-V104.3-FUNCOES-FLUXOS-CHECKBOXES.md
 db491bf1339289c523d0ca48a95a02049c95c74d1840bf313309ce980c2a159e  ./docs/RELATORIO-V104.3-FUNCOES-FLUXOS-CHECKBOXES.md
+db7a0c245e506cbe513f953283481bfb13b8bf9fcaf472da1262f7b7525f8af9  ./tests/enterprise/v104_49_3_webhook_contract_test.php
 dbb421d6c81a0127bc63a9c81150c8785dc9629f17694635059d87473fea9265  ./app/Services/TinyRateLimitObserverService.php
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comercial/09-servidor-licenciamento.md

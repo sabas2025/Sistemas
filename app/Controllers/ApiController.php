@@ -294,12 +294,15 @@ class ApiController {
       try { $fila=PedidoTinyVsmValidationService::enfileirar($id); $this->responderTiny(true,['message'=>'Pedido Tiny validado e enfileirado para VSM.','pedido_validacao_id'=>$id,'fila_id'=>$fila]); return; }
       catch(Throwable $e){ Audit::exception($e,'tiny.webhook.pedido.enfileirar_erro',['pedido_validacao_id'=>$id]); $this->responderTiny(false,['message'=>'Pedido validado, mas falhou ao enfileirar para VSM.','erro'=>$e->getMessage(),'pedido_validacao_id'=>$id],500); return; }
     }
-    // Achado I-14: o primeiro argumento era `true` FIXO enquanto o código HTTP varia 202/422, então
-    // um pedido bloqueado respondia `HTTP 422` com `"success": true` — os dois sinais do mesmo
-    // corpo dizendo o contrário. A convenção deste controller é a oposta e está logo acima, na
-    // resposta de estoque sem itens: `responderTiny(false, …, 422)`. Esta linha era a única a
-    // divergir. **O código HTTP fica como está**: mudá-lo alteraria quando o Tiny reenvia, que é
-    // decisão de produto, não de correção. Aqui só o corpo deixa de contradizer o status.
+    // Achado I-14 + DECISÃO DE PRODUTO (2026-09-22): o primeiro argumento `success` era `true` FIXO
+    // enquanto o código HTTP variava — um pedido bloqueado respondia `HTTP 422` com `"success": true`.
+    // Corrigido para o corpo seguir o status. E o CÓDIGO HTTP foi decidido pelo responsável à luz da
+    // doc oficial da Olist (o webhook deve retornar 200 para confirmar; senão reenvia até 10×, +5 min):
+    //   - pedido validado AGUARDANDO APROVAÇÃO -> 200 (ack de recebimento; a Olist não reenvia).
+    //     Era 202; a doc pede 200 e o pedido já está gravado, então 200 é o "recebi".
+    //   - pedido BLOQUEADO por validação        -> 422 MANTIDO (a Olist reenvia; idempotência por
+    //     `pedido_origem_id` impede duplicar — decisão de manter o sinal de rejeição).
+    // O caminho de auto-envio logo acima já responde 200 (responderTiny default).
     $this->responderTiny($validacao['ok'],[
       'message'=>$validacao['ok']?'Pedido Tiny validado e aguardando aprovação/envio.':'Pedido Tiny recebido, mas bloqueado por validação.',
       'pedido_validacao_id'=>$id,
@@ -307,7 +310,7 @@ class ApiController {
       'erros'=>$validacao['erros'],
       'avisos'=>$validacao['avisos'],
       'link'=>'index.php?page=pedido-validacao-detalhe&id='.$id
-    ], $validacao['ok']?202:422);
+    ], $validacao['ok']?200:422);
   }
 
 

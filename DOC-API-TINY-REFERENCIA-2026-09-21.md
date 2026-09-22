@@ -277,13 +277,17 @@ mas agora essa evidência é **medida pelo próprio Hub** em vez de estimada.
   idempotência (`pedido_origem_id`, 1 linha para N reenvios) **impede duplicação**, mas há reprocessamento.
 - **O que NÃO é testável aqui:** a reação da Olist ao 202/422 roda **no servidor da Olist** — sem rede
   nem conta de teste, não há como observá-la. A doc é a única fonte, e ela diz 200.
-- **Decisão de produto (do responsável), explicitamente marcada no código (`ApiController.php:297-301`)
-  e no CLAUDE.md — *"mudar o código HTTP altera quando o Tiny reenvia"*:**
-  (a) pedido **pendente de aprovação** → manter `202` ou devolver `200` (ack, sem reenvio)?
-  (b) pedido **bloqueado** → manter `422` (Olist reenvia) ou `200` (ack, para de reenviar um bloqueio)?
-- **Se decidida:** a mudança é pequena e localizada; o lado do Hub (código devolvido + idempotência no
-  reenvio) é validável contra banco real. A reação da Olist continua fora de alcance.
-- **Status:** **não é defeito** — caminho feliz conforme; o resto é decisão de produto pendente.
+- **DECISÃO DE PRODUTO TOMADA E APLICADA (2026-09-22):**
+  (a) pedido **pendente de aprovação** → **200** (era 202; ack de recebimento, a Olist não reenvia).
+  (b) pedido **bloqueado** → **422 MANTIDO** (a Olist reenvia; idempotência por `pedido_origem_id` dedup).
+  Mudança de um ponto no ternário `$validacao['ok']?200:422` (`ApiController.php`), com o comentário e o
+  teste de contrato `v104_49_3_webhook_contract_test.php` atualizados para travar o novo contrato.
+- **Validação (MariaDB 10.11 real, por HTTP):** pedido válido aguardando aprovação → **HTTP 200**
+  (`success:true`); pedido bloqueado → **HTTP 422** (`success:false`); reenvio do válido → 200, **mesma
+  linha** (`pedido_validacao_id=1`, COUNT=1) — idempotência intacta. Portões verdes: php-lint, classmap
+  (251), 56 testes enterprise. A reação da Olist ao código continua fora de alcance (servidor dela).
+- **Status:** **corrigido e validado** (a parte do Hub); o comportamento de reenvio da Olist depende do
+  provedor.
 
 ## Achado T-05 — limite V3 é por CONTA e o Hub não lia `X-RateLimit-*` — OBSERVABILIDADE ADICIONADA (Fase 1.5)
 O limite V3 é **por conta, compartilhado entre apps**, e diferencia leitura/escrita. **Corrigido
