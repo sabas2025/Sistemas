@@ -661,6 +661,7 @@ c350d58f435e48ab71c54fe3e0af7574392dad0e3baef458bd5be752dc7a3d1b  ./docs/comerci
 c35b7f9fe6143b479eded95b5802d20d73c74acf143ff3df70bafce0415457d8  ./app/Services/TinyV2Service.php
 c37436f8aaad7eef814e4eb50fff257681efe89733589a95bf10e2d700dfd6b7  ./scripts/diagnose-http-500.php
 c377baec6f4163f07929bc296c43181157e29e6888518d5d7b7c687f4cda87e7  ./LEIA-ME-HOTFIX-SCHEMA-R2.txt
+c379885688474ce5d63b559d0a8095fc19e454581df7ae491e897811f6f24c82  ./contracts/vsm/pedidos-integradora.openapi.json
 c432895aa3cf589ad4e66526bc5c1c4086ab218d68a08e0bee7c4ce8fc95ee5d  ./app/Services/VsmOpenApiContractService.php
 c4a694bacb09384710a362dbfd92e8770ca1cb96b37b5c75601588426d5d5738  ./views/security_assisted_test.php
 c55616dea44c2e2def7131407ea15ef30516cdaf756aa02dff535419657f9535  ./views/login.php
@@ -762,6 +763,7 @@ de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/asset
 de7d52653dac4b653d8827d6d682b8e4e7ff42a26193d87a438f793b9951dd16  ./app/Services/IntegrationSecurityService.php
 dea0650790df068203ede6aa7d57075605bc04110ea18103de0e4d5a6c553d42  ./app/Services/DataRetentionService.php
 deb2535a062748cae4315809deb35ac012bb9587bc2ef7c1213e09856adb41c7  ./views/tiny_ambientes.php
+df2419cfbf0a09ea691eef25a99196e65c47c4f88ef929274d9e65db0d75fd9a  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 df4b8b34053b7f1d1f91432cc07b72a24474f9df6aa6761b05aa9cc813ac53b0  ./tests/enterprise/v104_49_3_sessao_trace_test.php
 df9ff817cd17684c6e3dcb2fe5752d8cb73c0234c5cfbed1e39a59e8a99981f6  ./app/Services/QueueV24AnalyticsService.php
 dfd1648671b55f2a40ad38a08dd5cdd9c9b355c294ef513028d91139fd94016c  ./app/Controllers/OperationCenterController.php
@@ -798,7 +800,6 @@ e731595da17979191c5c4ef7d346b1a1f591339fceceed3619563e46ba5fd91d  ./views/audito
 e868f189d7d9a9dc14ad330d40392cd46d863b71b7d8e2895e9ea8d8cb02618c  ./app/Services/UpgradeSqlService.php
 e9b8d652a59e80b8c542cc1e666502c537d17dcfcf33b8fe71a4ba0c0e738b9a  ./views/produtos.php
 e9ec4f321347ba47f650b0d3a657996014f4459612ae586749f3d45457c00206  ./app/Services/VsmEndpointService.php
-ea143302daaf6354afe58ffb1da715d5605fe252709a3d26fd4065af9532f5df  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 ea33f7250693288eb38ece871cddcd62bf2e0b84e5f1ef4396999ec3e5a95400  ./views/manutencao.php
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 eaeff7c230ac6d95a427d73d2a321b7d3d422cbcbf56eadaee553587a42dab76  ./views/myouro_configuracoes.php

@@ -102,25 +102,39 @@ Derivado do código e travado pelo teste `tests/enterprise/v104_49_3_vsm_dual_ap
 - **Como reverter:** remover `stage` das duas listas.
 - **Status:** corrigido e validado.
 
-### F6-07 · Auth e endpoints do Hub divergem da VSM real — **PROVÁVEL (bloqueado no Swagger)**
-- **Evidência (Hub hoje):** `VsmService` usa `vsm_token` **estático** como `Authorization: Bearer`
-  (`app/Services/VsmService.php:19,42`) **+ HMAC** de saída (`:53`); endpoints default
-  `/api/pedidos`, `/api/estoque/baixa`, `/api/estoque/consulta`. **Não há** troca de token
-  `/v1/auth/token` para VSM em lugar nenhum.
-- **Evidência (VSM real, informada):** autenticação por **`clientToken` + `clientSecret` no corpo
-  de `POST /v1/auth/token`**; pedido em **`/v1/pedido/integradora`**; duas credenciais
-  (**Integradora** e **Loja**). Credenciais atuais válidas **só em Stage**.
-- **Gravidade:** Alta.
-- **Impacto:** o cliente VSM atual não autentica contra a VSM real (falta o token-exchange);
-  endpoints default não batem; o modelo integradora/loja não tem lugar no schema (só `vsm_token`).
-- **Por que PROVÁVEL e não confirmado:** falta o **contrato OpenAPI (JSON/YAML)** para o formato
-  exato do corpo de `/v1/auth/token`, o token retornado e sua validade, os campos obrigatórios de
-  `/v1/pedido/integradora` e se a VSM ainda espera HMAC. **Não inventar** o contrato (regra
-  inegociável) — o responsável vai anexar o Swagger.
-- **Como testar / reverter:** definidos junto com a proposta de correção, após o Swagger.
-- **Status:** provável (aberto — aguardando o Swagger).
+### F6-07 · Auth e endpoints do Hub divergem da VSM real — **CONFIRMADO (contrato em mãos; correção pendente de aprovação)**
+Contrato oficial recebido em 2026-09-26 e salvo em `contracts/vsm/pedidos-integradora.openapi.json`
+(OpenAPI 3.1.0, 4 operações; gate `vsm-openapi-check` verde). O delta ficou **confirmado**:
 
-### F6-05 · Contrato OpenAPI da VSM não verificado em CI — **ABERTO (gated no responsável)**
+| # | VSM real (contrato) | Hub hoje | Impacto |
+|---|---|---|---|
+| **a** | `POST /v1/auth/token` body `{clientToken,clientSecret}` → JWT `{accessToken, expiration, expiresIn≈7200s}` (Bearer JWT) | `vsm_token` **estático** como Bearer; **sem** token-exchange (`VsmService.php:19,42`) | Não autentica contra a VSM real |
+| **b** | Credenciais: **Integradora** (`clientToken`+`clientSecret`) e **Loja** (`clientTokenLoja`); `clientTokenIntegradora` | schema só tem `vsm_token` | Sem lugar para guardar as credenciais reais (precisa de colunas cifradas + migration nos 2 caminhos, lição I-18) |
+| **c** | Pedido: `POST /v1/pedido/integradora?clientTokenLoja=…&clientTokenIntegradora=…` (query **obrigatória**) + Bearer | `POST /api/pedidos` (default), sem os query tokens | Endpoint e query não batem |
+| **d** | Corpo `PedidoCadastroDTO` (cliente, pedidoEntrega, pedidoPagamento, pedidoItem[], tipo, valorFinal, dataAprovacao) com enums 0..5 | `PedidoMapper` monta outro formato | Mapeamento precisa ser reescrito para o DTO |
+| **e** | `409` = **falha de validação permanente** ("Quantidade dos itens deve ser maior que 0") | `RetryPolicyService::shouldRetry` **retenta 409** | Retentaria erro permanente — desperdício e DLQ atrasada. Correção deve ser **específica da VSM** (o 409 global é compartilhado com o Tiny) |
+| **f** | **Sem HMAC** | envia `vsmHmacHeaders` na saída (`:53`) | Peso morto (o servidor ignora); o HMAC de ENTRADA (VSM→Hub) é outro e permanece |
+| **g** | Os dois `clientToken*` viajam na **query string** | `VsmService::request` audita `'url'=>$url` **cru** (`:55-56`) | Se a query levar os tokens, o log grava segredo em claro — a gravação precisa usar `redactUrlForLog` |
+
+- **Gravidade:** Alta.
+- **Correção recomendada:** serviço de token VSM (troca `/v1/auth/token`, cache do JWT até
+  `expiration`/`expiresIn`, refresh proativo — desenho do `TinyV3TokenService`); colunas cifradas
+  para as credenciais (migration idempotente nos 2 caminhos); endpoint/`query` corretos; mapper
+  para `PedidoCadastroDTO`; retry VSM que **não** retenta 409; log com `redactUrlForLog`.
+- **Risco da correção:** médio-alto — mexe no fluxo de pedido e no schema. Exige autorização
+  explícita e será desenhada no formato "antes de alterar" antes de aplicar.
+- **Como testar:** contra MariaDB real (schema/migration, mapper, retry) + teste que reprova sobre
+  o código antigo; a **chamada real à VSM** ainda depende de liberar o host na rede e das
+  credenciais de Stage.
+- **Status:** confirmado (correção pendente de aprovação e do spec `pedidos-loja`, se houver mais).
+
+### F6-05 · Contrato OpenAPI da VSM — **integradora IMPORTADA; loja pendente**
+- **Resolvido:** `contracts/vsm/pedidos-integradora.openapi.json` importado; o gate
+  `scripts/ci/vsm-openapi-check.php` agora **valida** o contrato (antes era no-op).
+- **Pendente:** o spec `pedidos-loja` (se a VSM o expõe) ainda não foi importado; e a comparação
+  automática endpoint↔contrato (`VsmOpenApiContractService::compareCatalog()`) ainda não é
+  chamada pelo gate — entra junto com a implementação do F6-07.
+- **Nota histórica (o texto abaixo era o estado ANTERIOR, mantido para rastreabilidade):**
 - **Identificação:** o portão de contrato roda em modo no-op por falta do Swagger oficial.
 - **Evidência:** `contracts/vsm/` contém apenas `README.md`;
   `scripts/ci/vsm-openapi-check.php:6-9` sai `[OK]` com a mensagem
