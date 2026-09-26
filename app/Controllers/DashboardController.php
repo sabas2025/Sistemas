@@ -4,54 +4,12 @@ class DashboardController {
   public function __construct(){ $this->pdo = Database::getConnection(); }
   private function db(string $table): PDO { return Database::forTable($table); }
 
-  private function appBaseUrl(): string {
-    $cfgFile = __DIR__.'/../../config/config.php';
-    if (is_file($cfgFile)) {
-      $cfg = require $cfgFile;
-      return rtrim((string)($cfg['base_url'] ?? ''), '/');
-    }
-    return '';
-  }
-
   /**
    * P0-08 (reauditoria 2026-08-23): host/scheme passam pelo TrustedProxyService
    * (que já respeita trusted_proxies) em vez de ler HTTP_HOST/XFP crus, e usam o
    * primeiro canonical_host configurado quando existir, para não deixar um Host
    * header adulterado ditar a URL de redirect_uri usada no OAuth.
    */
-  private function safeHostForUrls(): string {
-    $canonical = class_exists('TrustedProxyService') ? TrustedProxyService::canonicalHosts() : [];
-    if ($canonical !== []) return $canonical[0];
-    return $_SERVER['HTTP_HOST'] ?? 'localhost';
-  }
-
-  private function absolutePublicBaseUrl(): string {
-    $https = class_exists('TrustedProxyService') ? TrustedProxyService::isHttps() : ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'));
-    $scheme = $https ? 'https' : 'http';
-    $host = $this->safeHostForUrls();
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/public/index.php';
-    $dir = rtrim(str_replace('\\','/', dirname($script)), '/');
-    if ($dir === '' || $dir === '.') $dir = '';
-    return $scheme . '://' . $host . $dir;
-  }
-
-  private function normalizeTinyV3RedirectUri(string $uri = ''): string {
-    $uri = trim($uri);
-    if ($uri === '') {
-      return $this->absolutePublicBaseUrl() . '/index.php?page=tiny-v3-callback';
-    }
-    if (preg_match('#^https?://#i', $uri)) {
-      return $uri;
-    }
-    if (str_starts_with($uri, '/')) {
-      $https = class_exists('TrustedProxyService') ? TrustedProxyService::isHttps() : ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'));
-      $scheme = $https ? 'https' : 'http';
-      $host = $this->safeHostForUrls();
-      return $scheme . '://' . $host . $uri;
-    }
-    return $this->absolutePublicBaseUrl() . '/' . ltrim($uri, '/');
-  }
-
   /**
    * Reauditoria 2026-09-14 (achado A-02): entrada exclusiva dos callbacks OAuth, que chegam
    * por navegação cross-site sem o cookie de sessão SameSite=Strict e por isso não podem passar
@@ -75,7 +33,6 @@ class DashboardController {
       case 'fila': (new FilaController())->dispatch($page); break;
       case 'fila-reprocessar': (new FilaController())->dispatch($page); break;
       case 'fila-criar-teste': (new FilaController())->dispatch($page); break;
-      case 'testar-tiny': $this->testarTiny(); break;
       case 'testar-vsm': $this->testarVsm(); break;
       case 'produtos': (new ProdutoController())->dispatch($page); break;
       case 'estoque-dashboard': (new EstoqueController())->dispatch($page); break;
@@ -113,8 +70,6 @@ class DashboardController {
       case 'central-tecnica': $this->centralTecnica(); break;
       case 'salvar-orquestracao-integracoes': (new OrquestracaoController())->dispatch($page); break;
       case 'testar-orquestracao-fluxo': (new OrquestracaoController())->dispatch($page); break;
-      case 'teste-real-tiny': $this->testeRealTiny(); break;
-      case 'teste-real-tiny-executar': $this->testeRealTinyExecutar(); break;
       case 'atualizador-seguro': $this->atualizadorSeguro(); break;
       case 'auditoria-codigo': $this->auditoriaCodigo(); break;
       case 'atualizador-seguro-executar': $this->atualizadorSeguroExecutar(); break;
@@ -139,14 +94,11 @@ class DashboardController {
       case 'fiscal-reconciliacao':
       case 'fiscal-health':
       case 'fiscal': (new FiscalController())->dispatch($page); break;
-      case 'tiny-webhooks': $this->tinyWebhooks(); break;
-      case 'tiny-v3-ficha': $this->tinyV3Ficha(); break;
       case 'ficha-tecnica-100': $this->fichaTecnica100(); break;
       case 'production-ready-v24': $this->productionReadyV24(); break;
       case 'production-ready-v25': $this->productionReadyV25(); break;
       case 'production-ready-v26': $this->productionReadyV26(); break;
       case 'vsm-ficha-tecnica': $this->vsmFichaTecnica(); break;
-      case 'tiny-v2-ficha-tecnica': $this->tinyV2FichaTecnica(); break;
       case 'fila-analytics-v24': $this->filaAnalyticsV24(); break;
       case 'hosting-infinityfree': $this->hostingInfinityFree(); break;
       case 'auditoria-hash-chain': $this->auditoriaHashChain(); break;
@@ -156,12 +108,6 @@ class DashboardController {
       // FastRouteDispatcherService::$dispatchGroups; os cases aqui eram inalcançáveis.
       case 'relatorio-prontidao-producao': $this->relatorioProntidaoProducao(); break;
       case 'auditoria-exportar-enterprise': $this->auditoriaExportarEnterprise(); break;
-      case 'tiny-v3-token-salvar': $this->tinyV3TokenSalvar(); break;
-      case 'tiny-v3-token-renovar': $this->tinyV3TokenRenovar(); break;
-      case 'tiny-v3-token-revogar': $this->tinyV3TokenRevogar(); break;
-      case 'tiny-v3-testar': $this->tinyV3Testar(); break;
-      case 'tiny-v3-testar-modulo': $this->tinyV3TestarModulo(); break;
-      case 'tiny-v3-endpoints-salvar': $this->tinyV3EndpointsSalvar(); break;
       case 'fila-morta': $this->filaMorta(); break;
       case 'fila-morta-reprocessar': (new FilaController())->dispatch($page); break;
       case 'laboratorio': $this->laboratorio(); break;
@@ -191,7 +137,6 @@ class DashboardController {
       case 'backups': $this->backups(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       case 'configuracoes': $this->configuracoes(); break;
-      case 'tiny-ambientes': $this->tinyAmbientes(); break;
       case 'central-homologacao': $this->centralHomologacao(); break;
       case 'tiny-v2-homologacao': $this->tinyV2Homologacao(); break;
       case 'tiny-v2-homologacao-executar': $this->tinyV2HomologacaoExecutar(); break;
@@ -680,47 +625,6 @@ class DashboardController {
     require __DIR__.'/../../views/auditoria_codigo.php';
   }
 
-  private function testeRealTiny(): void {
-    PermissionService::require('laboratorio','executar');
-    $resultadoTeste = $_SESSION['ultimo_teste_real_tiny'] ?? null;
-    unset($_SESSION['ultimo_teste_real_tiny']);
-    $historicoTestes = TesteRealTinyService::ultimos(20);
-    $pageTitle = 'Teste Real Tiny';
-    require __DIR__.'/../../views/teste_real_tiny.php';
-  }
-
-  private function testeRealTinyExecutar(): void {
-    PermissionService::require('laboratorio','executar');
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-      header('Location: index.php?page=teste-real-tiny');
-      return;
-    }
-    Csrf::validate();
-    try {
-      $resultado = TesteRealTinyService::executar($_POST);
-    } catch (Throwable $e) {
-      $resultado = [
-        'success' => false,
-        'trace_id' => RequestContext::id(),
-        'sku' => trim((string)($_POST['sku'] ?? '')),
-        'acao' => (string)($_POST['acao_teste'] ?? ''),
-        'modo_tiny' => (string)($_POST['modo_tiny'] ?? ''),
-        'versao_efetiva' => 'bloqueado_pelo_hub',
-        'fallback_detectado' => false,
-        'resultados' => [[
-          'etapa' => 'pre_validacao_segura',
-          'ok' => false,
-          'mensagem' => $e->getMessage(),
-          'codigo_erro' => 'HUB_TESTE_REAL_BLOQUEADO'
-        ]],
-        'executado_em' => date('Y-m-d H:i:s'),
-      ];
-      Audit::exception($e, 'teste_real_tiny.bloqueado');
-    }
-    $_SESSION['ultimo_teste_real_tiny'] = $resultado;
-    header('Location: index.php?page=teste-real-tiny');
-  }
-
   private function logs(): void {
     PermissionService::require('logs','visualizar');
     $nivel = $_GET['nivel'] ?? '';
@@ -748,21 +652,6 @@ class DashboardController {
     $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $eventos=$st->fetchAll();
     $pageTitle = 'Auditoria';
     require __DIR__.'/../../views/auditoria.php';
-  }
-
-  private function tinyWebhooks(): void {
-    PermissionService::require('tiny_webhooks','visualizar');
-    $tipo = $_GET['tipo'] ?? '';
-    $status = $_GET['status'] ?? '';
-    $busca = trim($_GET['busca'] ?? '');
-    $sql = "SELECT * FROM tiny_webhooks WHERE 1=1"; $params=[];
-    if($tipo){ $sql .= " AND tipo=?"; $params[]=$tipo; }
-    if($status){ $sql .= " AND status=?"; $params[]=$status; }
-    if($busca){ $sql .= " AND (referencia LIKE ? OR trace_id LIKE ? OR cnpj LIKE ? OR id_ecommerce LIKE ?)"; for($i=0;$i<4;$i++) $params[]="%$busca%"; }
-    $sql .= " ORDER BY id DESC LIMIT 300";
-    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $webhooks=$st->fetchAll();
-    $pageTitle='Webhooks Tiny/Olist';
-    require __DIR__.'/../../views/tiny_webhooks.php';
   }
 
   private function notificacoes(): void {
@@ -819,7 +708,7 @@ class DashboardController {
     $config['tiny_v3_url'] = $config['tiny_v3_url'] ?: 'https://api.tiny.com.br/public-api/v3';
     $config['tiny_v3_auth_url'] = $config['tiny_v3_auth_url'] ?: 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth';
     $config['tiny_v3_token_url'] = $config['tiny_v3_token_url'] ?: 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token';
-    $config['tiny_v3_redirect_uri'] = $config['tiny_v3_redirect_uri'] ?: ($this->appBaseUrl() . '/index.php?page=tiny-v3-callback');
+    $config['tiny_v3_redirect_uri'] = $config['tiny_v3_redirect_uri'] ?: (PublicUrlService::appBaseUrl() . '/index.php?page=tiny-v3-callback');
     // Tiny/Olist V3 não aceita escopos livres como 'produtos estoque pedidos notas-fiscais'.
     // As permissões de Produtos/Estoque/Pedidos/NF-e são liberadas no aplicativo do Tiny.
     // Por padrão deixamos vazio e o parâmetro scope só é enviado se o usuário preencher um valor aceito pelo Tiny.
@@ -862,7 +751,7 @@ class DashboardController {
       'tiny_v3_token_url' => trim((string)($_POST['tiny_v3_token_url'] ?? ($atual['tiny_v3_token_url'] ?? ''))) ?: 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token',
       'tiny_v3_client_id' => trim((string)($_POST['tiny_v3_client_id'] ?? ($atual['tiny_v3_client_id'] ?? ''))),
       'tiny_v3_client_secret' => Secrets::keepIfMasked((string)($_POST['tiny_v3_client_secret'] ?? ''), $atual['tiny_v3_client_secret'] ?? ''),
-      'tiny_v3_redirect_uri' => $this->normalizeTinyV3RedirectUri(trim((string)($_POST['tiny_v3_redirect_uri'] ?? ($atual['tiny_v3_redirect_uri'] ?? '')))),
+      'tiny_v3_redirect_uri' => PublicUrlService::tinyV3RedirectUri(trim((string)($_POST['tiny_v3_redirect_uri'] ?? ($atual['tiny_v3_redirect_uri'] ?? '')))),
       'tiny_v3_scopes' => trim((string)($_POST['tiny_v3_scopes'] ?? ($atual['tiny_v3_scopes'] ?? ''))),
       'vsm_url' => trim($_POST['vsm_url'] ?? '') ?: 'https://conectavenda.homolog.vsm.com.br',
       'vsm_url_consulta' => trim((string)($_POST['vsm_url_consulta'] ?? ($atual['vsm_url_consulta'] ?? ''))),
@@ -1027,23 +916,6 @@ class DashboardController {
     redirect('index.php?page=configuracoes&salvo=1'.(!empty($_SESSION['tiny_v3_blocked_issues'])?'&tinyv3_bloqueado=1':''));
   }
 
-  private function testarTiny(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    try {
-      $tiny = TinyFactory::make();
-      $ret = $tiny->consultarProduto($_POST['sku'] ?? 'TESTE');
-      $okTiny = !isset($ret['erro']) && !isset($ret['errors']);
-      if (class_exists('DiagnosticoApiService')) DiagnosticoApiService::registrar('tiny', 'produto.consultar', $okTiny ? 'online' : 'erro', null, null, $okTiny ? 'Tiny respondeu ao teste.' : 'Tiny retornou erro no teste.', $ret);
-      Audit::event('tiny.teste_conexao','sucesso',['mensagem'=>'Teste de conexão Tiny executado.','retorno'=>$ret]);
-      NotificationService::criar('sistema','Teste Tiny executado','Veja o retorno completo na Auditoria.','info',['trace_id'=>RequestContext::id()]);
-      redirect('index.php?page=configuracoes&teste=ok');
-    } catch(Throwable $e){
-      Audit::exception($e,'tiny.teste_conexao.erro');
-      redirect('index.php?page=configuracoes&teste=erro');
-    }
-  }
-
   private function testarVsm(): void {
     PermissionService::require('configuracoes','editar');
     Csrf::validate();
@@ -1134,7 +1006,7 @@ class DashboardController {
       $tokenUrl = (string)($cfg['tiny_v3_token_url'] ?? '');
       $clientId = (string)($cfg['tiny_v3_client_id'] ?? '');
       $clientSecret = (string)($cfg['tiny_v3_client_secret'] ?? '');
-      $redirectUri = $this->normalizeTinyV3RedirectUri((string)($cfg['tiny_v3_redirect_uri'] ?? ''));
+      $redirectUri = PublicUrlService::tinyV3RedirectUri((string)($cfg['tiny_v3_redirect_uri'] ?? ''));
       if ($tokenUrl==='' || $clientId==='' || $clientSecret==='' || $redirectUri==='') {
         throw new RuntimeException('Configuração OAuth Tiny V3 incompleta: Token URL, Client ID, Client Secret ou Redirect URI ausente.');
       }
@@ -1177,136 +1049,6 @@ class DashboardController {
     }
   }
 
-  private function tinyV3Ficha(): void {
-    PermissionService::require('configuracoes','editar');
-    $config = IntegrationConfig::get();
-    $config['tiny_v3_auth_url_error'] = null;
-    try { $config['tiny_v3_auth_url'] = TinyEndpointSecurityService::validateUrl((string)($config['tiny_v3_auth_url'] ?? '')); }
-    catch(Throwable $e) {
-      $config['tiny_v3_auth_url_error'] = 'Auth URL Tiny V3 bloqueada pela allowlist de segurança.';
-      $config['tiny_v3_auth_url'] = '';
-      if(class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e, ['provider'=>'tiny_v3','field'=>'auth_url']);
-    }
-    $config['tiny_v3_redirect_uri_effective'] = $this->normalizeTinyV3RedirectUri((string)($config['tiny_v3_redirect_uri'] ?? ''));
-    $config['tiny_v3_redirect_uri_is_relative'] = !empty($config['tiny_v3_redirect_uri']) && !preg_match('#^https?://#i', (string)$config['tiny_v3_redirect_uri']);
-    $tokenStatus = TinyV3TokenService::status();
-    $ficha = TinyV3FichaTecnicaService::itens();
-    $score = TinyV3FichaTecnicaService::score();
-    $endpoints = TinyV3EndpointCatalog::defaults();
-    $endpointValues = [];
-    foreach($endpoints as $ek=>$ev){ $endpointValues[$ek] = TinyV3EndpointCatalog::get($ek); }
-    try { $tokenRows = Database::forTable('tiny_v3_tokens')->query("SELECT id, ambiente, expires_at, scope, origem, criado_em, atualizado_em FROM tiny_v3_tokens ORDER BY ambiente ASC, id DESC LIMIT 20")->fetchAll(); } catch(Throwable $e) { $tokenRows = []; }
-    try { $tinyV3Logs = Database::forTable('tiny_v3_endpoint_logs')->query("SELECT endpoint, metodo, http_code, sucesso, tempo_ms, trace_id, erro, criado_em FROM tiny_v3_endpoint_logs ORDER BY id DESC LIMIT 10")->fetchAll(); } catch(Throwable $e) { $tinyV3Logs = []; }
-    $tinyV3Diagnostico = [
-      'client_id' => !empty($config['tiny_v3_client_id']),
-      'client_secret' => !empty($config['tiny_v3_client_secret']),
-      'redirect_uri' => !empty($config['tiny_v3_redirect_uri_effective']) && preg_match('#^https?://#i', (string)$config['tiny_v3_redirect_uri_effective']),
-      'scope_seguro' => trim((string)($config['tiny_v3_scopes'] ?? '')) === '' || !str_contains((string)$config['tiny_v3_scopes'], 'produtos estoque pedidos notas-fiscais'),
-      'token' => !empty($tokenStatus['tem_token_tabela']) || !empty($tokenStatus['tem_token_manual']),
-      'operacional' => !empty($config['tiny_v3_operacional']),
-    ];
-    // P0-01 (reauditoria 2026-08-23): state OAuth aleatório de uso único + PKCE S256,
-    // gerado antes de qualquer saída HTML para poder setar o cookie de correlação.
-    $config['tiny_v3_oauth_state'] = OAuthStateService::start('tiny_v3');
-    $pageTitle='Tiny V3 - OAuth, Token e Diagnóstico';
-    require __DIR__.'/../../views/tiny_v3_ficha.php';
-  }
-
-  private function tinyV3TokenSalvar(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    try {
-      TinyV3TokenService::saveManual((string)($_POST['access_token'] ?? ''), (string)($_POST['refresh_token'] ?? ''), (int)($_POST['expires_in'] ?? 3600), (string)($_POST['scope'] ?? ''), (string)($_POST['ambiente_token'] ?? (IntegrationConfig::get()['tiny_v3_ambiente'] ?? 'homologacao')));
-      NotificationService::criar('sistema','Tiny V3 token salvo','Token Tiny V3 foi salvo criptografado.','sucesso',['link'=>'index.php?page=tiny-v3-ficha']);
-      redirect('index.php?page=tiny-v3-ficha&token=ok');
-    } catch(Throwable $e){ Audit::exception($e,'tiny.v3.token.salvar.erro'); redirect('index.php?page=tiny-v3-ficha&token=erro'); }
-  }
-
-  private function tinyV3TokenRenovar(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    $ret=TinyV3TokenService::refresh(true);
-    Audit::event('tiny.v3.token.renovar',empty($ret['erro'])?'sucesso':'erro',['mensagem'=>'Renovação de token Tiny V3 executada.','retorno'=>$ret]);
-    redirect('index.php?page=tiny-v3-ficha&refresh='.(empty($ret['erro'])?'ok':'erro'));
-  }
-
-  private function tinyV3TokenRevogar(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    $ambiente = (string)($_POST['ambiente_token'] ?? (IntegrationConfig::get()['tiny_v3_ambiente'] ?? 'homologacao'));
-    if (!in_array($ambiente, ['homologacao','producao'], true)) $ambiente = 'homologacao';
-    try {
-      $st = $this->db('tiny_v3_tokens')->prepare('DELETE FROM tiny_v3_tokens WHERE ambiente=?');
-      $st->execute([$ambiente]);
-      Audit::event('tiny.v3.token.revogar','sucesso',[
-        'mensagem'=>'Tokens Tiny V3 revogados/removidos para o ambiente selecionado.',
-        'contexto'=>['ambiente'=>$ambiente,'removidos'=>$st->rowCount()],
-        'acao_recomendada'=>'Reconectar via OAuth antes de usar Tiny V3 neste ambiente.'
-      ]);
-      NotificationService::criar('sistema','Token Tiny V3 revogado','Tokens removidos para o ambiente '.$ambiente.'.','alerta',['link'=>'index.php?page=tiny-v3-ficha']);
-      redirect('index.php?page=tiny-v3-ficha&revogar=ok');
-    } catch(Throwable $e) {
-      Audit::exception($e,'tiny.v3.token.revogar.erro',['codigo_erro'=>'TINY_V3_TOKEN_REVOKE_ERROR']);
-      redirect('index.php?page=tiny-v3-ficha&revogar=erro');
-    }
-  }
-
-  private function tinyV3Testar(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    $sku=trim((string)($_POST['sku'] ?? '')) ?: 'TESTE';
-    $tiny=new TinyV3Service(IntegrationConfig::get());
-    $ret=$tiny->consultarProduto($sku);
-    Audit::event('tiny.v3.teste','info',['mensagem'=>'Teste Tiny V3 executado por SKU.','payload'=>['sku'=>$sku],'retorno'=>$ret]);
-    redirect('index.php?page=tiny-v3-ficha&teste=ok');
-  }
-
-
-  private function tinyV3TestarModulo(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    $modulo = (string)($_POST['modulo'] ?? 'produto');
-    $params = [
-      'sku' => trim((string)($_POST['sku'] ?? '')),
-      'id_pedido' => trim((string)($_POST['id_pedido'] ?? '')),
-      'id_nota' => trim((string)($_POST['id_nota'] ?? '')),
-    ];
-    $tiny = new TinyV3Service(IntegrationConfig::get());
-    $ret = $tiny->testarModulo($modulo, $params);
-    Audit::event('tiny.v3.teste_modulo', empty($ret['erro']) ? 'info' : 'erro', [
-      'mensagem' => 'Teste Tiny V3 por módulo executado.',
-      'payload' => ['modulo'=>$modulo,'params'=>$params],
-      'retorno' => $ret,
-      'codigo_erro' => $ret['codigo_erro'] ?? null,
-      'acao_recomendada' => empty($ret['erro']) ? 'Guardar evidência no checklist de homologação.' : 'Conferir token, endpoint, permissões e parâmetros reais da Tiny V3.'
-    ]);
-    redirect('index.php?page=tiny-v3-ficha&teste_modulo='.urlencode($modulo));
-  }
-
-  private function tinyV3EndpointsSalvar(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    $defaults = TinyV3EndpointCatalog::defaults();
-    $sets=[]; $values=[]; $historico=[];
-    $atual = IntegrationConfig::get();
-    foreach($defaults as $key=>$default){
-      $col = 'tiny_v3_'.$key;
-      $novo = trim((string)($_POST[$col] ?? ''));
-      if($novo === '') $novo = $default;
-      $sets[] = "$col=?";
-      $values[] = $novo;
-      if((string)($atual[$col] ?? '') !== $novo) $historico[$col] = ['antes'=>$atual[$col] ?? '', 'depois'=>$novo];
-    }
-    if($sets){
-      $sql = 'UPDATE configuracoes_integracao SET '.implode(',', $sets).' WHERE id=1';
-      Database::tableConnectionForSql($sql)->prepare($sql)->execute($values);
-    }
-    Audit::event('tiny.v3.endpoints.salvar','sucesso',[
-      'mensagem'=>'Endpoints Tiny V3 salvos/atualizados pelo painel.',
-      'contexto'=>$historico
-    ]);
-    redirect('index.php?page=tiny-v3-ficha&endpoints=ok');
-  }
 
   private function tinyV3OperationalReady(array $dados = []): array {
     $issues = [];
@@ -1950,16 +1692,6 @@ class DashboardController {
     redirect('index.php?page=tiny-v3-homologacao&executado=1');
   }
 
-  private function tinyAmbientes(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $cfg = IntegrationConfig::get();
-    try { $itens = $this->db('homologacao_checklist')->query("SELECT id, chave, titulo, descricao, status, resultado, trace_id, atualizado_em, criado_em FROM homologacao_checklist ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC); }
-    catch (Throwable $e) { $itens = []; }
-    $analise = TinyEnvironmentReadinessService::analisar($cfg, $itens);
-    $pageTitle = 'Tiny V2/V3 - Ambientes';
-    require __DIR__.'/../../views/tiny_ambientes.php';
-  }
-
 
   private function homologacao(): void {
     PermissionService::require('homologacao','visualizar');
@@ -2084,15 +1816,6 @@ class DashboardController {
     $cfg = IntegrationConfig::get();
     $pageTitle = 'Ficha Técnica VSM';
     require __DIR__.'/../../views/vsm_ficha_tecnica.php';
-  }
-
-  private function tinyV2FichaTecnica(): void {
-    PermissionService::require('ficha_tecnica','visualizar');
-    $metricas = TinyV2ObservabilityService::metricas();
-    $erros = TinyV2ObservabilityService::erros();
-    $cfg = IntegrationConfig::get();
-    $pageTitle = 'Ficha Técnica Tiny V2';
-    require __DIR__.'/../../views/tiny_v2_ficha_tecnica.php';
   }
 
   private function filaAnalyticsV24(): void {
