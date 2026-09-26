@@ -56,6 +56,7 @@
 10b613ec3ed6394d80b8c88769c07812b408ac069663da5528baecde6985a9cf  ./app/Controllers/SecurityAssistedTestController.php
 10d7399c929d48cf6198b6fd66d8d61108052bdb698a80810876867f645c435f  ./RELATORIO-CAOS-BANCO-FORA-WEBHOOK-5XX-2026-09-21.md
 1181ef9bf4a365e8ba51374f4993ea3a9c914a7bffdc9d4a7fbca0951359910f  ./RELATORIO-USO-E-ATIVACAO-LLM-2026-09-20.md
+11f8483e442b8f22a4cbbb48ba5f6e989c7a893464c5b4afaaf8481ad988d6ef  ./tests/enterprise/v104_49_3_vsm_pedido_dto_mapper_test.php
 1217d02cc04cecc3b49ea86d1b27c67d78f8bbdeaaad35524912c203d65c3b9f  ./storage/cache/classmap.php
 12e9d8b031de679cdfea436ab8fec7de22a3070543e64124b0952b11b2826877  ./scripts/ci/mysql-modular-runtime-regression.php
 131e3d9c75f9419d8920e9ec31c0590babb4b893156df541016b2a4ef9a518bf  ./tests/enterprise/v104_49_3_vsm_stage_environment_test.php
@@ -162,6 +163,7 @@
 2db11734e7261800a8bc545e1abf4c8911ef9809c1874b7d4c84722e278e1454  ./app/Services/CommercialReadinessAdvisorService.php
 2df65761d3a6cd06b24f93f1ed76bddbedf6c7c9b6e3ca7f1f45b192122d9db3  ./views/reconciliacao.php
 2e695fbb16d02d5aabd4f0e9f45461299407ada9c794ced6742707e3fa64c5c3  ./tests/enterprise/v104_48_1_backup_security_test.php
+2ee18e20496f6e2b379d2334211f13657ecad210d2db7a722817011f1db5ec96  ./app/Services/PedidoMapper.php
 2f0673621f82b3174788bb883b0b63aa8ba2ac0dbab17d52e0643bf31474561f  ./RELATORIO-AUDITORIA-WEBHOOK-AUTH-2026-09-21.md
 2f9d8ca3f5f3f1df1ae425f3c01e3832b28028300f57d634ccf85d8c0ecf5e8b  ./workers/README-WORKERS.md
 2fb823d9e94d841d6acd643c61dc23a0b22551303f70a79a686ae46412ed6af2  ./RELATORIO-V94-SEGURANCA-EXTREMA.md
@@ -251,7 +253,6 @@
 4dd529fb7186644e01ac69ce76b8e4ae8e744e55a127e4b7b4cb321af2348ad1  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
 4e9e44611141673748accd1c86bf8f42299300ae4c5fd6769cc65c3c627a8109  ./app/Services/SchemaRuntimePolicyService.php
-4ecd1d377b078fe4da0974df14aa4521ecba5df7b19fdc06b7d657c716cdd408  ./app/Controllers/ApiController.php
 4f4c372e19cd6564c39eb3cf1c00be7f9bae6a2095ae553a2c526ffa011a85ae  ./app/Services/QrCodeService.php
 4f5ae2b0ba0a4d0eee6dd5743e54a8f5e1237efdfb0ba2b330017430c632d13b  ./views/fila_morta.php
 4fdda93711e35239887d21a489ab11313e4e4e94693f100c2f90f690890cbad2  ./RELATORIO-V97-BLINDAGEM-SEGURANCA-CODIGO-BANCO.md
@@ -378,6 +379,7 @@
 6f935b767bd01deac0c16853d0820de2a8f5f9b56fd70e186b282a77bdf27b72  ./RELATORIO-V71-DASHBOARD-EXECUTIVO-ALERTAS.txt
 6f98ada28f280bbb0fe3d6977f422c56b4fce02dbd53a78b0c7ed25b96291142  ./database/legacy/incrementais_v104_8/update_v104_7_schema_guard.sql
 7068022263f7956e34cfe9b5bdf92a76635d735fdeb2060617ac96112962fafd  ./database/update_v104_16_finalizacao_comercial.sql
+7071036bc8eda72b7505867cd3e6c99e2b7a1acf95d1ee54225d90ae61187888  ./app/Controllers/ApiController.php
 70df42754be5b412c36fe4145303165a5874f30f6fb88c67221c9aea637a0e15  ./database/legacy/sql_ate_v104_15/repair_v104_13_banco_unico.sql
 719c3e01f1ab7a32df55a4961829e132a179eb3c2c8d177c9fc306c9245de547  ./public/manifest.webmanifest
 71a5fc595eda8c34db49ec7d0ec412dcbcebb4a385768307c43ca6f0bda3016b  ./app/Controllers/MyOuroController.php
@@ -764,7 +766,6 @@ db7a0c245e506cbe513f953283481bfb13b8bf9fcaf472da1262f7b7525f8af9  ./tests/enterp
 dbb421d6c81a0127bc63a9c81150c8785dc9629f17694635059d87473fea9265  ./app/Services/TinyRateLimitObserverService.php
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comercial/09-servidor-licenciamento.md
-dc46bbcacff294eb6c4a61912473bcd3e99c7ee7d58ca75a7f3847505139fc90  ./app/Services/PedidoMapper.php
 dc5d70344dda6d3df3289b67ca75779516f928bb90ee85e6e9a8510de3aa1269  ./RELATORIO-V104-2FA-QRCODE-SEGURO.md
 dd9dfb7082b9e87782b0698d6f39c855f7e1b73462548f52600bac9d704cf3f3  ./views/security_center.php
 de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/assets/img/icon-128.png

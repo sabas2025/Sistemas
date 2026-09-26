@@ -79,6 +79,89 @@ class PedidoMapper {
     return round($total,2);
   }
 
+  /** Separa DDD (2 primeiros dígitos) e número de um telefone só com dígitos. */
+  private static function splitFone(string $digits): array {
+    $digits = self::onlyDigits($digits);
+    if (strlen($digits) >= 10) return [substr($digits,0,2), substr($digits,2)];
+    return ['', $digits];
+  }
+
+  /**
+   * F6-07 etapa 4 (2026-09-26) — monta o PedidoCadastroDTO da VSM Conecta Venda
+   * (contrato pedidos-integradora) a partir do payload intermediário produzido por
+   * PedidoTinyVsmValidationService::toVsmPayload (que preserva o payload_original do Tiny).
+   *
+   * Campos derivados fielmente do pedido: nome, documento, e-mail, telefone/DDD, itens (sku,
+   * quantidade, valor unitário, valorFinal=qtd*unitário, nomeCompleto), endereço, frete e total.
+   * tipoPessoa é DERIVADO do documento (14 dígitos = jurídica).
+   *
+   * DECISÕES DE MAPEAMENTO para enums que o pedido Tiny não traz 1:1 (valores neutros/mais comuns,
+   * a CONFIRMAR com a VSM/negócio — não são dado inventado do cliente):
+   *   - tipo do pedido        = "0" (NORMAL)
+   *   - pedidoEntrega.tipo    = "0" (DELIVERY, pois há endereço de entrega)
+   *   - pagamento.tipoPagamento = "0" (PAGAMENTO_ANTECIPADO, padrão de e-commerce)
+   *   - cliente.sexo          = "2" (INDEFINIDO — o Tiny não informa)
+   * Campos obrigatórios sem origem (ex.: telefone/DDD ausentes) ficam vazios de propósito: a VSM
+   * responde 400 e o erro é honesto, em vez de fabricar dado.
+   */
+  public static function tinyParaCadastroIntegradora(array $pv): array {
+    $orig = $pv['payload_original'] ?? [];
+    $d = $orig['dados'] ?? $orig['pedido'] ?? $orig;
+    $cOrig = (is_array($d) ? ($d['cliente'] ?? $d['comprador'] ?? []) : []);
+    $cli = $pv['cliente'] ?? [];
+    $doc = self::onlyDigits($cli['documento'] ?? self::pick($cOrig, ['cpf_cnpj','documento','cpf','cnpj']));
+    [$ddd,$fone] = self::splitFone((string)self::pick($cOrig, ['telefone','fone','celular'], (string)($cli['telefone'] ?? '')));
+
+    $cliente = array_filter([
+      'nome'        => (string)($cli['nome'] ?? self::pick($cOrig,['nome','razao_social','razaoSocial'], 'Cliente não informado')),
+      'sexo'        => '2',
+      'documento'   => $doc,
+      'tipoPessoa'  => strlen($doc) === 14 ? '1' : '0',
+      'telefone'    => $fone,
+      'ddd'         => $ddd,
+      'email'       => (string)($cli['email'] ?? self::pick($cOrig,['email'])),
+    ], fn($v)=>$v!=='' && $v!==null);
+
+    $itens = [];
+    foreach (($pv['itens'] ?? []) as $it) {
+      $q  = (float)str_replace(',','.',(string)($it['quantidade'] ?? 0));
+      $vu = self::money($it['valor_unitario'] ?? 0);
+      $itens[] = array_filter([
+        'sku'          => (string)($it['sku'] ?? ''),
+        'quantidade'   => $q,
+        'valorUnitario'=> $vu,
+        'valorFinal'   => round($q * $vu, 2),
+        'nomeCompleto' => (string)($it['descricao'] ?? $it['sku'] ?? 'Produto'),
+      ], fn($v)=>$v!=='' && $v!==null);
+    }
+
+    $frete = self::money($pv['frete'] ?? 0);
+    $total = self::money($pv['valor_total'] ?? 0);
+
+    $end = $pv['endereco'] ?? [];
+    $cep = self::onlyDigits(self::pick($end, ['cep']));
+    $entrega = array_filter([
+      'tipo'        => '0',
+      'valorEntrega'=> $frete,
+      'cep'         => strlen($cep) === 8 ? $cep : '',
+      'logradouro'  => (string)self::pick($end, ['logradouro','endereco','rua']),
+      'bairro'      => (string)self::pick($end, ['bairro']),
+      'numero'      => (string)self::pick($end, ['numero','nro'], 'S/N'),
+      'cidade'      => (string)self::pick($end, ['cidade','municipio']),
+      'siglaEstado' => strtoupper((string)self::pick($end, ['uf','estado','siglaEstado'])),
+    ], fn($v)=>$v!=='' && $v!==null);
+
+    return array_filter([
+      'cliente'         => $cliente,
+      'pedidoEntrega'   => $entrega,
+      'pedidoPagamento' => ['tipoPagamento'=>'0', 'valorPagamento'=>$total > 0 ? $total : $frete],
+      'pedidoItem'      => $itens,
+      'tipo'            => '0',
+      'valorFinal'      => $total,
+      'dataAprovacao'   => date('Y-m-d H:i:s'),
+    ], fn($v)=>$v!==[] && $v!==null);
+  }
+
   public static function extrairPedidoTinyId(array $ret): ?string {
     $candidatos = [
       $ret['retorno']['registros'][0]['registro']['id'] ?? null,

@@ -719,8 +719,10 @@ class ApiController {
         }
       } elseif ($tipo === 'pedido_tiny_para_vsm') {
         $vsm = new VsmService();
-        PayloadSnapshotService::registrar((int)$item['id'], 'enviado', $payload, ['referencia'=>$item['referencia'] ?? null, 'origem'=>'tiny', 'destino'=>'vsm', 'trace_id'=>$trace]);
-        $ret = $vsm->enviarPedido($payload, 'fila_pedidos:'.$item['id']);
+        // F6-07: o payload da fila é o intermediário (toVsmPayload); a VSM espera o PedidoCadastroDTO.
+        $dtoPedido = PedidoMapper::tinyParaCadastroIntegradora($payload);
+        PayloadSnapshotService::registrar((int)$item['id'], 'enviado', $dtoPedido, ['referencia'=>$item['referencia'] ?? null, 'origem'=>'tiny', 'destino'=>'vsm', 'trace_id'=>$trace]);
+        $ret = $vsm->enviarPedido($dtoPedido, 'fila_pedidos:'.$item['id']);
         $isErro = isset($ret['erro']) || isset($ret['codigo_erro']) || ((int)($ret['http_code'] ?? 200) < 200 || (int)($ret['http_code'] ?? 200) >= 300);
         $codigo = $isErro ? ($ret['codigo_erro'] ?? 'VSM_ORDER_SEND_ERROR') : null;
         $destino = 'vsm';
