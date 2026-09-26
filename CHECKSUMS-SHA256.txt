@@ -56,6 +56,7 @@
 10b613ec3ed6394d80b8c88769c07812b408ac069663da5528baecde6985a9cf  ./app/Controllers/SecurityAssistedTestController.php
 10d7399c929d48cf6198b6fd66d8d61108052bdb698a80810876867f645c435f  ./RELATORIO-CAOS-BANCO-FORA-WEBHOOK-5XX-2026-09-21.md
 1181ef9bf4a365e8ba51374f4993ea3a9c914a7bffdc9d4a7fbca0951359910f  ./RELATORIO-USO-E-ATIVACAO-LLM-2026-09-20.md
+1217d02cc04cecc3b49ea86d1b27c67d78f8bbdeaaad35524912c203d65c3b9f  ./storage/cache/classmap.php
 12e9d8b031de679cdfea436ab8fec7de22a3070543e64124b0952b11b2826877  ./scripts/ci/mysql-modular-runtime-regression.php
 131e3d9c75f9419d8920e9ec31c0590babb4b893156df541016b2a4ef9a518bf  ./tests/enterprise/v104_49_3_vsm_stage_environment_test.php
 13760188c882c8596e59b17c4f2f7880a182cc76ddd58831d24ce5229e7ce5e3  ./RELATORIO-V104.9-CORRECAO-INSTALACAO.md
@@ -334,6 +335,7 @@
 658eb09be5e4995c4b278d539d76c8a4a1f161376359bde39e262bef068f1fd7  ./RELATORIO-V104.25-RECOMENDACOES-AUDITORIA-ENTERPRISE.md
 65ad79717bf4c08fada329baa001f84f13b4e45ddca8d325fdf1712601454fed  ./scripts/ci/provision-e2e-environment.php
 65c4173cc18fde53bc3c31effbd88cb79906b1967d4756592a73080ce2cabaf4  ./RELATORIO-E2E-FLUXOS-2026-09-21.md
+65e61ad85f406eedd83aa786515b1c5ba012efea49be4df3c84f94a1bf83fb58  ./app/Services/VsmTokenService.php
 662a3e18b75ba4ece57bc21a550eedde9c2e515c73ccba86d735f51e91ee2622  ./app/Services/EnterpriseIdempotencyGuardService.php
 667546ed22b1c51a72d8a41928c4b05ccf66d0700a9a38f5901a3a1e5841f4e5  ./.github/workflows/pwa-quality.yml
 668527d277cc7932d2da84f007dbbc1417f70997b1715e2a5cb4b3133fb746c0  ./RELATORIO-V104.42-GOVERNANCA-VISUAL-RESPONSIVA.md
@@ -506,6 +508,7 @@
 957ec2c587a8fbde34fca6807c10a86757b92659a21fd2defbbd24536c74653d  ./docs/CONTROLLER_REFACTOR_PLAN_V104.16.md
 969ac07add3e6a1c932dd64ac5c502e62af4d1549499afb14283c99e04a41872  ./database/legacy/docs_sql_antigos/REMOVIDOS_UPDATES_ANTIGOS.md
 96ac215b67ee550dea65c8e4110a7f371957ebf8d497179b3b6d7d8aa42a44bb  ./tests/enterprise/v104_41_minimalist_pwa_test.php
+9762754bd73c4d1a28b5c58b10beb9a4df05084a7793748ef5d461c0047e0d12  ./tests/enterprise/v104_49_3_vsm_token_service_test.php
 97c343dd4c1d634616aca44363af465a6377e7d0f66c39b716888a1b1605610e  ./SECURITY.md
 993a8779b4f5945be5912fe4c42eee8477c6944562a7ffccd704c61e96073447  ./app/Services/LlmRealExecutionService.php
 9941e4764fc846fe09ea78ab74838ace25aca7ac81cfb80bc6d182e136a75f89  ./package-lock.json
@@ -628,7 +631,6 @@ b8ad630a46682e16c5e42bfe45a27f2365b0a8d36510d7bf29c7e50d36745560  ./scripts/pwa/
 b8b7dba6cba6e7dc8cbbfc206f54b9e490da7496970b5fb6bd89727537b2221e  ./workers/worker_reconciliacao.php
 b8c638ea29d834cada9bc4b21c16c2a662ef90af3240ce9ed50bcc47a92e7f30  ./public/assets/img/shortcut-homologacao-192.png
 b91debbf5987b3bb7f3b72a46bc3561b50113b4648ed6569120e3b947f28f342  ./app/Services/LicenseRemoteCacheService.php
-b9b02a3352d4a0a46b89206047f6f5d8bf72b2df8aeae13dfa60c85ec9dad552  ./storage/cache/classmap.php
 b9e2d0dbb24f513ce8070f1161d483d1252a031481442608656e8fd6bea6118b  ./database/legacy/docs_sql_antigos/README-SQL-V104.7.md
 ba2c561e0356835485b406e30ab7380db99718cf029cade39d2c1dee5ae5c4e0  ./database/legacy/incrementais_v104_8/update_v104_2_fluxo_nfe_vsm_tiny.sql
 ba331ba626599070b84f2e65194fc972b2f6b68eddbd2bd66bac9f759f08a824  ./RELATORIO-V86-PWA-HUB-INTEGRACAO.md

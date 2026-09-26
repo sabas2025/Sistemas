@@ -246,6 +246,7 @@ return [
   'VsmOpenApiContractService' => 'app/Services/VsmOpenApiContractService.php',
   'VsmService' => 'app/Services/VsmService.php',
   'VsmSimulatorService' => 'app/Services/VsmSimulatorService.php',
+  'VsmTokenService' => 'app/Services/VsmTokenService.php',
   'WafService' => 'app/Services/WafService.php',
   'WebhookSecurityService' => 'app/Services/WebhookSecurityService.php',
   'WorkerCliGuardService' => 'app/Services/WorkerCliGuardService.php',
