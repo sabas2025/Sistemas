@@ -56,6 +56,7 @@
 10d7399c929d48cf6198b6fd66d8d61108052bdb698a80810876867f645c435f  ./RELATORIO-CAOS-BANCO-FORA-WEBHOOK-5XX-2026-09-21.md
 1181ef9bf4a365e8ba51374f4993ea3a9c914a7bffdc9d4a7fbca0951359910f  ./RELATORIO-USO-E-ATIVACAO-LLM-2026-09-20.md
 12e9d8b031de679cdfea436ab8fec7de22a3070543e64124b0952b11b2826877  ./scripts/ci/mysql-modular-runtime-regression.php
+131e3d9c75f9419d8920e9ec31c0590babb4b893156df541016b2a4ef9a518bf  ./tests/enterprise/v104_49_3_vsm_stage_environment_test.php
 13760188c882c8596e59b17c4f2f7880a182cc76ddd58831d24ce5229e7ce5e3  ./RELATORIO-V104.9-CORRECAO-INSTALACAO.md
 13e3c135e20606e305a781c9118871259543bd286f9763cd3649c9ff77d355a1  ./app/Services/MenuActionTestService.php
 13fed6bab094f754da5dcde5b76a7e5a5a4ba7acd9ad901216da8480f813edc6  ./docs/README-OPERACIONAL.md
@@ -160,7 +161,6 @@
 2f0673621f82b3174788bb883b0b63aa8ba2ac0dbab17d52e0643bf31474561f  ./RELATORIO-AUDITORIA-WEBHOOK-AUTH-2026-09-21.md
 2f9d8ca3f5f3f1df1ae425f3c01e3832b28028300f57d634ccf85d8c0ecf5e8b  ./workers/README-WORKERS.md
 2fb823d9e94d841d6acd643c61dc23a0b22551303f70a79a686ae46412ed6af2  ./RELATORIO-V94-SEGURANCA-EXTREMA.md
-301ff77e27005fdabb37edec79f6d836dc8bbd59800a068eae98cfe5b0be23dc  ./app/Services/VsmEnvironmentService.php
 3029c0ce264c80e644b89604add870f88b6a098fd173ef1cb880785c7edd8193  ./public/assets/img/favicon-32.png
 306ac6a201c2bfd6a1b1fbeda48f0cce523b36c516ab0e41bf5049be110f3d8e  ./views/commercial_docs.php
 31459470e7562345f0c7994cdb19d4bf70dcab87ea1e6cb9d642db503fdca6b8  ./RELATORIO-V103-HARDENING-PRODUCAO.md
@@ -309,6 +309,7 @@
 5e4c2891073412da896303aca2a66d1e1a71df2a0a2ded0700e38fcdc1d83f2f  ./RELATORIO-V104.43-UX-ACESSIBILIDADE-TEMA-TESTES.md
 5e95f8e7343294fc267b551a9a3ebc18706a875da2d7f0894f3c4c770373eaac  ./docs/comercial/09-multiempresa-multifilial.md
 5e9bc58eeb602618888e44567b5cd944a6d47e64a470b99c5c9908de954a19bc  ./database/migrations/20260914_008_rbac_backup_actions.sql
+5eb91cf3fd9dadeafe54e2bde8ff3c2d4b8669e43f72a6c63fad8c77f643935f  ./app/Services/ProductionGoLiveService.php
 5ecf81e3e5b3f4df87196b754e50c5939afad9c82b2a166cc8a720d47d9efd81  ./views/commercial_hardening_final.php
 5f16e0c0f6322d5f97a10e5cd778d4edd749c45bc731f2ef297b5c0da9249ff4  ./app/Services/OperationalRouteService.php
 5f18f905f2a9b93fb324a9670b2e0303e4b53571c6d107d1b11279791fc4e85e  ./app/Services/DatabaseMapService.php
@@ -436,7 +437,6 @@
 823f16ec77613d89e8145db5f5744e744557b384b3827c5c0d5d1e75b1b628e0  ./docs/comercial/08-sla.md
 8255545bb76e28a1e8321b4605d9fe373b824d0cbf22b5d3f5b7ee03aedb968b  ./app/Services/ProdutoTinyPreflightService.php
 82d0a8daed988a1da7977c855b0e7b171cdd48c29127418f3e17f00af472b81c  ./docs/ARQUITETURA-CONECTORES-V104.16.md
-832f182e12ce6176f1a16833c8b744b1f1bf6602f7b64cc1d6dac22da6b4dcc7  ./app/Services/ProductionGoLiveService.php
 83389e81e5fed5d59d524fb6c923caa2b6ee6477d26c6358bf1768228116f279  ./database/modules/produtos.sql
 836ffb2ba9c653795956548daf9cf038b4c131dc4e20a4a5524e5f38297dd536  ./scripts/ci/php-lint.sh
 83bb53ca48d9ce90e0f4e1fbe6dd504bfe7284fee6d97cc3e1d44c8700cb244f  ./app/Controllers/CentralHomologacaoController.php
@@ -798,6 +798,7 @@ e731595da17979191c5c4ef7d346b1a1f591339fceceed3619563e46ba5fd91d  ./views/audito
 e868f189d7d9a9dc14ad330d40392cd46d863b71b7d8e2895e9ea8d8cb02618c  ./app/Services/UpgradeSqlService.php
 e9b8d652a59e80b8c542cc1e666502c537d17dcfcf33b8fe71a4ba0c0e738b9a  ./views/produtos.php
 e9ec4f321347ba47f650b0d3a657996014f4459612ae586749f3d45457c00206  ./app/Services/VsmEndpointService.php
+ea143302daaf6354afe58ffb1da715d5605fe252709a3d26fd4065af9532f5df  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 ea33f7250693288eb38ece871cddcd62bf2e0b84e5f1ef4396999ec3e5a95400  ./views/manutencao.php
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 eaeff7c230ac6d95a427d73d2a321b7d3d422cbcbf56eadaee553587a42dab76  ./views/myouro_configuracoes.php
@@ -810,6 +811,7 @@ ec1bfc4765f9c4d3c55fd834b7e1c2671ff59b37125511dbf9e058d2521c5960  ./views/pedido
 ec2f3e125c64d1613836f7c6fc27f4d535b4e6a6b9729f794be350a5c431b3f1  ./package.json
 ed4532a8b8dda7b848454768cbac0bf125651e0c4059cc989e8252d642130ad1  ./views/fila_analytics_v24.php
 ede501dd3f1400a79fe94eca288837dcde703d17aa422312c442fc13646f9e45  ./app/Services/DashboardMetricsService.php
+ee6e6156e5541be2943d3632cd6115b395e1fa1240a4ffd02c219ca50e343061  ./app/Services/VsmEnvironmentService.php
 eea94d8b7d5cd70ee6441ae97cbe403b2a57b4a25b3800e69c948753332313d2  ./docs/comercial/11-ambiente-demo.md
 eeb15cdcef6fc1cc95d6fc3c00abf71c3d820b3e42bb4a8cb452ffcfb1a49dce  ./RELATORIO-V104.10-CORRECAO-RESTORE-TRANSACAO.md
 eeda94f72dcec4bffcc1497b977bfa65369c0e0cc9d0d9439836074959cb2922  ./views/pedidos.php

@@ -21,7 +21,17 @@ class VsmEnvironmentService {
 
   public static function isHomologUrl(string $url): bool {
     $host = strtolower((string)(parse_url($url, PHP_URL_HOST) ?: ''));
-    return $host === '' || str_contains($host, '.homolog.') || str_contains($host, 'homolog') || $host === self::HOMOLOG_HOST;
+    if ($host === '') return true;
+    if (str_contains($host, 'homolog') || $host === self::HOMOLOG_HOST) return true;
+    // A VSM usa o RÓTULO `stage` para o ambiente de validação de integrações de parceiros
+    // (conectavenda.stage.vsm.com.br), informado oficialmente pelo responsável em 2026-09-26.
+    // O rótulo antigo `homolog` continua reconhecido acima; `stage` é comparado por rótulo de DNS
+    // (nunca por substring — armadilha B-06), para não casar um host de produção que contenha o
+    // texto por acaso. `conectavenda.vsm.com.br` (produção real) não tem nenhum destes rótulos.
+    foreach (explode('.', $host) as $rotulo) {
+      if (in_array($rotulo, ['stage','staging','homologacao','homologação','sandbox','teste','test','dev'], true)) return true;
+    }
+    return false;
   }
 
   public static function normalizedEnv(array $cfg): string {
