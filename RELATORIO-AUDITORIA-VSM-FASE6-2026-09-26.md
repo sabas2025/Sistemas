@@ -121,12 +121,25 @@ Contrato oficial recebido em 2026-09-26 e salvo em `contracts/vsm/pedidos-integr
   `expiration`/`expiresIn`, refresh proativo — desenho do `TinyV3TokenService`); colunas cifradas
   para as credenciais (migration idempotente nos 2 caminhos); endpoint/`query` corretos; mapper
   para `PedidoCadastroDTO`; retry VSM que **não** retenta 409; log com `redactUrlForLog`.
-- **Risco da correção:** médio-alto — mexe no fluxo de pedido e no schema. Exige autorização
-  explícita e será desenhada no formato "antes de alterar" antes de aplicar.
-- **Como testar:** contra MariaDB real (schema/migration, mapper, retry) + teste que reprova sobre
-  o código antigo; a **chamada real à VSM** ainda depende de liberar o host na rede e das
-  credenciais de Stage.
-- **Status:** confirmado (correção pendente de aprovação e do spec `pedidos-loja`, se houver mais).
+- **Risco da correção:** médio-alto — mexe no fluxo de pedido e no schema.
+- **IMPLEMENTADO por etapas (2026-09-26), com autorização do responsável:**
+  1. **Schema** — colunas cifradas `vsm_client_token/secret/loja` + cache do JWT
+     (`vsm_access_token` + `vsm_access_token_expira_em`) nos 2 caminhos (módulo + migration
+     `20260926_018` + consolidado); `vsm_token` legado preservado. Gravação por
+     `VsmCredentialsConfigService` (fora do controller-deus). Paridade instalação × atualização
+     medida coluna a coluna em MariaDB real.
+  2. **`VsmTokenService`** — troca `/v1/auth/token`, cache do JWT (margem 60s), lock cooperativo,
+     SSRF pelo `VsmEndpointSecurityService`, retry só transitório (401/403 não retentados).
+  3. **`VsmService`** — endpoint `/v1/pedido/integradora`, `clientTokenLoja`+`clientTokenIntegradora`
+     na query, Bearer JWT (fallback legado), URL mascarada no log/métrica, 409 não-retentado.
+  4. **`PedidoMapper::tinyParaCadastroIntegradora`** — monta o `PedidoCadastroDTO`; teste cruza a
+     saída com os `required` do próprio contrato. Enums sem origem 1:1 (tipo do pedido, entrega,
+     pagamento, sexo) usam defaults neutros **documentados, a confirmar com a VSM/negócio**.
+  5. **`worker_vsm_token_refresh.php`** — aquecimento do JWT (opcional; a VSM não tem refresh token).
+- **Resíduo (não testável daqui):** a **chamada HTTP real à VSM** depende de liberar o host na rede
+  e das credenciais de Stage — medido só até o limite da rede (guarda passa, tenta, 403 do proxy).
+  E os **defaults de enum** do mapper precisam de confirmação do negócio/VSM.
+- **Status:** corrigido; validado contra MariaDB real até o limite da rede.
 
 ### F6-05 · Contrato OpenAPI da VSM — **os DOIS specs IMPORTADOS**
 - **Resolvido:** `contracts/vsm/pedidos-integradora.openapi.json` **e**

@@ -249,7 +249,6 @@
 4d04ca903414eea89ea5ef2a936a28104770b76c6e4f82cbbb173acc827cd2a4  ./views/integracoes.php
 4d059fa566f281b802f266a6464bf12860cbd0ad60cab9875b6cbe50ee3e89e9  ./RELATORIO-V104.6-CORRECAO-ORQUESTRACAO-DUPLICATE-COLUMN.md
 4d8ae8ac7cd3f139be6911e68a00c21914693c341dc1ffe39655b521fd16cb1f  ./public/assets/vendor/bootstrap-icons/bootstrap-icons.css
-4dd529fb7186644e01ac69ce76b8e4ae8e744e55a127e4b7b4cb321af2348ad1  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
 4e9e44611141673748accd1c86bf8f42299300ae4c5fd6769cc65c3c627a8109  ./app/Services/SchemaRuntimePolicyService.php
 4f4c372e19cd6564c39eb3cf1c00be7f9bae6a2095ae553a2c526ffa011a85ae  ./app/Services/QrCodeService.php
@@ -566,6 +565,7 @@ a6bc88933369289cba10c341ae5242d861799d745f20647dc97763d4b34c845b  ./docs/schema_
 a6d70915c7a636a7164aa48af367d11de134065c951a181dc352773105bb7b0f  ./views/license_blocked.php
 a761ba7cf8af2303602fd3d8fd075fae6462a7edd107d615cae93f839ca25f75  ./views/hosting_infinityfree.php
 a79d199c6e1e8e70eeaa4a220d85113b3ce81f89daebba52615baf7ae5f3c86f  ./RELATORIO-V102-SOC-ANTI-REPLAY-HARDENING.md
+a872736ab1e61ecdf5fc902e069017a329c63d8a5bd562010333d82bdc0b0191  ./RELATORIO-AUDITORIA-VSM-FASE6-2026-09-26.md
 a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/legacy/sql_ate_v104_15/install_final_v104_12.sql
 a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/legacy/sql_ate_v104_15/install_final_v104_13.sql
 a8a82714298207dff46d0979f9101b78b707062e7b37c4490eef7c039a04a708  ./database/legacy/sql_ate_v104_15/install_final_v104_8.sql
