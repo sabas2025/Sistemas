@@ -16,6 +16,8 @@ class VsmController {
       case 'vsm-saude': $this->saude(); break;
       case 'vsm-logs': $this->logs(); break;
       case 'vsm-testes': $this->testes(); break;
+      case 'testar-vsm': $this->testarVsm(); break;
+      case 'vsm-ficha-tecnica': $this->vsmFichaTecnica(); break;
       default: redirect('index.php?page=vsm-endpoints');
     }
   }
@@ -104,6 +106,43 @@ class VsmController {
     http_response_code(405);
     header('Allow: POST');
     exit('Método não permitido. Use POST com token CSRF válido.');
+  }
+
+  private function testarVsm(): void {
+    PermissionService::require('configuracoes','editar');
+    Csrf::validate();
+    try {
+      $cfg = IntegrationConfig::get();
+      $resultado = HealthCheckService::testarVsm($cfg);
+      if (class_exists('VsmEnvironmentService')) VsmEnvironmentService::registerTestResult(!empty($resultado['ok']));
+      $status = $resultado['ok'] ? 'sucesso' : 'erro';
+      Audit::event('vsm.teste_conexao',$status,[
+        'codigo_erro'=>$resultado['ok'] ? null : 'VSM_CONNECTION_TEST_FAILED',
+        'mensagem'=>'Teste de conexão VSM executado.',
+        'causa_provavel'=>$resultado['ok'] ? null : 'URL VSM incorreta, DNS indisponível, HTTPS bloqueado, token inválido ou endpoint de teste inexistente.',
+        'acao_recomendada'=>$resultado['ok'] ? 'Conexão VSM validada.' : 'Confira VSM URL, token, internet do servidor, SSL/cURL e endpoint informado no Swagger.',
+        'retorno'=>$resultado
+      ]);
+      NotificationService::criar('sistema',$resultado['ok']?'Teste VSM OK':'Teste VSM falhou',$resultado['mensagem'] ?? 'Veja detalhes na Auditoria.',$resultado['ok']?'sucesso':'erro',['trace_id'=>RequestContext::id()]);
+      redirect('index.php?page=configuracoes&teste_vsm='.($resultado['ok']?'ok':'erro'));
+    } catch(Throwable $e){
+      Audit::exception($e,'vsm.teste_conexao.erro',[
+        'codigo_erro'=>'VSM_CONNECTION_TEST_EXCEPTION',
+        'causa_provavel'=>'Falha inesperada ao executar diagnóstico VSM.',
+        'acao_recomendada'=>'Confira a configuração VSM e veja o erro técnico no evento de auditoria.'
+      ]);
+      redirect('index.php?page=configuracoes&teste_vsm=erro');
+    }
+  }
+
+  private function vsmFichaTecnica(): void {
+    PermissionService::require('ficha_tecnica','visualizar');
+    $endpoints = VsmFichaTecnicaService::endpoints();
+    $metricas = VsmFichaTecnicaService::metricas();
+    $payloads = VsmFichaTecnicaService::payloads();
+    $cfg = IntegrationConfig::get();
+    $pageTitle = 'Ficha Técnica VSM';
+    require __DIR__.'/../../views/vsm_ficha_tecnica.php';
   }
 
 }

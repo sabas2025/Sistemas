@@ -40,7 +40,7 @@ class FastRouteDispatcherService {
     DashboardHomeController::class => ['dashboard'],
     CommercialReadinessController::class => ['analise-comercial-tecnica'],
     EnterpriseCoreController::class => ['enterprise-core','enterprise-core-aplicar','enterprise-observabilidade','integration-events','llm-governance','enterprise-regression-tests','design-system-enterprise'],
-    VsmController::class => ['vsm-endpoints','vsm-endpoint-salvar','vsm-endpoint-testar','vsm-campos','vsm-campo-salvar','vsm-saude','vsm-logs','vsm-testes'],
+    VsmController::class => ['vsm-endpoints','vsm-endpoint-salvar','vsm-endpoint-testar','vsm-campos','vsm-campo-salvar','vsm-saude','vsm-logs','vsm-testes','testar-vsm','vsm-ficha-tecnica'],
     // Fase 3 (decomposição do controller-deus): bloco de Segurança extraído do DashboardController.
     SecurityController::class => ['security-center','security-soc','security-code-audit','security-inventory','security-backup-trust','security-health','security-audit-signatures','security-events','security-ips','security-circuit-breakers','security-hardening','security-ssl','security-user-audit','security-pentest','security-audit-sign','security-fim','security-fim-gerar','security-score','seguranca-auditoria','seguranca-extrema'],
     // Fase 3 etapa Tiny: telas/ações Tiny (V2/V3, webhooks, teste real, tokens) extraídas do DashboardController.
