@@ -161,6 +161,7 @@ return [
   'ProdutoTinyPreflightService' => 'app/Services/ProdutoTinyPreflightService.php',
   'ProdutoVsmApprovalGuardService' => 'app/Services/ProdutoVsmApprovalGuardService.php',
   'ProdutoVsmGovernanceService' => 'app/Services/ProdutoVsmGovernanceService.php',
+  'PublicUrlService' => 'app/Services/PublicUrlService.php',
   'PwaController' => 'app/Controllers/PwaController.php',
   'QrCodeService' => 'app/Services/QrCodeService.php',
   'QueueAnalyticsService' => 'app/Services/QueueAnalyticsService.php',
