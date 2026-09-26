@@ -1000,6 +1000,9 @@ class DashboardController {
         Database::forTable('configuracoes_integracao')->prepare('UPDATE configuracoes_integracao SET '.implode(',', $vsmSets).' WHERE id=1')->execute($vsmValues);
       }
     } catch(Throwable $e){ Audit::exception($e,'configuracoes.vsm_api_profile.erro',['codigo_erro'=>'VSM_API_PROFILE_SAVE_ERROR']); }
+    // F6-07: credenciais VSM (clientToken/secret/loja) — assembladas, cifradas e gravadas por
+    // serviço (lógica de domínio fora do controller-deus, lição do teto do DashboardController).
+    VsmCredentialsConfigService::salvarDoFormulario($_POST, $atual);
     if (class_exists('VsmEndpointService')) VsmEndpointService::invalidateBaseConfigCache();
     try {
       $queueSets=[]; $queueValues=[];

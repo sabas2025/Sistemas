@@ -1,0 +1,836 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "VSM Conecta Venda",
+    "description": "Projeto responsável por receber pedidos de múltiplas fontes e integrá-los ao ERP da VSM.",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://conectavenda.stage.vsm.com.br"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Token",
+      "description": "Endpoint para gerar token de auteticação"
+    }
+  ],
+  "paths": {
+    "/v1/pedido/integradora/status": {
+      "put": {
+        "tags": [
+          "pedidos-integradora"
+        ],
+        "summary": "Atualizar Status Pedido",
+        "operationId": "atualizarStatus",
+        "parameters": [
+          {
+            "name": "clientTokenLoja",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientTokenIntegradora",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestUpdateStatusPedido"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalhesPedidoRetornoDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ]
+      }
+    },
+    "/v1/pedido/integradora": {
+      "post": {
+        "tags": [
+          "pedidos-integradora"
+        ],
+        "summary": "Cadastrar Pedido",
+        "operationId": "criarNovoPedido",
+        "parameters": [
+          {
+            "name": "clientTokenLoja",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientTokenIntegradora",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PedidoCadastroDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Pedido cadastrado com sucesso.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalhesPedidoRetornoDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida, campos obrigatórios não informados.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T08:31:55.7144381",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "message": "Erro de validação nos campos.",
+                  "fieldErrors": {
+                    "clientToken": "não deve estar vazio"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou vencido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T08:50:58.2639795",
+                  "status": 401,
+                  "error": "Unauthorized",
+                  "message": "O Token de autenticação informado é inválido."
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Acesso negado sem corpo de resposta"
+          },
+          "409": {
+            "description": "Falha nas validações do pedido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-04T17:47:35.8597382",
+                  "status": 409,
+                  "error": "Conflict",
+                  "message": "Quantidade dos itens deve ser maior que 0."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ]
+      }
+    },
+    "/v1/auth/token": {
+      "post": {
+        "tags": [
+          "Token"
+        ],
+        "summary": "Gera um token de autenticação",
+        "operationId": "gerarToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthenticationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Token gerado com sucesso.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponseDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida, campos obrigatórios não informados.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T08:31:55.7144381",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "message": "Erro de validação nos campos.",
+                  "fieldErrors": {
+                    "clientToken": "não deve estar vazio"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "ClientToken ou ClientSecret inválidos.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T08:50:58.2639795",
+                  "status": 401,
+                  "error": "Unauthorized",
+                  "message": "Usuário inexistente ou senha inválida."
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Acesso negado sem corpo de resposta"
+          },
+          "404": {
+            "description": "Loja ou integradora não encontrada.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T10:30:00",
+                  "status": 404,
+                  "error": "Not Found",
+                  "message": "Integradora não encontrada."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Data crédito vencida.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T09:52:34.4441335",
+                  "status": 422,
+                  "error": "Unprocessable Entity",
+                  "message": "A integradora está com a data de crédito vencida."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pedido/integradora/{pedidoId}": {
+      "get": {
+        "tags": [
+          "pedidos-integradora"
+        ],
+        "summary": "Buscar Status Pedido",
+        "operationId": "buscarPedidoPorIdELojaId",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientTokenLoja",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientTokenIntegradora",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido localizado com sucesso.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetalhesPedidoRetornoIntegradoraDTO"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Pedido com id informado não foi localizado."
+          },
+          "401": {
+            "description": "Token inválido ou vencido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "timestamp": "2025-08-05T08:50:58.2639795",
+                  "status": 401,
+                  "error": "Unauthorized",
+                  "message": "O Token de autenticação informado é inválido."
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Acesso negado sem corpo de resposta"
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RequestUpdateStatusPedido": {
+        "type": "object",
+        "properties": {
+          "pedidoId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "novoStatus": {
+            "type": "string",
+            "description": "Status: 0 = CANCELADO, 1 = APROVADO, 2 = EM_FATURAMENTO, 3 = FATURADO, 4 = EM_TRANSITO, 5 = FINALIZADO",
+            "enum": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "example": 0
+          }
+        },
+        "required": [
+          "novoStatus",
+          "pedidoId"
+        ]
+      },
+      "DetalhesPedidoClienteRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "sexo": {
+            "type": "string",
+            "description": "Sexo: 0 = MASCULINO, 1 = FEMINO, 2 = INDEFINIDO",
+            "enum": [
+              "0",
+              "1",
+              "2"
+            ],
+            "example": 0
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "ddd": {
+            "type": "string"
+          },
+          "documento": {
+            "type": "string"
+          },
+          "rgInsc": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo da pessoa: 0 = FISICA, 1 = JURIDICA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "email": {
+            "type": "string"
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "DetalhesPedidoEntregaRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "description": "Tipo da pessoa: 0 = DELIVERY, 1 = RETIRAR_NA_LOJA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "valorEntrega": {
+            "type": "number"
+          },
+          "cep": {
+            "type": "string"
+          },
+          "logradouro": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "cidade": {
+            "type": "string"
+          },
+          "siglaEstado": {
+            "type": "string"
+          },
+          "codigoIbge": {
+            "type": "string"
+          }
+        }
+      },
+      "DetalhesPedidoIntegradoraLojaRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "clientTokenLoja": {
+            "type": "string"
+          },
+          "clientTokenIntegradora": {
+            "type": "string"
+          }
+        }
+      },
+      "DetalhesPedidoItemRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "number"
+          },
+          "valorUnitario": {
+            "type": "number"
+          },
+          "valorFinal": {
+            "type": "number"
+          },
+          "nomeCompleto": {
+            "type": "string"
+          }
+        }
+      },
+      "DetalhesPedidoPagamentoRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "description": "Status: 0 = PAGAMENTO_ANTECIPADO, 1 = PAGAMENTO_NA_ENTREGA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "valorPagamento": {
+            "type": "number"
+          }
+        }
+      },
+      "DetalhesPedidoRetornoDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cliente": {
+            "$ref": "#/components/schemas/DetalhesPedidoClienteRetornoDTO"
+          },
+          "integradoraLoja": {
+            "$ref": "#/components/schemas/DetalhesPedidoIntegradoraLojaRetornoDTO"
+          },
+          "entrega": {
+            "$ref": "#/components/schemas/DetalhesPedidoEntregaRetornoDTO"
+          },
+          "pagamento": {
+            "$ref": "#/components/schemas/DetalhesPedidoPagamentoRetornoDTO"
+          },
+          "pedidoItens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetalhesPedidoItemRetornoDTO"
+            }
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Status: 0 = NORMAL, 1 = ORCAMENTO, 2 = MANIPULACAO",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "status": {
+            "type": "string",
+            "description": "Status: 0 = CANCELADO, 1 = APROVADO, 2 = EM_FATURAMENTO, 3 = FATURADO, 4 = EM_TRANSITO, 5 = FINALIZADO",
+            "enum": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "example": 0
+          },
+          "valorFinal": {
+            "type": "number"
+          },
+          "dataAprovacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ClienteCadastroPedidoDTO": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sexo": {
+            "type": "string",
+            "description": "Sexo: 0 = MASCULINO, 1 = FEMINO, 2 = INDEFINIDO",
+            "enum": [
+              "0",
+              "1",
+              "2"
+            ],
+            "example": 0
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date"
+          },
+          "documento": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rgInsc": {
+            "type": "string"
+          },
+          "tipoPessoa": {
+            "type": "string",
+            "description": "Tipo da pessoa: 0 = FISICA, 1 = JURIDICA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "telefone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ddd": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ddd",
+          "documento",
+          "email",
+          "nome",
+          "telefone",
+          "tipoPessoa"
+        ]
+      },
+      "PedidoCadastroDTO": {
+        "type": "object",
+        "properties": {
+          "cliente": {
+            "$ref": "#/components/schemas/ClienteCadastroPedidoDTO"
+          },
+          "pedidoEntrega": {
+            "$ref": "#/components/schemas/PedidoEntregaCadastroDTO"
+          },
+          "pedidoPagamento": {
+            "$ref": "#/components/schemas/PedidoPagamentoCadastroDTO"
+          },
+          "pedidoItem": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PedidoItemCadastroDTO"
+            }
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Status: 0 = NORMAL, 1 = ORCAMENTO, 2 = MANIPULACAO",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "valorFinal": {
+            "type": "number"
+          },
+          "dataAprovacao": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de aprovação do pedido",
+            "example": "2026-03-23 10:30:00",
+            "pattern": "yyyy-MM-dd HH:mm:ss"
+          }
+        },
+        "required": [
+          "cliente",
+          "dataAprovacao",
+          "pedidoEntrega",
+          "pedidoItem",
+          "pedidoPagamento",
+          "tipo",
+          "valorFinal"
+        ]
+      },
+      "PedidoEntregaCadastroDTO": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "description": "Status: 0 = DELIVERY, 1 = RETIRAR_NA_LOJA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "valorEntrega": {
+            "type": "number"
+          },
+          "cep": {
+            "type": "string",
+            "description": "CEP com 8 números, sem máscara. Obrigatório caso 'codigoIbge' não seja informado.",
+            "example": 19806173,
+            "pattern": "^\\d{8}$"
+          },
+          "logradouro": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bairro": {
+            "type": "string",
+            "minLength": 1
+          },
+          "numero": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cidade": {
+            "type": "string",
+            "minLength": 1
+          },
+          "siglaEstado": {
+            "type": "string",
+            "minLength": 1
+          },
+          "codigoIbge": {
+            "type": "string",
+            "description": "Código IBGE do município, com 7 números. Obrigatório caso 'cep' não seja informado.",
+            "example": 3504008,
+            "pattern": "^\\d{7}$"
+          }
+        },
+        "required": [
+          "bairro",
+          "cidade",
+          "logradouro",
+          "numero",
+          "siglaEstado",
+          "tipo",
+          "valorEntrega"
+        ]
+      },
+      "PedidoItemCadastroDTO": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantidade": {
+            "type": "number"
+          },
+          "valorUnitario": {
+            "type": "number"
+          },
+          "valorFinal": {
+            "type": "number"
+          },
+          "nomeCompleto": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "nomeCompleto",
+          "quantidade",
+          "sku",
+          "valorFinal",
+          "valorUnitario"
+        ]
+      },
+      "PedidoPagamentoCadastroDTO": {
+        "type": "object",
+        "properties": {
+          "tipoPagamento": {
+            "type": "string",
+            "description": "Tipo pagamento: 0 = PAGAMENTO_ANTECIPADO, 1 = PAGAMENTO_NA_ENTREGA",
+            "enum": [
+              "0",
+              "1"
+            ],
+            "example": 0
+          },
+          "valorPagamento": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "tipoPagamento",
+          "valorPagamento"
+        ]
+      },
+      "UserAuthenticationDTO": {
+        "type": "object",
+        "properties": {
+          "clientToken": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clientSecret": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "clientSecret",
+          "clientToken"
+        ]
+      },
+      "JwtResponseDTO": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de expiração do accessToken no padrão ISO 8601 (UTC)",
+            "example": "2025-08-06T15:54:53.730595500Z"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Duração do accessToken em segundos",
+            "example": 7200
+          }
+        }
+      },
+      "DetalhesPedidoRetornoIntegradoraDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status: 0 = CANCELADO, 1 = APROVADO, 2 = EM_FATURAMENTO, 3 = FATURADO, 4 = EM_TRANSITO, 5 = FINALIZADO",
+            "enum": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "example": 0
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "accessToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

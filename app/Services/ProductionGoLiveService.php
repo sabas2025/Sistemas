@@ -115,7 +115,9 @@ class ProductionGoLiveService {
     $host = strtolower((string)(parse_url(trim($url), PHP_URL_HOST) ?? ''));
     if ($host === '') return false;
     foreach (explode('.', $host) as $rotulo) {
-      if (in_array($rotulo, ['homolog','homologacao','homologação','sandbox','staging','teste','test','dev'], true)) return true;
+      // `stage` é o rótulo real do ambiente de validação da VSM (conectavenda.stage.vsm.com.br),
+      // informado pelo responsável em 2026-09-26 — antes só havia `staging`, que não casa `stage`.
+      if (in_array($rotulo, ['homolog','homologacao','homologação','sandbox','stage','staging','teste','test','dev'], true)) return true;
     }
     return false;
   }

@@ -83,6 +83,18 @@ O refresh token da V3 dura **apenas 1 dia** (doc oficial). Sem este cron, um Hub
 sem chamar a V3 perde a conexão e exige OAuth manual. É **aditivo e guardado**: sem V3 configurada
 ou sem token salvo, sai 0 sem fazer nada. **Não agende** onde o Hub opera em V2 (`tiny.version='v2'`).
 
+### Aquecimento do token VSM — só quando a gravação de pedido na VSM estiver ativa (F6-07)
+
+```cron
+0 */1 * * * php /caminho/workers/worker_vsm_token_refresh.php >> /var/log/hub-vsm-token.log 2>&1
+```
+
+A VSM emite um JWT de **~2h** por `POST /v1/auth/token` e **não** usa refresh token — as credenciais
+ficam sempre disponíveis, então a renovação sob demanda nunca perde a capacidade de reautenticar.
+Este worker é **aquecimento e alarme precoce** (não salva-vidas como o do Tiny V3): mantém o JWT
+quente e falha cedo se as credenciais estiverem erradas. **Aditivo e guardado**: sem credenciais VSM
+configuradas, sai 0 sem fazer nada. É opcional — a renovação sob demanda já cobre o fluxo.
+
 ### Retenção — obrigatório em produção
 
 ```cron
