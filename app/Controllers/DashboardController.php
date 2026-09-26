@@ -73,7 +73,6 @@ class DashboardController {
       case 'atualizador-seguro': $this->atualizadorSeguro(); break;
       case 'auditoria-codigo': $this->auditoriaCodigo(); break;
       case 'atualizador-seguro-executar': $this->atualizadorSeguroExecutar(); break;
-      case 'oauth-v3-checklist': $this->oauthV3Checklist(); break;
       case 'salvar-regras-sincronizacao': $this->salvarRegrasSincronizacao(); break;
       case 'logs': $this->logs(); break;
       case 'notificacoes': $this->notificacoes(); break;
@@ -115,15 +114,7 @@ class DashboardController {
       case 'reconciliacao': $this->reconciliacao(); break;
       case 'reconciliacao-executar': $this->reconciliacaoExecutar(); break;
       case 'metricas': $this->metricas(); break;
-      case 'selftest': $this->selftest(); break;
-      case 'selftest-executar': $this->selftestExecutar(); break;
-      case 'homologacao-automatica': $this->homologacaoAutomatica(); break;
-      case 'homologacao-automatica-executar': $this->homologacaoAutomaticaExecutar(); break;
-      case 'homologacao': $this->homologacao(); break;
-      case 'homologacao-acao': $this->homologacaoAcao(); break;
-      case 'homologacao-relatorio': $this->homologacaoRelatorio(); break;
       case 'validar-banco': $this->validarBanco(); break;
-      case 'relatorio-homologacao': $this->homologacaoRelatorio(); break;
       case 'usuarios': $this->usuarios(); break;
       case 'usuario-salvar': $this->usuarioSalvar(); break;
       case 'usuario-excluir': $this->usuarioExcluir(); break;
@@ -1613,19 +1604,6 @@ class DashboardController {
     require __DIR__.'/../../views/metricas.php';
   }
 
-  private function selftest(): void {
-    PermissionService::require('selftest','visualizar');
-    $relatorios=$this->db('selftest_relatorios')->query('SELECT id, status, resumo, detalhes, trace_id, criado_em FROM selftest_relatorios ORDER BY id DESC LIMIT 50')->fetchAll();
-    $pageTitle='Self-Test do Sistema';
-    require __DIR__.'/../../views/selftest.php';
-  }
-
-  private function selftestExecutar(): void {
-    PermissionService::require('selftest','executar'); Csrf::validate();
-    SelfTestService::executar();
-    redirect('index.php?page=selftest&executado=1');
-  }
-
 
 
 
@@ -1693,27 +1671,6 @@ class DashboardController {
   }
 
 
-  private function homologacao(): void {
-    PermissionService::require('homologacao','visualizar');
-    try { $itens = $this->db('homologacao_checklist')->query("SELECT id, chave, titulo, descricao, status, resultado, trace_id, atualizado_em, criado_em FROM homologacao_checklist ORDER BY id ASC")->fetchAll(); }
-    catch (Throwable $e) { $itens = []; }
-    $cfg = IntegrationConfig::get();
-    $pageTitle = 'Checklist de Homologação Final';
-    require __DIR__.'/../../views/homologacao.php';
-  }
-
-  private function homologacaoAcao(): void {
-    PermissionService::require('homologacao','executar');
-    Csrf::validate();
-    $id=(int)($_POST['id'] ?? 0);
-    $status=$_POST['status'] ?? 'ok';
-    if(!in_array($status,['pendente','ok','falha','nao_aplicavel'],true)) $status='pendente';
-    $resultado=trim((string)($_POST['resultado'] ?? ''));
-    $this->db('homologacao_checklist')->prepare('UPDATE homologacao_checklist SET status=?, resultado=?, trace_id=?, atualizado_em=NOW() WHERE id=?')->execute([$status,$resultado,RequestContext::id(),$id]);
-    Audit::event('homologacao.checklist.atualizar','sucesso',['entidade'=>'homologacao_checklist','entidade_id'=>$id,'mensagem'=>'Checklist de homologação atualizado.','contexto'=>['status'=>$status,'resultado'=>$resultado]]);
-    redirect('index.php?page=homologacao');
-  }
-
 
   private function validarBanco(): void {
     PermissionService::require('database','validar');
@@ -1736,18 +1693,6 @@ class DashboardController {
     }
     $pageTitle = $reparar ? 'Reparar Banco de Dados' : 'Validar Banco de Dados';
     require __DIR__.'/../../views/validar_banco.php';
-  }
-
-  private function homologacaoRelatorio(): void {
-    PermissionService::require('homologacao','relatorio');
-    $html = HomologationReportService::gerarHtml($this->pdo);
-    Audit::event('homologacao.relatorio.gerado','sucesso',[
-      'mensagem'=>'Relatório final de homologação gerado em HTML.',
-      'acao_recomendada'=>'Salvar o HTML/PDF junto com evidências dos testes reais Tiny e VSM.'
-    ]);
-    header('Content-Type: text/html; charset=utf-8');
-    header('Content-Disposition: inline; filename="relatorio-homologacao-hub-vsm-tiny.html"');
-    echo $html;
   }
 
   private function columnExistsForUpdate(string $table, string $column): bool {
@@ -1937,32 +1882,6 @@ class DashboardController {
     }
   }
 
-  private function homologacaoAutomatica(): void {
-    PermissionService::require('homologacao','visualizar');
-    try { (new AutoHomologationService($this->pdo))->executar(false); } catch(Throwable $e) { if(class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
-    try { $relatorios = $this->db('homologacao_automatica_relatorios')->query('SELECT * FROM homologacao_automatica_relatorios ORDER BY id DESC LIMIT 30')->fetchAll(); }
-    catch(Throwable $e) { if(class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); $relatorios = []; }
-    $ultimoRelatorio = $relatorios[0] ?? null;
-    $pageTitle = 'Homologação Automática';
-    require __DIR__.'/../../views/homologacao_automatica.php';
-  }
-
-  private function homologacaoAutomaticaExecutar(): void {
-    PermissionService::require('homologacao','executar');
-    Csrf::validate();
-    $liberar = isset($_POST['liberar_se_aprovado']);
-    try {
-      $service = new AutoHomologationService($this->pdo);
-      $rel = $service->executar($liberar);
-      $_SESSION['homologacao_automatica_ultimo'] = $rel;
-      NotificationService::criar('sistema', $rel['aprovado'] ? 'Homologação automática aprovada' : 'Homologação automática com pendências', $rel['aprovado'] ? 'Todos os testes obrigatórios passaram.' : 'Existem pendências/falhas no assistente de homologação.', $rel['aprovado'] ? 'sucesso' : 'alerta', ['link'=>'index.php?page=homologacao-automatica','trace_id'=>$rel['trace_id']]);
-    } catch(Throwable $e) {
-      Audit::exception($e,'homologacao.automatica.erro',['codigo_erro'=>'AUTO_HOMOLOGATION_ERROR','acao_recomendada'=>'Verificar estrutura do banco, tokens Tiny V3 e permissões do usuário.']);
-      NotificationService::criar('sistema','Erro na homologação automática',$e->getMessage(),'erro',['link'=>'index.php?page=homologacao-automatica']);
-    }
-    redirect('index.php?page=homologacao-automatica&executado=1');
-  }
-
   private function atualizadorSeguro(): void {
     PermissionService::require('database','validar');
     $arquivos = glob(dirname(__DIR__,2).'/database/update_v*.sql') ?: [];
@@ -1977,14 +1896,6 @@ class DashboardController {
     $relatorio = (new UniversalUpgradeService(dirname(__DIR__,2)))->run();
     $_SESSION['upgrade_report_v32'] = $relatorio;
     redirect('index.php?page=atualizador-seguro&executado=1');
-  }
-
-  private function oauthV3Checklist(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $passos = OAuthV3ChecklistService::passos();
-    $score = OAuthV3ChecklistService::score();
-    $pageTitle='Checklist OAuth Tiny V3';
-    require __DIR__.'/../../views/oauth_v3_checklist.php';
   }
 
 
