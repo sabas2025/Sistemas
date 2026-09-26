@@ -49,6 +49,7 @@
 0de6a812cd32c729151f574f55dd4054ff3bdf6859e1ee9933d9da83579f4a46  ./workers/worker_notificacoes.php
 0ea31a70a005d29240a412a80c168dbb75c86c00333c22310b454925c5f4d9b0  ./database/install_final_v104_21.sql
 0f70ff8bd9d4f864e6b353a904e87dc229327edd6c45671aa184053aa6eb2a01  ./app/Connectors/AmazonConnector.php
+106598205b6f8194e8a38cacb34b61e0127f7e9b8320486e9fbad7bb6864227f  ./PROPOSTA-T01-PRE-THROTTLE-TINY-2026-09-26.md
 108479af3da67919fd74f74336eb9ceb03b81ff9a9b36e80f5da0167b97ffadc  ./RELATORIO-HOTFIX-SCHEMA-R2-HUB-V104.48.1.md
 10b1a45eb80309fb8d59d264eb71f1742d87fa5c2b30e1007153dbd479bc04e7  ./app/Services/RateLimitService.php
 10b613ec3ed6394d80b8c88769c07812b408ac069663da5528baecde6985a9cf  ./app/Controllers/SecurityAssistedTestController.php
@@ -365,6 +366,7 @@
 6d2377289670c41e54ee8a2d5849dd5939777663ed0cd40119e332b0718714df  ./database/install_final_v104_18.sql
 6d485e7e2d3c4870eabfa63e902a4e08381c5f52a2b50df98b6fccae13a1c68d  ./views/commercial_client_portal.php
 6d9fe617596c7b5bcd523dbd555c6a8abae2b5122d69e9c07c02ace234e88337  ./RELATORIO-V104.16-LIMPEZA-FINAL-PRODUCAO-COMERCIAL.md
+6df4bd409040ca9826a3f3dd74cc8d884bc5be0dc8796ab84bcbd8e9b99917ce  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 6e5b1e9684220db2bc4f00b55da69ff20a48ef362f52cb33293e6b0d62e36f98  ./app/Services/LegacyInventoryService.php
 6e78d0efa31984a60cc32bda6105fa99da4cae1477ff38f52aa356aa5882a968  ./workers/worker_consulta_estoque_vsm.php
 6e933fe598cb9d821ce189f602f149f89ecb1f22d0162acdb73e1f0a3560864e  ./tests/e2e/specs/authenticated-smoke.spec.js
@@ -606,7 +608,6 @@ b2fb040a14f6df76dd4c2bcf16e1f1386d17a1d58be34b0453c35a78d45922b6  ./RELATORIO-V1
 b30543a9f1c6706de83619005f4e082d56d73392b47506f397c6ec938b825ec5  ./views/config_diagnostic.php
 b35cc06acc9af30e8ccdb6f276a1445dfad3d39f1a44f9b9b80c574d7c0c9462  ./database/update_v104_25_enterprise_hardening_tiny_vsm.sql
 b3943048e1640f87a7b101bf52af38b817e1a32503a2b68016edc72aa73d736d  ./database/modules/fiscal.sql
-6df4bd409040ca9826a3f3dd74cc8d884bc5be0dc8796ab84bcbd8e9b99917ce  ./DOC-API-TINY-REFERENCIA-2026-09-21.md
 b3bc30ec07c21e6b0e96f01564e2ecdeaab7a439c1d18015ed8aee4a87d485bb  ./app/Services/LegacyRouteGuardService.php
 b4577edaaff126be9a6764e43abe1b03444cbf868da6e7b2ce5fd56eafa4f003  ./RELATORIO-AUDITORIA-FISCAL-NFE-2026-09-21.md
 b48027c5a5504d5c197ce0984e748935cdeb4754b64154cd9ef1329c0403e410  ./views/estoque_consultas_vsm.php
