@@ -128,12 +128,22 @@ Contrato oficial recebido em 2026-09-26 e salvo em `contracts/vsm/pedidos-integr
   credenciais de Stage.
 - **Status:** confirmado (correção pendente de aprovação e do spec `pedidos-loja`, se houver mais).
 
-### F6-05 · Contrato OpenAPI da VSM — **integradora IMPORTADA; loja pendente**
-- **Resolvido:** `contracts/vsm/pedidos-integradora.openapi.json` importado; o gate
-  `scripts/ci/vsm-openapi-check.php` agora **valida** o contrato (antes era no-op).
-- **Pendente:** o spec `pedidos-loja` (se a VSM o expõe) ainda não foi importado; e a comparação
-  automática endpoint↔contrato (`VsmOpenApiContractService::compareCatalog()`) ainda não é
-  chamada pelo gate — entra junto com a implementação do F6-07.
+### F6-05 · Contrato OpenAPI da VSM — **os DOIS specs IMPORTADOS**
+- **Resolvido:** `contracts/vsm/pedidos-integradora.openapi.json` **e**
+  `contracts/vsm/pedidos-loja.openapi.json` importados (fornecidos pelo responsável em
+  2026-09-26); o gate `scripts/ci/vsm-openapi-check.php` **valida os dois** (4 operações cada,
+  antes era no-op).
+- **Mapa das duas APIs (esclarece a fase 6 "qual API em cada fluxo"):**
+  - **Integradora** = ponta de **ESCRITA**: `POST /v1/pedido/integradora` (criar pedido),
+    `PUT /v1/pedido/integradora/status`, `GET /v1/pedido/integradora/{pedidoId}`. Query exige
+    `clientTokenLoja` **e** `clientTokenIntegradora`.
+  - **Loja** = ponta de **LEITURA/POLLING**: `GET /v1/pedido/loja/eventos` (devolve array de IDs
+    de pedidos no status Aprovado — é polling, não webhook), `GET /v1/pedido/loja/{pedidoId}`,
+    `PUT /v1/pedido/loja/status`. Query exige só `clientTokenLoja`.
+  - Auth idêntica nas duas (`POST /v1/auth/token` → JWT). A Loja **não** tem criar pedido.
+- **Pendente:** a comparação automática endpoint↔contrato
+  (`VsmOpenApiContractService::compareCatalog()`) ainda não é chamada pelo gate — entra junto com
+  a implementação do F6-07.
 - **Nota histórica (o texto abaixo era o estado ANTERIOR, mantido para rastreabilidade):**
 - **Identificação:** o portão de contrato roda em modo no-op por falta do Swagger oficial.
 - **Evidência:** `contracts/vsm/` contém apenas `README.md`;
