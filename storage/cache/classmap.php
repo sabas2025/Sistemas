@@ -238,6 +238,7 @@ return [
   'VisualProfileService' => 'app/Services/VisualProfileService.php',
   'VsmConnector' => 'app/Connectors/VsmConnector.php',
   'VsmController' => 'app/Controllers/VsmController.php',
+  'VsmCredentialsConfigService' => 'app/Services/VsmCredentialsConfigService.php',
   'VsmEndpointSecurityService' => 'app/Services/VsmEndpointSecurityService.php',
   'VsmEndpointService' => 'app/Services/VsmEndpointService.php',
   'VsmEnvironmentService' => 'app/Services/VsmEnvironmentService.php',

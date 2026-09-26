@@ -4,7 +4,7 @@ class IntegrationConfig {
     try {
       $pdo = Database::forTable('configuracoes_integracao');
       $row = $pdo->query('SELECT * FROM configuracoes_integracao WHERE id=1 LIMIT 1')->fetch();
-      if ($row) { foreach(['tiny_v2_token','tiny_v3_token','tiny_v3_client_secret','tiny_v3_manual_access_token','tiny_v3_manual_refresh_token','vsm_token','webhook_secret','tiny_webhook_secret'] as $k){ if(isset($row[$k])) $row[$k]=CryptoService::decrypt($row[$k]); } return $row; }
+      if ($row) { foreach(['tiny_v2_token','tiny_v3_token','tiny_v3_client_secret','tiny_v3_manual_access_token','tiny_v3_manual_refresh_token','vsm_token','vsm_client_token','vsm_client_secret','vsm_client_token_loja','vsm_access_token','webhook_secret','tiny_webhook_secret'] as $k){ if(isset($row[$k])) $row[$k]=CryptoService::decrypt($row[$k]); } return $row; }
     } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
     return [
       'tiny_versao'=>cfg('tiny.version') ?: 'v2',
@@ -15,6 +15,11 @@ class IntegrationConfig {
       'vsm_url'=>cfg('vsm.url') ?: 'https://conectavenda.homolog.vsm.com.br',
       'vsm_url_consulta'=>'',
       'vsm_token'=>'',
+      'vsm_client_token'=>'',
+      'vsm_client_secret'=>'',
+      'vsm_client_token_loja'=>'',
+      'vsm_access_token'=>'',
+      'vsm_access_token_expira_em'=>null,
       'vsm_api_principal'=>'pedidos-integradora',
       'vsm_api_loja'=>'desativado',
       'vsm_swagger_integradora'=>'https://conectavenda.homolog.vsm.com.br/swagger-ui/index.html?urls.primaryName=pedidos-integradora',
