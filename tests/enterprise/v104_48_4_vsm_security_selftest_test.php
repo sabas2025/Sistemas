@@ -7,6 +7,8 @@ $migration=hub_read('database/migrations/20260712_004_vsm_security_selftest_reco
 $schemaService=hub_read('app/Services/SchemaMigrationService.php');
 $policy=hub_read('app/Services/SchemaRuntimePolicyService.php');
 $controller=hub_read('app/Controllers/DashboardController.php');
+// Fase 3: o handler selftest migrou do DashboardController para o HomologacaoController.
+$controller .= "\n".hub_read('app/Controllers/HomologacaoController.php');
 $validation=hub_read('app/Services/DatabaseValidationService.php');
 $bestEffort=hub_read('app/Services/BestEffortLogService.php');
 $staticCi=hub_read('scripts/ci/mysql-schema-static-check.php');

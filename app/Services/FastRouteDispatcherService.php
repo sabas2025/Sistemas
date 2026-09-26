@@ -45,6 +45,8 @@ class FastRouteDispatcherService {
     SecurityController::class => ['security-center','security-soc','security-code-audit','security-inventory','security-backup-trust','security-health','security-audit-signatures','security-events','security-ips','security-circuit-breakers','security-hardening','security-ssl','security-user-audit','security-pentest','security-audit-sign','security-fim','security-fim-gerar','security-score','seguranca-auditoria','seguranca-extrema'],
     // Fase 3 etapa Tiny: telas/ações Tiny (V2/V3, webhooks, teste real, tokens) extraídas do DashboardController.
     TinyController::class => ['testar-tiny','teste-real-tiny','teste-real-tiny-executar','tiny-webhooks','tiny-v3-ficha','tiny-v2-ficha-tecnica','tiny-v3-token-salvar','tiny-v3-token-renovar','tiny-v3-token-revogar','tiny-v3-testar','tiny-v3-testar-modulo','tiny-v3-endpoints-salvar','tiny-ambientes'],
+    // Fase 3 etapa Homologação: homologação (manual/automática/relatório/ação), self-test e checklist OAuth V3.
+    HomologacaoController::class => ['selftest','selftest-executar','homologacao','homologacao-acao','homologacao-relatorio','relatorio-homologacao','homologacao-automatica','homologacao-automatica-executar','oauth-v3-checklist'],
   ];
 
   /** @var array<string, string>|null */
