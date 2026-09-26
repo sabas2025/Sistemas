@@ -165,7 +165,6 @@
 2e695fbb16d02d5aabd4f0e9f45461299407ada9c794ced6742707e3fa64c5c3  ./tests/enterprise/v104_48_1_backup_security_test.php
 2ee18e20496f6e2b379d2334211f13657ecad210d2db7a722817011f1db5ec96  ./app/Services/PedidoMapper.php
 2f0673621f82b3174788bb883b0b63aa8ba2ac0dbab17d52e0643bf31474561f  ./RELATORIO-AUDITORIA-WEBHOOK-AUTH-2026-09-21.md
-2f9d8ca3f5f3f1df1ae425f3c01e3832b28028300f57d634ccf85d8c0ecf5e8b  ./workers/README-WORKERS.md
 2fb823d9e94d841d6acd643c61dc23a0b22551303f70a79a686ae46412ed6af2  ./RELATORIO-V94-SEGURANCA-EXTREMA.md
 3029c0ce264c80e644b89604add870f88b6a098fd173ef1cb880785c7edd8193  ./public/assets/img/favicon-32.png
 306ac6a201c2bfd6a1b1fbeda48f0cce523b36c516ab0e41bf5049be110f3d8e  ./views/commercial_docs.php
@@ -418,6 +417,7 @@
 7bcd270834a787c6b2b11a53e26e9d59b8e61fe5e4e7a2c490fe160eda736cdb  ./app/Controllers/DivergenceMonitorController.php
 7bfaba286704c33aea78ecfa6da15b8f8dbceaf0da004aec45a6cdcb74580edb  ./database/legacy/install_final_v104_5.sql
 7bffc672376fa470ba1dfc4fbded59d7f4227e136e987d17f2f9b91fd3e4f2d5  ./.htaccess
+7c3d9a5ad5da251ccbe7141d68002c4752f960c73f1b6023cd041a9d7ebdde10  ./workers/worker_vsm_token_refresh.php
 7c405d0e0e5eddaecb17e95536f4ac6ea6946cea5d061a5f218a2fc5750b1c93  ./app/Services/TinyClientInterface.php
 7c8a0bba23dd3a86375cba63be54768bb2fbdd835390647d31d0b1f3aad6db66  ./database/legacy/schema_inventories_antigos/schema_inventory_v103.json
 7c9eba321f9807ea1745c4358ab355c044fc385049292ec75075976de7290fce  ./app/Services/DatabaseInventoryService.php
@@ -766,6 +766,7 @@ db7a0c245e506cbe513f953283481bfb13b8bf9fcaf472da1262f7b7525f8af9  ./tests/enterp
 dbb421d6c81a0127bc63a9c81150c8785dc9629f17694635059d87473fea9265  ./app/Services/TinyRateLimitObserverService.php
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comercial/09-servidor-licenciamento.md
+dc518202655ac4d9a6b2b73c94e532a512f5a49e35e764183c0c3b405ebac5a3  ./workers/README-WORKERS.md
 dc5d70344dda6d3df3289b67ca75779516f928bb90ee85e6e9a8510de3aa1269  ./RELATORIO-V104-2FA-QRCODE-SEGURO.md
 dd9dfb7082b9e87782b0698d6f39c855f7e1b73462548f52600bac9d704cf3f3  ./views/security_center.php
 de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/assets/img/icon-128.png
@@ -840,6 +841,7 @@ f1f93069b677b912242a79c4668249a95938978f95c50e1e52e8a91346e09b54  ./public/asset
 f2460c788dcc29563be3d88f623c9bda05b062a60aabf0990a2a3023db336deb  ./docs/comercial/07-politica-backup.md
 f335ae5aecef53e3b94c6afb0edd4b2a88d2bf5f3c60a604013824124feea6cc  ./docs/comercial/10-cobranca-gateway.md
 f3c01d027564705613931ac04bd11ba3657489d1e262c2a56046ec69d894048b  ./scripts/ci/sql-inventory-check.php
+f436407c4c8640149fb69624dad0b0c73c14b5044546fd07bcb7b4ffa60779ee  ./tests/enterprise/v104_49_3_vsm_token_worker_test.php
 f4e1f59d75d17da300063d622febb5ac60acaab4e2a98fd5dccdf4acae3630a4  ./RELATORIO-AUDITORIA-BACKUP-RESTORE-2026-09-21.md
 f4f4860723b83e67a8ce2c418098ccca71e1a3a51492d6abb1714a8d8fad7a7e  ./database/update_v104_17_prioridades_alta_media.sql
 f54aeab4d3e2d5f035c6d8e73af78367b128f851b4c24540748be8a1b2ee4921  ./RELATORIO-FINAL-V104.49.3-R5-AUDITORIA-E-CORRECOES-2026-08-22.md
