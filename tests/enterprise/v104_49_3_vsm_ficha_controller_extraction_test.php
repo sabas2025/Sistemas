@@ -35,9 +35,14 @@ hub_check($checks, 'DashboardController não tem mais vsmFichaTecnica', $dash !=
 hub_check($checks, 'DashboardController não tem mais o case testar-vsm', !str_contains($dash, "case 'testar-vsm'"));
 hub_check($checks, 'DashboardController não tem mais o case vsm-ficha-tecnica', !str_contains($dash, "case 'vsm-ficha-tecnica'"));
 
-// Os simular-* permanecem no Dashboard (acoplados ao laboratorioExecutar).
-hub_check($checks, 'simular* permanecem no DashboardController (laboratorioExecutar os usa)',
-    str_contains($dash, 'function simularBaixaTiny(') && str_contains($dash, 'function laboratorioExecutar('));
+// Os simular-* ficaram FORA do escopo desta etapa (VSM ficha): eram um cluster "Laboratório" à parte,
+// acoplado ao laboratorioExecutar. Na etapa Laboratório (2026-09-26) esse cluster saiu do Dashboard
+// para o LaboratorioController — a asserção acompanha o dono atual, preservando a intenção original
+// (a etapa VSM não os tocou).
+$lab = hub_read('app/Controllers/LaboratorioController.php');
+hub_check($checks, 'simular*/laboratorioExecutar vivem no LaboratorioController (não no Dashboard)',
+    str_contains($lab, 'function simularBaixaTiny(') && str_contains($lab, 'function laboratorioExecutar(')
+    && !str_contains($dash, 'function simularBaixaTiny(') && !str_contains($dash, 'function laboratorioExecutar('));
 
 hub_check($checks, 'DashboardController abaixo de 160 KB', strlen($dash) < 160*1024, 'bytes='.strlen($dash));
 

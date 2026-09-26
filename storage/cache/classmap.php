@@ -103,6 +103,7 @@ return [
   'IntegrationTenantService' => 'app/Services/IntegrationTenantService.php',
   'IpBlockService' => 'app/Services/IpBlockService.php',
   'JsonLogger' => 'app/Services/JsonLogger.php',
+  'LaboratorioController' => 'app/Controllers/LaboratorioController.php',
   'LegacyDatabaseUpgradeController' => 'app/Controllers/LegacyDatabaseUpgradeController.php',
   'LegacyInventoryService' => 'app/Services/LegacyInventoryService.php',
   'LegacyRegistryService' => 'app/Services/LegacyRegistryService.php',

@@ -47,6 +47,8 @@ class FastRouteDispatcherService {
     TinyController::class => ['testar-tiny','teste-real-tiny','teste-real-tiny-executar','tiny-webhooks','tiny-v3-ficha','tiny-v2-ficha-tecnica','tiny-v3-token-salvar','tiny-v3-token-renovar','tiny-v3-token-revogar','tiny-v3-testar','tiny-v3-testar-modulo','tiny-v3-endpoints-salvar','tiny-ambientes'],
     // Fase 3 etapa Homologação: homologação (manual/automática/relatório/ação), self-test e checklist OAuth V3.
     HomologacaoController::class => ['selftest','selftest-executar','homologacao','homologacao-acao','homologacao-relatorio','relatorio-homologacao','homologacao-automatica','homologacao-automatica-executar','oauth-v3-checklist'],
+    // Fase 3 etapa Laboratório: a tela do Laboratório de Integração, o despachante por $tipo e os quatro simuladores de fila.
+    LaboratorioController::class => ['laboratorio','laboratorio-executar','simular-baixa-tiny','simular-produto-vsm','simular-estoque-vsm','simular-status-vsm'],
   ];
 
   /** @var array<string, string>|null */
