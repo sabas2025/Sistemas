@@ -141,6 +141,7 @@
 28e4bfb20b358c7c745476e461a5a3f329ce96078134ffeb3d0054681dbe3cdf  ./RELATORIO-V70-VALIDACAO-BASE-DADOS.txt
 28f0e314f67d46088587b106c7c998c5830e4db91b1e2bd0444b8592502b7510  ./views/nao_encontrado.php
 29560bb5b884c0347387b6b044fc21e1d7411c41bb73b43adde9ef3b8d36a249  ./scripts/create-install-authorization.php
+2970b673eac722a116f0c793dfe5a1248cbbe02beacab24f9d99c4d7ac7ff68d  ./tests/enterprise/v104_49_3_vsm_pedido_integradora_test.php
 298521780adbff2459d1a46083665d512ac2aa1f0cd8502f90a3daf5fb32f1a9  ./RELATORIO-V104.24-AUTOREPAIR-CONFIG-DB-STORAGE-MODE.md
 299d99169185f6b528d3bc076bdcb9c9c7632a660e17cb28d98366df0386bcda  ./public/assets/img/apple-touch-icon.png
 299d99169185f6b528d3bc076bdcb9c9c7632a660e17cb28d98366df0386bcda  ./public/assets/img/icon-180.png
@@ -228,7 +229,6 @@
 44fba28ed05aee5494aff7a75d5f5c9f1fa6ea1fe549df568dfddfb1387e743a  ./app/Controllers/DatabaseMaintenanceController.php
 45e0730e297451bc5a12eca86c45c9a68daebd9bc2ada8ec47f1cb47cd02d2db  ./app/Services/TinyWebhookService.php
 45f82071fbc493877fb12ace07801e199e983a261cc5f69e6e6d3632a7ab3b04  ./database/legacy/incrementais_v104_8/update_v102_soc_anti_replay_auditoria.sql
-461f8b74cad621fd5c259b35c0f40958d92a3109564d72c05d68e3af6a9d079f  ./app/Services/VsmService.php
 4632b741b8db94c4a3e861a404469c3440f8bb561407c9c48b2bebb365c752cb  ./app/Services/QueueRetryPolicyEnterpriseService.php
 46369e5dbfc4bef0e607979b80dcbd3eb4d4d8be955a1f3afc9bb65ee1c459df  ./app/Services/TinyFactory.php
 4656a48cb80ddacff6bef904defaab85ae2e6d0757f51afc8b8b43ba29474c65  ./app/Services/RetentionCleanupService.php
@@ -299,6 +299,7 @@
 5cced2a4d45e6aaa15996c1a76ce3a0c5e7205988ef2caf10726f0e50ac05309  ./contracts/vsm/pedidos-loja.openapi.json
 5cea182f739cc1950e59eeefed27348f8dd496e43c89ffda331ddf8a29610765  ./RELATORIO-V97.1-CORRECAO-INSTALL-403.md
 5cf963d569a9211e56c1d6fdd4930fbc1e42263c4e8852542b095b02563d4c4b  ./views/regras_sincronizacao.php
+5cfd5c350b12084971503c78f1df61ce42d49915fda916ddf5992f278f33af71  ./app/Services/VsmService.php
 5d243a6685f7714711553ced78c35345217b0bd73f12d0225e9f6e5016a37461  ./app/Services/TinyV3TokenService.php
 5d2e3450b3a155854f91abaad39be30870858ea6615564f9575a854eb817e269  ./RELATORIO-V104.44-CORRECAO-TELA-BRANCA-DENSIDADE.md
 5d2ebba94751259e4b062a69e88347dfd809f33f333ec73b987d4d999a6e1b3d  ./app/Services/PostInstallTestService.php
