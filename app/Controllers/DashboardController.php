@@ -33,7 +33,6 @@ class DashboardController {
       case 'fila': (new FilaController())->dispatch($page); break;
       case 'fila-reprocessar': (new FilaController())->dispatch($page); break;
       case 'fila-criar-teste': (new FilaController())->dispatch($page); break;
-      case 'testar-vsm': $this->testarVsm(); break;
       case 'produtos': (new ProdutoController())->dispatch($page); break;
       case 'estoque-dashboard': (new EstoqueController())->dispatch($page); break;
       case 'estoque-config': (new EstoqueController())->dispatch($page); break;
@@ -97,7 +96,6 @@ class DashboardController {
       case 'production-ready-v24': $this->productionReadyV24(); break;
       case 'production-ready-v25': $this->productionReadyV25(); break;
       case 'production-ready-v26': $this->productionReadyV26(); break;
-      case 'vsm-ficha-tecnica': $this->vsmFichaTecnica(); break;
       case 'fila-analytics-v24': $this->filaAnalyticsV24(); break;
       case 'hosting-infinityfree': $this->hostingInfinityFree(); break;
       case 'auditoria-hash-chain': $this->auditoriaHashChain(); break;
@@ -905,33 +903,6 @@ class DashboardController {
     }
     Audit::event('configuracoes.atualizar','sucesso',['mensagem'=>'Configurações de integração atualizadas','entidade'=>'configuracoes_integracao','entidade_id'=>'1']);
     redirect('index.php?page=configuracoes&salvo=1'.(!empty($_SESSION['tiny_v3_blocked_issues'])?'&tinyv3_bloqueado=1':''));
-  }
-
-  private function testarVsm(): void {
-    PermissionService::require('configuracoes','editar');
-    Csrf::validate();
-    try {
-      $cfg = IntegrationConfig::get();
-      $resultado = HealthCheckService::testarVsm($cfg);
-      if (class_exists('VsmEnvironmentService')) VsmEnvironmentService::registerTestResult(!empty($resultado['ok']));
-      $status = $resultado['ok'] ? 'sucesso' : 'erro';
-      Audit::event('vsm.teste_conexao',$status,[
-        'codigo_erro'=>$resultado['ok'] ? null : 'VSM_CONNECTION_TEST_FAILED',
-        'mensagem'=>'Teste de conexão VSM executado.',
-        'causa_provavel'=>$resultado['ok'] ? null : 'URL VSM incorreta, DNS indisponível, HTTPS bloqueado, token inválido ou endpoint de teste inexistente.',
-        'acao_recomendada'=>$resultado['ok'] ? 'Conexão VSM validada.' : 'Confira VSM URL, token, internet do servidor, SSL/cURL e endpoint informado no Swagger.',
-        'retorno'=>$resultado
-      ]);
-      NotificationService::criar('sistema',$resultado['ok']?'Teste VSM OK':'Teste VSM falhou',$resultado['mensagem'] ?? 'Veja detalhes na Auditoria.',$resultado['ok']?'sucesso':'erro',['trace_id'=>RequestContext::id()]);
-      redirect('index.php?page=configuracoes&teste_vsm='.($resultado['ok']?'ok':'erro'));
-    } catch(Throwable $e){
-      Audit::exception($e,'vsm.teste_conexao.erro',[
-        'codigo_erro'=>'VSM_CONNECTION_TEST_EXCEPTION',
-        'causa_provavel'=>'Falha inesperada ao executar diagnóstico VSM.',
-        'acao_recomendada'=>'Confira a configuração VSM e veja o erro técnico no evento de auditoria.'
-      ]);
-      redirect('index.php?page=configuracoes&teste_vsm=erro');
-    }
   }
 
 
@@ -1751,16 +1722,6 @@ class DashboardController {
     $prechecks = class_exists('InstallationPrecheckService') ? InstallationPrecheckService::run() : [];
     $pageTitle = 'Production Ready V24';
     require __DIR__.'/../../views/production_ready_v24.php';
-  }
-
-  private function vsmFichaTecnica(): void {
-    PermissionService::require('ficha_tecnica','visualizar');
-    $endpoints = VsmFichaTecnicaService::endpoints();
-    $metricas = VsmFichaTecnicaService::metricas();
-    $payloads = VsmFichaTecnicaService::payloads();
-    $cfg = IntegrationConfig::get();
-    $pageTitle = 'Ficha Técnica VSM';
-    require __DIR__.'/../../views/vsm_ficha_tecnica.php';
   }
 
   private function filaAnalyticsV24(): void {
