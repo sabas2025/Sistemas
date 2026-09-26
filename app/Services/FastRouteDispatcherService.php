@@ -41,6 +41,8 @@ class FastRouteDispatcherService {
     CommercialReadinessController::class => ['analise-comercial-tecnica'],
     EnterpriseCoreController::class => ['enterprise-core','enterprise-core-aplicar','enterprise-observabilidade','integration-events','llm-governance','enterprise-regression-tests','design-system-enterprise'],
     VsmController::class => ['vsm-endpoints','vsm-endpoint-salvar','vsm-endpoint-testar','vsm-campos','vsm-campo-salvar','vsm-saude','vsm-logs','vsm-testes'],
+    // Fase 3 (decomposição do controller-deus): bloco de Segurança extraído do DashboardController.
+    SecurityController::class => ['security-center','security-soc','security-code-audit','security-inventory','security-backup-trust','security-health','security-audit-signatures','security-events','security-ips','security-circuit-breakers','security-hardening','security-ssl','security-user-audit','security-pentest','security-audit-sign','security-fim','security-fim-gerar','security-score','seguranca-auditoria','seguranca-extrema'],
   ];
 
   /** @var array<string, string>|null */

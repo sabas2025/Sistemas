@@ -188,6 +188,7 @@ return [
   'SecurityAssistedTestController' => 'app/Controllers/SecurityAssistedTestController.php',
   'SecurityAssistedTestService' => 'app/Services/SecurityAssistedTestService.php',
   'SecurityAuditService' => 'app/Services/SecurityAuditService.php',
+  'SecurityController' => 'app/Controllers/SecurityController.php',
   'SecurityEventService' => 'app/Services/SecurityEventService.php',
   'SecurityHardeningService' => 'app/Services/SecurityHardeningService.php',
   'SecurityHealthService' => 'app/Services/SecurityHealthService.php',
