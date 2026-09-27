@@ -160,7 +160,7 @@ class ProductionGoLiveService {
     try {
       if ($versao === 'v3') {
         $r = TinyV3HomologationService::resumo($cfg);
-        return ['progresso'=>(int)($r['progresso'] ?? 0),'apto_producao'=>((int)($r['progresso'] ?? 0) >= 100),'token_configurado'=>!empty($cfg['tiny_v3_manual_access_token']) || !empty($cfg['tiny_v3_token']),'status'=>$r['status_geral'] ?? 'pendente'];
+        return ['progresso'=>(int)($r['progresso'] ?? 0),'apto_producao'=>((int)($r['progresso'] ?? 0) >= 100),'token_configurado'=>!empty($cfg['tiny_v3_token']),'status'=>$r['status_geral'] ?? 'pendente'];
       }
       $r = TinyV2HomologationService::resumo($cfg);
       return ['progresso'=>(int)($r['progresso'] ?? 0),'apto_producao'=>((int)($r['progresso'] ?? 0) >= 100),'token_configurado'=>trim((string)($cfg['tiny_v2_token'] ?? '')) !== '','status'=>$r['status_geral'] ?? 'pendente'];

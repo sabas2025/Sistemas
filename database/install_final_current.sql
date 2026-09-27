@@ -112,8 +112,6 @@ CREATE TABLE IF NOT EXISTS configuracoes_integracao (
   tiny_v3_pedidos_obter VARCHAR(255) NULL,
   tiny_v3_pedidos_lancar_estoque VARCHAR(255) NULL,
   tiny_v3_notas_obter VARCHAR(255) NULL,
-  tiny_v3_manual_access_token TEXT NULL,
-  tiny_v3_manual_refresh_token TEXT NULL,
   vsm_url VARCHAR(255) DEFAULT 'https://conectavenda.homolog.vsm.com.br',
   vsm_url_consulta VARCHAR(255) DEFAULT '',
   vsm_token TEXT NULL,
@@ -406,8 +404,8 @@ INSERT IGNORE INTO homologacao_checklist(chave,titulo,descricao,status) VALUES
 ('auto_vsm','Homologação automática: VSM','Validação automática da configuração mínima da VSM.','pendente'),
 ('auto_fila_auditoria','Homologação automática: fila/auditoria','Validação automática de fila, DLQ e auditoria por Trace ID.','pendente');
 
-INSERT IGNORE INTO configuracoes_integracao(id, ambiente, tiny_versao, tiny_v2_url, tiny_v2_token, tiny_v3_url, tiny_v3_ambiente, tiny_v3_token, tiny_v3_auth_url, tiny_v3_token_url, tiny_v3_client_id, tiny_v3_client_secret, tiny_v3_redirect_uri, tiny_v3_scopes, tiny_v3_manual_access_token, tiny_v3_manual_refresh_token, vsm_url, vsm_token, vsm_endpoint_baixa_estoque, vsm_endpoint_produto_novo, vsm_endpoint_consulta_estoque, fluxo_tiny_vsm_estoque, fluxo_vsm_tiny_produto, fluxo_vsm_tiny_pedido, webhook_secret, tiny_webhook_secret, tiny_webhook_cnpj_autorizados, tiny_webhook_exigir_secret, tiny_webhook_rate_limit, tiny_webhook_max_bytes, bloquear_inativo_com_estoque, sync_criar_produto_tiny, sync_atualizar_produto_tiny, sync_atualizar_estoque_tiny, sync_atualizar_status_tiny, sync_atualizar_preco_tiny, sync_atualizar_descricao_tiny, sync_atualizar_categoria_tiny, sync_atualizar_marca_tiny, sync_criar_produto_se_nao_existir, sync_bloquear_estoque_negativo, tiny_v3_operacional)
-VALUES(1, '{AMBIENTE}', '{TINY_VERSION}', '{TINY_V2_URL}', '{TINY_V2_TOKEN}', '{TINY_V3_URL}', 'homologacao', '{TINY_V3_TOKEN}', 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth', 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token', '', '', '', '', '', '', '{VSM_URL}', '{VSM_TOKEN}', '/api/estoque/baixa', '/api/produtos', '/api/estoque/consulta', 1, 1, 0, '{WEBHOOK_SECRET}', '{WEBHOOK_SECRET}', '', 1, 60, 1048576, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0)
+INSERT IGNORE INTO configuracoes_integracao(id, ambiente, tiny_versao, tiny_v2_url, tiny_v2_token, tiny_v3_url, tiny_v3_ambiente, tiny_v3_token, tiny_v3_auth_url, tiny_v3_token_url, tiny_v3_client_id, tiny_v3_client_secret, tiny_v3_redirect_uri, tiny_v3_scopes, vsm_url, vsm_token, vsm_endpoint_baixa_estoque, vsm_endpoint_produto_novo, vsm_endpoint_consulta_estoque, fluxo_tiny_vsm_estoque, fluxo_vsm_tiny_produto, fluxo_vsm_tiny_pedido, webhook_secret, tiny_webhook_secret, tiny_webhook_cnpj_autorizados, tiny_webhook_exigir_secret, tiny_webhook_rate_limit, tiny_webhook_max_bytes, bloquear_inativo_com_estoque, sync_criar_produto_tiny, sync_atualizar_produto_tiny, sync_atualizar_estoque_tiny, sync_atualizar_status_tiny, sync_atualizar_preco_tiny, sync_atualizar_descricao_tiny, sync_atualizar_categoria_tiny, sync_atualizar_marca_tiny, sync_criar_produto_se_nao_existir, sync_bloquear_estoque_negativo, tiny_v3_operacional)
+VALUES(1, '{AMBIENTE}', '{TINY_VERSION}', '{TINY_V2_URL}', '{TINY_V2_TOKEN}', '{TINY_V3_URL}', 'homologacao', '{TINY_V3_TOKEN}', 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth', 'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token', '', '', '', '', '{VSM_URL}', '{VSM_TOKEN}', '/api/estoque/baixa', '/api/produtos', '/api/estoque/consulta', 1, 1, 0, '{WEBHOOK_SECRET}', '{WEBHOOK_SECRET}', '', 1, 60, 1048576, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0)
 ;
 
 

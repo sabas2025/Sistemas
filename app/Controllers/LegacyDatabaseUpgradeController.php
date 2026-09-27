@@ -102,8 +102,9 @@ class LegacyDatabaseUpgradeController {
       'tiny_v3_client_secret'=>'TEXT NULL',
       'tiny_v3_redirect_uri'=>'VARCHAR(255) NULL',
       'tiny_v3_scopes'=>'TEXT NULL',
-      'tiny_v3_manual_access_token'=>'TEXT NULL',
-      'tiny_v3_manual_refresh_token'=>'TEXT NULL',
+      // F5-01 (auditoria Fase 5, 2026-09-27): tiny_v3_manual_access_token/refresh_token saíram
+      // daqui junto com o DROP (migration 20260927_019 + core.sql). Recriá-las neste upgrade legado
+      // reintroduziria as colunas mortas e quebraria a paridade instalação × atualização (I-18).
     ];
     foreach($cols as $col=>$def){ try { $this->safeAddColumn($mensagens, 'configuracoes_integracao', $col, $def); } catch(Throwable $e){ $erros[]=$col.': '.$e->getMessage(); } }
     try { Database::forTable('tiny_v3_tokens')->exec("CREATE TABLE IF NOT EXISTS tiny_v3_tokens (id INT AUTO_INCREMENT PRIMARY KEY, access_token TEXT NOT NULL, refresh_token TEXT NULL, expires_at DATETIME NULL, scope TEXT NULL, origem VARCHAR(30) DEFAULT 'manual', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em DATETIME NULL, INDEX idx_tiny_v3_tokens_expira(expires_at)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"); $mensagens[]='OK: tiny_v3_tokens verificada.'; } catch(Throwable $e){ $erros[]='tiny_v3_tokens: '.$e->getMessage(); }

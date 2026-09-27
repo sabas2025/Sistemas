@@ -45,7 +45,7 @@ class ProductionReadinessV50Service {
     $tinyVersao = strtolower((string)($cfg['tiny_versao'] ?? 'v2'));
     $tinyV2Token = trim((string)($cfg['tiny_v2_token'] ?? '')) !== '';
     $tinyV3Operational = !empty($cfg['tiny_v3_operacional']);
-    $tinyV3ManualToken = trim((string)($cfg['tiny_v3_manual_access_token'] ?? '')) !== '' || trim((string)($cfg['tiny_v3_token'] ?? '')) !== '';
+    $tinyV3ManualToken = trim((string)($cfg['tiny_v3_token'] ?? '')) !== '';
     $tinyV3OAuthToken = false;
     try {
       if (class_exists('TinyV3TokenService')) {
