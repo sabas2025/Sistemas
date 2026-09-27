@@ -65,7 +65,8 @@ foreach ($donos as $ctrl => $rotas) {
 // Rotas vivas do próprio Dashboard permanecem.
 // (configuracoes migrou para o ConfiguracaoController na etapa Configurações — não é mais rota do Dashboard.)
 // (produtos migrou para o ProdutoController na etapa Produtos — não é mais rota do Dashboard.)
-foreach (['pedidos','integracoes','logs','diagnostico'] as $r) {
+// (diagnostico migrou para o CentralTecnicaController na etapa Central Técnica — não é mais rota do Dashboard.)
+foreach (['pedidos','integracoes','logs'] as $r) {
     hub_check($checks, "rota viva {$r} permanece no Dashboard", str_contains($dash, "case '{$r}'"));
 }
 

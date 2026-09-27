@@ -30,25 +30,13 @@ class DashboardController {
       case 'integracoes': $this->integracoes(); break;
       case 'bancos-modulos': $this->bancosModulos(); break;
       case 'bancos-modulos-instalar': $this->bancosModulosInstalar(); break;
-      case 'central-tecnica': $this->centralTecnica(); break;
       case 'atualizador-seguro': $this->atualizadorSeguro(); break;
       case 'atualizador-seguro-executar': $this->atualizadorSeguroExecutar(); break;
       case 'logs': $this->logs(); break;
       case 'notificacoes': $this->notificacoes(); break;
       case 'notificacao-lida': $this->marcarNotificacaoLida(); break;
-      case 'diagnostico': $this->diagnostico(); break;
-      case 'dashboard-integridade': $this->dashboardIntegridade(); break;
-      case 'producao-ready': $this->producaoReady(); break;
-      case 'dashboard-integridade-executar': $this->dashboardIntegridadeExecutar(); break;
-      case 'menu-testes': $this->menuTestes(); break;
-      case 'ficha-tecnica-100': $this->fichaTecnica100(); break;
-      case 'production-ready-v24': $this->productionReadyV24(); break;
-      case 'production-ready-v25': $this->productionReadyV25(); break;
-      case 'production-ready-v26': $this->productionReadyV26(); break;
-      case 'hosting-infinityfree': $this->hostingInfinityFree(); break;
       // Bloco de Segurança extraído para SecurityController (Fase 3) — despachado pelo
       // FastRouteDispatcherService::$dispatchGroups; os cases aqui eram inalcançáveis.
-      case 'relatorio-prontidao-producao': $this->relatorioProntidaoProducao(); break;
       case 'metricas': $this->metricas(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       // Reauditoria 2026-09-14 (achado A-13): antes qualquer rota desconhecida renderizava o
@@ -252,14 +240,6 @@ class DashboardController {
 
 
 
-  private function dashboardIntegridade(): void {
-    PermissionService::require('dashboard','visualizar');
-    $checks = DashboardIntegrityService::checks();
-    $summary = DashboardIntegrityService::summary($checks);
-    $pageTitle = 'Integridade do Dashboard';
-    require __DIR__.'/../../views/dashboard_integridade.php';
-  }
-
   private function pedidos(): void {
     PermissionService::require('pedidos','visualizar');
     $status = $_GET['status'] ?? '';
@@ -393,14 +373,6 @@ class DashboardController {
     redirect('index.php?page=notificacoes');
   }
 
-
-  private function diagnostico(): void {
-    PermissionService::require('dashboard','visualizar');
-    $checks = HealthCheckService::run();
-    $historicoDiagnostico = class_exists('DiagnosticoApiService') ? DiagnosticoApiService::ultimos(50) : [];
-    $pageTitle = 'Diagnóstico';
-    require __DIR__.'/../../views/diagnostico.php';
-  }
 
 
 
@@ -575,56 +547,9 @@ class DashboardController {
 
 
 
-  private function fichaTecnica100(): void {
-    PermissionService::require('ficha_tecnica','visualizar');
-    $prechecks = InstallationPrecheckService::run();
-    $preScore = InstallationPrecheckService::score();
-    $queue = QueueAnalyticsService::resumo();
-    $tinyV2Errors = TinyV2ErrorCatalogService::all();
-    $cfg = IntegrationConfig::get();
-    $pageTitle = 'Ficha Técnica 100%';
-    require __DIR__.'/../../views/ficha_tecnica_100.php';
-  }
 
 
 
-
-  private function productionReadyV25(): void {
-    PermissionService::require('ficha_tecnica','visualizar');
-    $scores = ProductionReadinessV24Service::scores();
-    $checklist = ProductionReadinessV24Service::checklist();
-    $postTests = PostInstallTestService::run();
-    $postScore = PostInstallTestService::score($postTests);
-    $trace = trim($_GET['trace_id'] ?? RequestContext::id());
-    $integridade = class_exists('AuditIntegrityService') ? AuditIntegrityService::verificarTrace($trace) : ['integro'=>false,'mensagem'=>'Serviço indisponível'];
-    $pageTitle = 'Production Ready V25';
-    require __DIR__.'/../../views/production_ready_v25.php';
-  }
-
-  private function productionReadyV24(): void {
-    PermissionService::require('ficha_tecnica','visualizar');
-    $scores = ProductionReadinessV24Service::scores();
-    $checklist = ProductionReadinessV24Service::checklist();
-    $prechecks = class_exists('InstallationPrecheckService') ? InstallationPrecheckService::run() : [];
-    $pageTitle = 'Production Ready V24';
-    require __DIR__.'/../../views/production_ready_v24.php';
-  }
-
-
-  private function productionReadyV26(): void {
-    PermissionService::require('production_ready','visualizar');
-    $resumo = EnterpriseV26ReadinessService::resumo();
-    $pageTitle = 'Production Ready V26 / InfinityFree';
-    require __DIR__.'/../../views/production_ready_v26.php';
-  }
-
-  private function hostingInfinityFree(): void {
-    PermissionService::require('hosting','visualizar');
-    $compat = HostingCompatibilityService::ambiente();
-    $recomendacoes = HostingCompatibilityService::recomendações();
-    $pageTitle = 'Hospedagem InfinityFree';
-    require __DIR__.'/../../views/hosting_infinityfree.php';
-  }
 
 
 
@@ -656,14 +581,6 @@ class DashboardController {
   }
 
 
-  private function relatorioProntidaoProducao(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $checks = class_exists('ProductionReadinessV24Service') ? ProductionReadinessV24Service::checks() : [];
-    $host = class_exists('HostingCompatibilityService') ? HostingCompatibilityService::ambiente() : [];
-    $pageTitle = 'Relatório de Prontidão para Produção';
-    require __DIR__.'/../../views/relatorio_prontidao_producao.php';
-  }
-
   private function fiscal(): void {
     PermissionService::require('configuracoes','visualizar');
     $resumoFiscal = class_exists('FiscalIntegrationService') ? FiscalIntegrationService::resumo() : [];
@@ -674,22 +591,6 @@ class DashboardController {
     require __DIR__.'/../../views/fiscal.php';
   }
 
-  private function dashboardIntegridadeExecutar(): void {
-    PermissionService::require('dashboard','visualizar');
-    Csrf::validate();
-    $checks = DashboardIntegrityService::checks(true);
-    $_SESSION['dashboard_integridade_v43'] = ['checks'=>$checks, 'summary'=>DashboardIntegrityService::summary($checks), 'executado_em'=>date('Y-m-d H:i:s')];
-    Audit::event('dashboard.integridade.executar','sucesso',['mensagem'=>'Checklist real do dashboard V43 executado.','contexto'=>DashboardIntegrityService::summary($checks)]);
-    redirect('index.php?page=dashboard-integridade&executado=1');
-  }
-
-
-  private function menuTestes(): void {
-    PermissionService::require('dashboard','visualizar');
-    $checks = class_exists('MenuActionTestService') ? MenuActionTestService::run() : [];
-    $pageTitle = 'Teste de Menu e Botões';
-    require __DIR__.'/../../views/menu_testes.php';
-  }
 
   private function fiscalReenviar(): void {
     PermissionService::require('configuracoes','visualizar');
@@ -698,12 +599,6 @@ class DashboardController {
     if ($id>0 && class_exists('FiscalIntegrationService')) FiscalIntegrationService::marcarReenvio($id);
     Audit::event('fiscal.reenviar','sucesso',['mensagem'=>'NF-e marcada para reenvio à VSM.','entidade'=>'nfe_integracao','entidade_id'=>$id]);
     redirect('index.php?page=fiscal&reenviar=1');
-  }
-
-  private function centralTecnica(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $pageTitle = 'Central Técnica';
-    require __DIR__.'/../../views/central_tecnica.php';
   }
 
   private function bancosModulos(): void {
@@ -724,13 +619,6 @@ class DashboardController {
     redirect('index.php?page=bancos-modulos&instalado=1');
   }
 
-
-  private function producaoReady(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $pageTitle = 'Produção Segura';
-    $resultado = ProductionReadyService::checks();
-    require __DIR__.'/../../views/producao_ready.php';
-  }
 
 
 }
