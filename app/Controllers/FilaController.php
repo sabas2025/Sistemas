@@ -1,7 +1,16 @@
 <?php
 class FilaController extends BaseModuleController {
-  public function dispatch(string $page): void { if($page==='fila-reprocessar') $this->reprocessar(); elseif($page==='fila-criar-teste') $this->criarTeste(); elseif($page==='fila-morta-reprocessar') $this->mortaReprocessar(); else $this->index(); }
-  public static function routes(): array { return ['fila','fila-reprocessar','fila-criar-teste','fila-morta-reprocessar']; }
+  public function dispatch(string $page): void {
+    switch ($page) {
+      case 'fila-reprocessar': $this->reprocessar(); break;
+      case 'fila-criar-teste': $this->criarTeste(); break;
+      case 'fila-morta-reprocessar': $this->mortaReprocessar(); break;
+      case 'fila-analytics-v24': $this->filaAnalyticsV24(); break;
+      case 'fila-morta': $this->filaMorta(); break;
+      default: $this->index(); break; // fila
+    }
+  }
+  public static function routes(): array { return ['fila','fila-reprocessar','fila-criar-teste','fila-morta-reprocessar','fila-analytics-v24','fila-morta']; }
   public function index(): void { PermissionService::require('fila','visualizar'); $status=$_GET['status']??''; /* achado I-06: atualizado_em NÃO existe em fila_integracao — só em fila_estoque, fila_fiscal e fila_morta. Pedi-la derrubava a tela inteira com 500, e a view nunca usou o campo. */ $sql='SELECT id,tipo,referencia,status,tentativas,proxima_tentativa,codigo_erro,trace_id,criado_em FROM fila_integracao WHERE 1=1'; $params=[]; if($status){$sql.=' AND status=?';$params[]=$status;} $sql.=' ORDER BY id DESC LIMIT 200'; $st = TenantScopeService::run('fila_integracao', $sql, $params); $itens=$st->fetchAll(); $pageTitle='Fila de Integração'; $this->view('fila',compact('pageTitle','itens','status')); }
   public function reprocessar(): void { PermissionService::require('fila','reprocessar'); Csrf::validate(); $id=(int)($_POST['id']??0); if($id>0) QueueService::reprocessar($id); redirect('index.php?page=fila'); }
   public function criarTeste(): void { PermissionService::require('fila','reprocessar'); Csrf::validate(); $trace=RequestContext::id(); $referencia='BAIXA-TESTE-'.date('Ymd-His'); $payload=['referencia'=>$referencia,'origem'=>'tiny','evento'=>'baixa_estoque_teste','itens'=>[['sku'=>'TESTE001','quantidade'=>1,'descricao'=>'Produto Teste Hub de Integração','idProdutoTiny'=>'TESTE-TINY-001']],'observacao'=>'Teste Tiny → Hub → VSM','criado_em'=>date('c')]; $pdo=Database::forTable('fila_integracao'); TenantScopeService::run('fila_integracao', 'INSERT INTO fila_integracao(tipo,referencia,payload,status,trace_id) VALUES(?,?,?,?,?)', ['baixa_estoque_vsm',$referencia,json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),'pendente',$trace]); Audit::event('fila.criar_baixa_teste','sucesso',['entidade'=>'fila_integracao','entidade_id'=>$pdo->lastInsertId(),'mensagem'=>'Baixa de estoque teste criada na fila.','payload'=>$payload]); redirect('index.php?page=fila&baixa_teste_criada=1'); }
@@ -11,4 +20,25 @@ class FilaController extends BaseModuleController {
      reprocessar() acima já guardava o id; aqui a guarda faltava. Mora aqui porque é o que o
      RouteModuleRegistry sempre declarou: FilaController é o dono de fila-morta-reprocessar. */
   public function mortaReprocessar(): void { PermissionService::require('fila_morta','reprocessar'); Csrf::validate(); $id=(int)($_POST['id']??0); if($id<1) redirect('index.php?page=fila-morta&erro=id_invalido'); try { DeadLetterQueueService::reprocessar($id); } catch(RuntimeException $e){ Audit::event('fila_morta.reprocessar','alerta',['entidade'=>'fila_morta','entidade_id'=>$id,'mensagem'=>$e->getMessage(),'causa_provavel'=>'O item já foi reprocessado, expurgado, ou a tela estava desatualizada.','acao_recomendada'=>'Recarregue a Fila Morta e confira se o item ainda está aberto.']); redirect('index.php?page=fila-morta&erro=nao_encontrado'); } redirect('index.php?page=fila-morta&reprocessado=1'); }
+  private function filaAnalyticsV24(): void {
+    PermissionService::require('fila_morta','visualizar');
+    $analytics = QueueV24AnalyticsService::resumoAvancado();
+    $pageTitle = 'Fila / DLQ Analytics V24';
+    require __DIR__.'/../../views/fila_analytics_v24.php';
+  }
+
+  private function filaMorta(): void {
+    PermissionService::require('fila_morta','visualizar');
+    $status=$_GET['status'] ?? 'aberto';
+    $sql='SELECT * FROM fila_morta WHERE 1=1'; $params=[];
+    if($status !== ''){ $sql.=' AND status=?'; $params[]=$status; }
+    // Melhoria 1 da seção 8: o escopo de empresa entra DEPOIS do WHERE montado pelos filtros e
+    // ANTES do ORDER BY/LIMIT — applyToSelect() cuida da posição do parâmetro.
+    [$sql, $params] = TenantScopeService::applyToSelect('fila_morta', $sql, $params);
+    $sql.=' ORDER BY id DESC LIMIT 300';
+    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $itens=$st->fetchAll();
+    $pageTitle='Fila Morta / DLQ';
+    require __DIR__.'/../../views/fila_morta.php';
+  }
+
 }

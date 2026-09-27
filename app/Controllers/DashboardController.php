@@ -27,9 +27,6 @@ class DashboardController {
     switch($page){
       case 'pedidos': (new PedidoController())->dispatch($page); break;
       case 'pedido-detalhe': (new PedidoController())->dispatch($page); break;
-      case 'fila': (new FilaController())->dispatch($page); break;
-      case 'fila-reprocessar': (new FilaController())->dispatch($page); break;
-      case 'fila-criar-teste': (new FilaController())->dispatch($page); break;
       case 'integracoes': $this->integracoes(); break;
       case 'bancos-modulos': $this->bancosModulos(); break;
       case 'bancos-modulos-instalar': $this->bancosModulosInstalar(); break;
@@ -48,13 +45,10 @@ class DashboardController {
       case 'production-ready-v24': $this->productionReadyV24(); break;
       case 'production-ready-v25': $this->productionReadyV25(); break;
       case 'production-ready-v26': $this->productionReadyV26(); break;
-      case 'fila-analytics-v24': $this->filaAnalyticsV24(); break;
       case 'hosting-infinityfree': $this->hostingInfinityFree(); break;
       // Bloco de Segurança extraído para SecurityController (Fase 3) — despachado pelo
       // FastRouteDispatcherService::$dispatchGroups; os cases aqui eram inalcançáveis.
       case 'relatorio-prontidao-producao': $this->relatorioProntidaoProducao(); break;
-      case 'fila-morta': $this->filaMorta(); break;
-      case 'fila-morta-reprocessar': (new FilaController())->dispatch($page); break;
       case 'metricas': $this->metricas(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       // Reauditoria 2026-09-14 (achado A-13): antes qualquer rota desconhecida renderizava o
@@ -566,20 +560,6 @@ class DashboardController {
   }
 
 
-  private function filaMorta(): void {
-    PermissionService::require('fila_morta','visualizar');
-    $status=$_GET['status'] ?? 'aberto';
-    $sql='SELECT * FROM fila_morta WHERE 1=1'; $params=[];
-    if($status !== ''){ $sql.=' AND status=?'; $params[]=$status; }
-    // Melhoria 1 da seção 8: o escopo de empresa entra DEPOIS do WHERE montado pelos filtros e
-    // ANTES do ORDER BY/LIMIT — applyToSelect() cuida da posição do parâmetro.
-    [$sql, $params] = TenantScopeService::applyToSelect('fila_morta', $sql, $params);
-    $sql.=' ORDER BY id DESC LIMIT 300';
-    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $itens=$st->fetchAll();
-    $pageTitle='Fila Morta / DLQ';
-    require __DIR__.'/../../views/fila_morta.php';
-  }
-
   private function metricas(): void {
     PermissionService::require('metricas','visualizar');
     $metricas=$this->db('metricas_api')->query('SELECT id, sistema, endpoint, metodo, http_code, tempo_ms, sucesso, criado_em FROM metricas_api ORDER BY id DESC LIMIT 300')->fetchAll();
@@ -628,13 +608,6 @@ class DashboardController {
     $prechecks = class_exists('InstallationPrecheckService') ? InstallationPrecheckService::run() : [];
     $pageTitle = 'Production Ready V24';
     require __DIR__.'/../../views/production_ready_v24.php';
-  }
-
-  private function filaAnalyticsV24(): void {
-    PermissionService::require('fila_morta','visualizar');
-    $analytics = QueueV24AnalyticsService::resumoAvancado();
-    $pageTitle = 'Fila / DLQ Analytics V24';
-    require __DIR__.'/../../views/fila_analytics_v24.php';
   }
 
 
