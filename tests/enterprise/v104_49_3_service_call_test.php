@@ -91,8 +91,10 @@ hub_check($checks, 'Nenhum construtor chamado com argumentos de menos: '.(implod
 
 // O ponto exato do I-11, travado por nome.
 $controller = hub_read('app/Controllers/DashboardController.php');
+// Fase 3 (2026-09-27): atualizadorSeguroExecutar migrou para o DatabaseMaintenanceController.
+$dbCtrl = hub_read('app/Controllers/DatabaseMaintenanceController.php');
 hub_check($checks, 'atualizadorSeguroExecutar chama run(), não o inexistente executarTodos()',
-    !str_contains($controller, 'executarTodos') && str_contains($controller, 'UniversalUpgradeService(dirname(__DIR__,2)))->run()'));
+    $dbCtrl !== '' && !str_contains($dbCtrl, 'executarTodos') && str_contains($dbCtrl, 'UniversalUpgradeService(dirname(__DIR__,2)))->run()'));
 hub_check($checks, 'O serviço devolve Trace ID, que a tela exibe',
     str_contains(hub_read('app/Services/UniversalUpgradeService.php'), "'trace_id'")
     && str_contains(hub_read('views/atualizador_seguro.php'), "\$r['trace_id']"));
