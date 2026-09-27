@@ -57,6 +57,8 @@ class FastRouteDispatcherService {
     EstoqueController::class => ['estoque-dashboard','estoque-config','estoque-config-salvar','estoque-alertas','estoque-sku-historico','estoque-consultas-vsm','estoque-consulta-vsm-resultados','estoque-consulta-vsm-testar-sku','estoque-reconciliar-agora','estoque-consulta-vsm-executar','estoque-consulta-tiny-executar','baixas-estoque','reconciliacao','reconciliacao-executar'],
     // Fase 3 etapa Auditoria: trilha (lista/detalhe), auditoria de código, cadeia de hash, assinatura de trace e exportações (PDF/enterprise) — consolidadas no AuditoriaController.
     AuditoriaController::class => ['auditoria','auditoria-detalhe','auditoria-codigo','auditoria-hash-chain','auditoria-assinar-trace','auditoria-exportar-pdf','auditoria-exportar-enterprise'],
+    // Fase 3 etapa Produtos: mapeamento de produtos, recebidos da VSM, pendências e pendentes de integração — consolidados no ProdutoController.
+    ProdutoController::class => ['produtos','produtos-pendencias','produtos-vsm','produtos-pendentes-integracao','produto-pendente-integracao-comparar','produto-pendente-integracao-acao','produto-pendencia-acao'],
   ];
 
   /** @var array<string, string>|null */
