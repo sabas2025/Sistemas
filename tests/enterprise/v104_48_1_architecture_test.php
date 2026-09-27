@@ -14,7 +14,12 @@ $pkgLock=hub_read('package-lock.json');
 hub_check($checks,'Dashboard delega atualizações legadas ao controller dedicado',str_contains($dash,'LegacyDatabaseUpgradeController')&&!preg_match('/private\s+function\s+atualizarV\d+/',$dash));
 hub_check($checks,'Controller legado contém rotas de atualização e CSRF',preg_match('/function\s+atualizarV15HomologacaoFinal\s*\(/',$legacy)===1&&str_contains($legacy,'Csrf::validate'));
 hub_check($checks,'Dashboard foi reduzido abaixo de 160 KB',strlen($dash)<160*1024,'bytes='.strlen($dash));
-hub_check($checks,'Orquestração foi extraída sem perder fallback compatível',str_contains($dash,"(new OrquestracaoController())->dispatch(\$page)")&&!preg_match('/private\s+function\s+(orquestracaoIntegracoes|salvarOrquestracaoIntegracoes|testarOrquestracaoFluxo)\s*\(/',$dash));
+// Fase 3 (A3-03): orquestração é roteada pelo FastRouteDispatcherService::$dispatchGroups a
+// OrquestracaoController ANTES do fallback do Dashboard, então o fallback (new OrquestracaoController)
+// que existia aqui era código morto e foi removido. A garantia agora é: a rota tem dono no
+// dispatchGroups e o Dashboard não mantém implementação duplicada.
+$dispatcher=hub_read('app/Services/FastRouteDispatcherService.php');
+hub_check($checks,'Orquestração roteada por dispatchGroups, sem duplicata no Dashboard',(bool)preg_match('/OrquestracaoController::class => \[[^\]]*\'orquestracao-integracoes\'/',$dispatcher)&&!preg_match('/private\s+function\s+(orquestracaoIntegracoes|salvarOrquestracaoIntegracoes|testarOrquestracaoFluxo)\s*\(/',$dash)&&!str_contains($dash,"(new OrquestracaoController())->dispatch(\$page)"));
 hub_check($checks,'Reparo de schema em runtime fica desativado por padrão',preg_match("/'schema_runtime_repair_enabled'\s*=>\s*false/",$config)===1&&preg_match("/'schema_runtime_repair_enabled'\s*=>\s*false/",$installer)===1);
 hub_check($checks,'Instalador publica configuração, FIM e lock de forma atômica, privada e reversível',str_contains($installer,'function atomic_private_write')&&str_contains($installer,'@chmod($path,0600)')&&str_contains($installer,'function publish_install_artifacts')&&str_contains($installer,'publish_install_artifacts($configPath,$root,$cfg)'));
 

@@ -25,9 +25,6 @@ class DashboardController {
   public function dispatch(string $page): void {
     Auth::requireLogin();
     switch($page){
-      case 'dashboard': $this->dashboard(); break;
-      case 'alertas-operacionais': $this->alertasOperacionais(); break;
-      case 'centro-operacoes': $this->centroOperacoes(); break;
       case 'pedidos': (new PedidoController())->dispatch($page); break;
       case 'pedido-detalhe': (new PedidoController())->dispatch($page); break;
       case 'fila': (new FilaController())->dispatch($page); break;
@@ -54,24 +51,18 @@ class DashboardController {
       case 'categorias-mapeamento': $this->categoriasMapeamento(); break;
       case 'categoria-mapeamento-salvar': $this->categoriaMapeamentoSalvar(); break;
       case 'produto-pendencia-acao': $this->produtoPendenciaAcao(); break;
-      case 'divergencia-estoque': $this->divergenciaEstoque(); break;
-      case 'divergencia-acao': $this->divergenciaAcao(); break;
       case 'salvar-fluxos': $this->salvarFluxos(); break;
       case 'integracoes': $this->integracoes(); break;
       case 'regras-sincronizacao': $this->regrasSincronizacao(); break;
-      case 'orquestracao-integracoes': (new OrquestracaoController())->dispatch($page); break;
       case 'bancos-modulos': $this->bancosModulos(); break;
       case 'bancos-modulos-instalar': $this->bancosModulosInstalar(); break;
       case 'central-tecnica': $this->centralTecnica(); break;
-      case 'salvar-orquestracao-integracoes': (new OrquestracaoController())->dispatch($page); break;
-      case 'testar-orquestracao-fluxo': (new OrquestracaoController())->dispatch($page); break;
       case 'atualizador-seguro': $this->atualizadorSeguro(); break;
       case 'auditoria-codigo': $this->auditoriaCodigo(); break;
       case 'atualizador-seguro-executar': $this->atualizadorSeguroExecutar(); break;
       case 'salvar-regras-sincronizacao': $this->salvarRegrasSincronizacao(); break;
       case 'logs': $this->logs(); break;
       case 'notificacoes': $this->notificacoes(); break;
-      case 'sobre': $this->sobre(); break;
       case 'notificacao-lida': $this->marcarNotificacaoLida(); break;
       case 'auditoria': $this->auditoria(); break;
       case 'auditoria-detalhe': (new AuditoriaController())->dispatch($page); break;
@@ -79,15 +70,7 @@ class DashboardController {
       case 'dashboard-integridade': $this->dashboardIntegridade(); break;
       case 'producao-ready': $this->producaoReady(); break;
       case 'dashboard-integridade-executar': $this->dashboardIntegridadeExecutar(); break;
-      case 'health-modulos': $this->healthModulos(); break;
       case 'menu-testes': $this->menuTestes(); break;
-      case 'fiscal-reenviar':
-      case 'fiscal-dashboard':
-      case 'fiscal-xml':
-      case 'fiscal-timeline':
-      case 'fiscal-reconciliacao':
-      case 'fiscal-health':
-      case 'fiscal': (new FiscalController())->dispatch($page); break;
       case 'ficha-tecnica-100': $this->fichaTecnica100(); break;
       case 'production-ready-v24': $this->productionReadyV24(); break;
       case 'production-ready-v25': $this->productionReadyV25(); break;
@@ -106,7 +89,6 @@ class DashboardController {
       case 'reconciliacao': $this->reconciliacao(); break;
       case 'reconciliacao-executar': $this->reconciliacaoExecutar(); break;
       case 'metricas': $this->metricas(); break;
-      case 'validar-banco': $this->validarBanco(); break;
       case 'usuarios': $this->usuarios(); break;
       case 'usuario-salvar': $this->usuarioSalvar(); break;
       case 'usuario-excluir': $this->usuarioExcluir(); break;
@@ -114,11 +96,6 @@ class DashboardController {
       case 'trocar-senha': $this->trocarSenha(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       case 'configuracoes': $this->configuracoes(); break;
-      case 'central-homologacao': $this->centralHomologacao(); break;
-      case 'tiny-v2-homologacao': $this->tinyV2Homologacao(); break;
-      case 'tiny-v2-homologacao-executar': $this->tinyV2HomologacaoExecutar(); break;
-      case 'tiny-v3-homologacao': $this->tinyV3Homologacao(); break;
-      case 'tiny-v3-homologacao-executar': $this->tinyV3HomologacaoExecutar(); break;
       case 'salvar-configuracoes': $this->salvarConfiguracoes(); break;
       // Reauditoria 2026-09-14 (achado A-13): antes qualquer rota desconhecida renderizava o
       // dashboard com HTTP 200, escondendo links quebrados e dando falso positivo em smoke test.
@@ -128,11 +105,12 @@ class DashboardController {
       // manda para MigrationController::legacyBlocked(). Elas davam a impressão de existir uma
       // superfície de DDL em runtime que, na prática, o roteamento já não alcançava. O próprio
       // controller passou a recusar execução salvo liberação explícita (ver o arquivo dele).
+      // Fase 3 (A3-03): cases fantasma removidos — rotas já interceptadas pelo
+      // FastRouteDispatcherService::$dispatchGroups (controllers dedicados) antes deste fallback.
       default: $this->naoEncontrado($page);
     }
   }
 
-  public function index(){ $this->dashboard(); }
 
   /** Resposta 404 controlada para rotas inexistentes (A-13), sem expor detalhes internos. */
   private function naoEncontrado(string $page): void {
@@ -318,179 +296,6 @@ class DashboardController {
     return $rows[0] ?? null;
   }
 
-  private function dashboard(): void {
-    PermissionService::require('dashboard','visualizar');
-    $k = [
-      'Pedidos integrados' => $this->count('pedidos_integracao'),
-      'Pedidos com erro' => $this->count('pedidos_integracao', "status IN ('erro','falha','falha_definitiva')"),
-      'Fila pendente' => $this->count('fila_integracao', "status='pendente'"),
-      'Produtos mapeados' => $this->count('produtos_mapeamento'),
-      'Empresas' => $this->count('empresas'),
-      'Eventos de auditoria' => $this->count('auditoria_eventos'),
-      'Notificações não lidas' => $this->count('notificacoes', 'lida=0'),
-    ];
-    $pedidos = $this->tableRows('pedidos_integracao', 'id DESC', 8);
-    $logs = $this->tableRows('logs_integracao', 'id DESC', 8);
-    $filaResumo = TenantScopeService::run('fila_integracao', "SELECT status, COUNT(*) total FROM fila_integracao GROUP BY status")->fetchAll();
-
-    // Dashboard de Saúde: indicadores rápidos sem deixar o painel lento.
-    // Testes de internet/API mais pesados continuam na página Diagnóstico.
-    try {
-      $cfgInt = IntegrationConfig::get();
-    } catch (Throwable $e) {
-      $cfgInt = [];
-    }
-    $vsmStatus = class_exists('VsmEnvironmentService') ? VsmEnvironmentService::dashboardStatus($cfgInt) : ['status'=>!empty($cfgInt['vsm_url'])?'atencao':'erro','modo'=>!empty($cfgInt['vsm_url'])?'Homologação':'Não configurado','detalhe'=>!empty($cfgInt['vsm_url'])?'URL configurada':'URL pendente','acao'=>!empty($cfgInt['vsm_url'])?'Validar VSM':'Configurar VSM'];
-    $syncRules = class_exists('SyncRulesService') ? SyncRulesService::all() : [];
-    $syncResumo = [
-      ['chave'=>'sync_criar_produto_tiny','titulo'=>'Criar produto Tiny'],
-      ['chave'=>'sync_atualizar_estoque_tiny','titulo'=>'Atualizar estoque Tiny'],
-      ['chave'=>'sync_atualizar_status_tiny','titulo'=>'Ativo/Inativo Tiny'],
-      ['chave'=>'sync_bloquear_estoque_negativo','titulo'=>'Bloquear estoque negativo'],
-    ];
-
-    $filaPendente = $this->count('fila_integracao', "status='pendente'");
-    $filaErro = $this->count('fila_integracao', "status IN ('erro','falha_definitiva')");
-    $filaProcessandoAntiga = $this->count('fila_integracao', "status='processando' AND processando_desde IS NOT NULL AND processando_desde < DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
-    $falhasRecentes = $this->count('logs_integracao', "nivel IN ('erro','critico') AND criado_em >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
-
-    $healthCards = [
-      [
-        'titulo' => 'Banco MySQL',
-        'status' => 'online',
-        'icone' => 'bi-database-check',
-        'detalhe' => 'Conexão PDO ativa',
-        'acao' => 'OK'
-      ],
-      [
-        'titulo' => 'Tiny V2',
-        'status' => !empty($cfgInt['tiny_v2_token']) ? 'online' : 'atencao',
-        'icone' => 'bi-cloud-check',
-        'detalhe' => !empty($cfgInt['tiny_v2_token']) ? 'Token configurado' : 'Token não configurado',
-        'acao' => !empty($cfgInt['tiny_v2_token']) ? 'Pronto para teste' : 'Configure o token Tiny'
-      ],
-      [
-        'titulo' => 'VSM',
-        'status' => $vsmStatus['status'],
-        'icone' => 'bi-diagram-3',
-        'detalhe' => $vsmStatus['detalhe'],
-        'acao' => $vsmStatus['acao']
-      ],
-      [
-        'titulo' => 'Webhook VSM',
-        'status' => !empty($cfgInt['webhook_secret']) ? 'online' : 'atencao',
-        'icone' => 'bi-shield-lock',
-        'detalhe' => !empty($cfgInt['webhook_secret']) ? 'Secret/HMAC configurado' : 'Secret não configurado',
-        'acao' => !empty($cfgInt['webhook_secret']) ? 'Protegido' : 'Configure o segredo do webhook'
-      ],
-      [
-        'titulo' => 'Fila',
-        'status' => $filaProcessandoAntiga > 0 || $filaErro > 0 ? 'erro' : ($filaPendente > 0 ? 'atencao' : 'online'),
-        'icone' => 'bi-arrow-repeat',
-        'detalhe' => $filaPendente.' pendente(s), '.$filaErro.' com erro',
-        'acao' => $filaProcessandoAntiga > 0 ? 'Há item travado; rode worker_fila.php' : ($filaPendente > 0 ? 'Processar fila' : 'Fila normal')
-      ],
-      [
-        'titulo' => 'Erros 24h',
-        'status' => $falhasRecentes > 0 ? 'erro' : 'online',
-        'icone' => 'bi-bug',
-        'detalhe' => $falhasRecentes.' erro(s)/crítico(s)',
-        'acao' => $falhasRecentes > 0 ? 'Verifique Logs e Auditoria' : 'Sem erros recentes'
-      ],
-    ];
-
-    $ultimoDiagVsm = class_exists('DiagnosticoApiService') ? DiagnosticoApiService::ultimoPorSistema('vsm') : null;
-    $ultimoDiagTiny = class_exists('DiagnosticoApiService') ? DiagnosticoApiService::ultimoPorSistema('tiny') : null;
-    $ultimoPedidoIntegrado = $this->tableOne('pedidos_integracao');
-    $ultimaFalha = $this->tableOne('logs_integracao', 'id DESC', "nivel IN ('erro','critico')");
-    $ultimaBaixaVsm = $this->tableOne('estoque_movimentos');
-    $ultimoProdutoTiny = $this->tableOne('produtos_mapeamento');
-    $baixasErro = $this->count('estoque_movimentos', "status IN ('erro','falha','falha_definitiva')");
-    $produtosErro = $this->count('fila_integracao', "tipo IN ('produto_vsm_para_tiny','produto_vsm_atualizar_tiny','produto_vsm_estoque_para_tiny','produto_vsm_status_para_tiny') AND status IN ('erro','falha_definitiva')");
-    $filaTinyVsm = $this->count('fila_integracao', "tipo='baixa_estoque_vsm' AND status='pendente'");
-    $filaVsmTiny = $this->count('fila_integracao', "tipo IN ('produto_vsm_para_tiny','produto_vsm_atualizar_tiny','produto_vsm_estoque_para_tiny','produto_vsm_status_para_tiny') AND status='pendente'");
-
-    // V53 - Dashboard operacional do ciclo Tiny → Hub → VSM → Tiny.
-    $pedidoCicloResumo = [
-      'recebidos_tiny' => 0,
-      'enviados_vsm' => 0,
-      'aguardando_xml' => 0,
-      'enviados_tiny' => 0,
-      'concluidos' => 0,
-      'erros' => 0,
-    ];
-    try {
-      $pdoCiclo = Database::forTable('pedidos_hub');
-      $rowsCiclo = TenantScopeService::run('pedidos_hub', "SELECT status_hub, COUNT(*) total FROM pedidos_hub GROUP BY status_hub")->fetchAll();
-      foreach ($rowsCiclo as $rowCiclo) {
-        $statusCiclo = (string)($rowCiclo['status_hub'] ?? '');
-        $totalCiclo = (int)($rowCiclo['total'] ?? 0);
-        if ($statusCiclo === 'recebido_tiny') $pedidoCicloResumo['recebidos_tiny'] += $totalCiclo;
-        if ($statusCiclo === 'enviado_vsm') $pedidoCicloResumo['enviados_vsm'] += $totalCiclo;
-        if (in_array($statusCiclo, ['recebido_vsm','xml_validado'], true)) $pedidoCicloResumo['aguardando_xml'] += $totalCiclo;
-        if ($statusCiclo === 'enviado_tiny') $pedidoCicloResumo['enviados_tiny'] += $totalCiclo;
-        if ($statusCiclo === 'concluido') $pedidoCicloResumo['concluidos'] += $totalCiclo;
-        if (str_contains($statusCiclo, 'erro')) $pedidoCicloResumo['erros'] += $totalCiclo;
-      }
-    } catch (Throwable $e) {
-      $pedidoCicloResumo['erro_consulta'] = $e->getMessage();
-    }
-    $tinyV3Aviso = (($cfgInt['tiny_versao'] ?? 'v2') === 'v3' && empty($cfgInt['tiny_v3_operacional']));
-    $operacao = $this->operationalSummary($cfgInt);
-    $workerCards = $this->workerCards();
-    $estoqueResumo = [
-      'sincronizados' => $this->safeCount('estoque_movimentos', "status IN ('sucesso','sincronizado','confirmado')"),
-      'divergencias' => $this->safeCount('estoque_divergencias'),
-      'pendentes' => $this->safeCount('fila_estoque', "status='pendente'"),
-      'falhas' => $this->safeCount('fila_estoque', "status IN ('erro','falha_definitiva')"),
-    ];
-    $fiscalResumo = [
-      'recebidas' => $this->safeCount('pedidos_nfe_xml'),
-      'xml_processados' => $this->safeCount('pedidos_nfe_xml', "status_xml IN ('validado','enviado_tiny','concluido')"),
-      'xml_erros' => $this->safeCount('pedidos_nfe_xml', "status_xml LIKE '%erro%' OR validado=0"),
-      'reenvios' => $this->safeCount('fila_fiscal', "status IN ('pendente','processando')"),
-    ];
-    $pageTitle = 'Dashboard';
-    require __DIR__.'/../../views/dashboard.php';
-  }
-
-
-  private function alertasOperacionais(): void {
-    PermissionService::require('dashboard','visualizar');
-    try { $cfgInt = IntegrationConfig::get(); } catch(Throwable $e){ $cfgInt=[]; }
-    $operacao = $this->operationalSummary($cfgInt);
-    $pageTitle = 'Alertas Operacionais';
-    require __DIR__.'/../../views/alertas_operacionais.php';
-  }
-
-  private function centroOperacoes(): void {
-    PermissionService::require('dashboard','visualizar');
-    try { $cfgInt = IntegrationConfig::get(); } catch(Throwable $e){ $cfgInt=[]; }
-    $operacao = $this->operationalSummary($cfgInt);
-    $workerCards = $this->workerCards();
-    $estoqueResumo = [
-      'sincronizados' => $this->safeCount('estoque_movimentos', "status IN ('sucesso','sincronizado','confirmado')"),
-      'divergencias' => $this->safeCount('estoque_divergencias'),
-      'pendentes' => $this->safeCount('fila_estoque', "status='pendente'"),
-      'falhas' => $this->safeCount('fila_estoque', "status IN ('erro','falha_definitiva')"),
-    ];
-    $fiscalResumo = [
-      'recebidas' => $this->safeCount('pedidos_nfe_xml'),
-      'xml_processados' => $this->safeCount('pedidos_nfe_xml', "status_xml IN ('validado','enviado_tiny','concluido')"),
-      'xml_erros' => $this->safeCount('pedidos_nfe_xml', "status_xml LIKE '%erro%' OR validado=0"),
-      'reenvios' => $this->safeCount('fila_fiscal', "status IN ('pendente','processando')"),
-    ];
-    $pedidoCicloResumo = [
-      'recebidos_tiny' => $this->safeCount('pedidos_hub', "status_hub='recebido_tiny'"),
-      'enviados_vsm' => $this->safeCount('pedidos_hub', "status_hub='enviado_vsm'"),
-      'aguardando_xml' => $this->safeCount('pedidos_hub', "status_hub IN ('recebido_vsm','xml_validado')"),
-      'enviados_tiny' => $this->safeCount('pedidos_hub', "status_hub='enviado_tiny'"),
-      'concluidos' => $this->safeCount('pedidos_hub', "status_hub='concluido'"),
-      'erros' => $this->safeCount('pedidos_hub', "status_hub LIKE '%erro%'"),
-    ];
-    $pageTitle = 'Centro de Operações';
-    require __DIR__.'/../../views/centro_operacoes.php';
-  }
 
 
   private function dashboardIntegridade(): void {
@@ -1276,42 +1081,6 @@ class DashboardController {
     redirect('index.php?page=produtos-pendencias');
   }
 
-  private function divergenciaEstoque(): void {
-    PermissionService::require('reconciliacao','visualizar');
-    $status = $_GET['status'] ?? '';
-    $busca = trim($_GET['busca'] ?? '');
-    $sql = "SELECT * FROM estoque_divergencias WHERE 1=1"; $params=[];
-    if($status !== ''){ $sql .= " AND status=?"; $params[]=$status; }
-    if($busca !== ''){ $sql .= " AND (sku LIKE ? OR trace_id LIKE ?)"; $params[]="%$busca%"; $params[]="%$busca%"; }
-    // Melhoria 1 da seção 8: o escopo de empresa entra DEPOIS do WHERE montado pelos filtros e
-    // ANTES do ORDER BY/LIMIT — applyToSelect() cuida da posição do parâmetro.
-    [$sql, $params] = TenantScopeService::applyToSelect('estoque_divergencias', $sql, $params);
-    $sql .= " ORDER BY id DESC LIMIT 300";
-    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $divergencias=$st->fetchAll();
-    $pageTitle='Divergência Tiny x VSM';
-    require __DIR__.'/../../views/divergencia_estoque.php';
-  }
-
-  private function divergenciaAcao(): void {
-    PermissionService::require('reconciliacao','executar');
-    Csrf::validate();
-    $id=(int)($_POST['id'] ?? 0); $acao=(string)($_POST['acao'] ?? '');
-    $st = TenantScopeService::run('estoque_divergencias', 'SELECT * FROM estoque_divergencias WHERE id=? LIMIT 1', [$id]); $d=$st->fetch();
-    if(!$d) redirect('index.php?page=divergencia-estoque&erro=nao_encontrada');
-    if($acao==='ignorar') {
-      TenantScopeService::run('estoque_divergencias', "UPDATE estoque_divergencias SET status='ignorado', atualizado_em=NOW() WHERE id=?", [$id]);
-      Audit::event('estoque.divergencia.ignorada','alerta',['entidade'=>'estoque_divergencias','entidade_id'=>$id,'mensagem'=>'Divergência ignorada manualmente.']);
-    } elseif($acao==='marcar_corrigido') {
-      TenantScopeService::run('estoque_divergencias', "UPDATE estoque_divergencias SET status='corrigido', atualizado_em=NOW() WHERE id=?", [$id]);
-      Audit::event('estoque.divergencia.corrigida','sucesso',['entidade'=>'estoque_divergencias','entidade_id'=>$id,'mensagem'=>'Divergência marcada como corrigida manualmente.']);
-    } elseif($acao==='corrigir_tiny') {
-      $payload=['sku'=>$d['sku'],'estoque'=>(float)$d['estoque_vsm'],'origem'=>'divergencia_estoque','divergencia_id'=>$id,'acao'=>'corrigir_tiny'];
-      TenantScopeService::run('fila_integracao', "INSERT INTO fila_integracao(tipo,referencia,payload,status,trace_id) VALUES('produto_vsm_estoque_para_tiny',?,?, 'pendente', ?)", [$d['sku'], json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES), RequestContext::id()]);
-      Audit::event('estoque.divergencia.corrigir_tiny','info',['entidade'=>'estoque_divergencias','entidade_id'=>$id,'mensagem'=>'Gerada fila para corrigir estoque do Tiny com saldo da VSM.','payload'=>$payload]);
-    }
-    redirect('index.php?page=divergencia-estoque');
-  }
-
   private function salvarFluxos(): void {
     PermissionService::require('fluxos','editar');
     Csrf::validate();
@@ -1367,92 +1136,8 @@ class DashboardController {
 
 
 
-  private function centralHomologacao(): void {
-    PermissionService::require('homologacao','visualizar');
-    $cfg = IntegrationConfig::get();
-    $v2 = class_exists('TinyV2HomologationService') ? TinyV2HomologationService::resumo($cfg) : ['checks'=>[], 'progresso'=>0, 'status_geral'=>'pendente', 'historico'=>[], 'ultimo'=>null];
-    $v3 = class_exists('TinyV3HomologationService') ? TinyV3HomologationService::resumo($cfg) : ['checks'=>[], 'progresso'=>0, 'status_geral'=>'pendente', 'historico'=>[], 'ultimo'=>null];
-    $vsmOk = !empty($cfg['vsm_url']);
-    $xmlResumo = ['total'=>0,'pendentes'=>0,'erros'=>0,'xml_sem_envio'=>0];
-    try { if (class_exists('FiscalIntegrationService')) $xmlResumo = array_merge($xmlResumo, FiscalIntegrationService::resumo() ?: []); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
-    try { if (class_exists('FiscalEnterpriseService')) $xmlResumo = array_merge($xmlResumo, FiscalEnterpriseService::reconciliacao() ?: []); } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
-    $pageTitle = 'Central de Homologação';
-    require __DIR__.'/../../views/central_homologacao.php';
-  }
-
-  private function tinyV2Homologacao(): void {
-    PermissionService::require('homologacao','visualizar');
-    $cfg = IntegrationConfig::get();
-    $skuPadrao = trim((string)($_GET['sku'] ?? 'HUB-TESTE-001'));
-    $pedidoPadrao = trim((string)($_GET['pedido_teste'] ?? ''));
-    $resumo = class_exists('TinyV2HomologationService') ? TinyV2HomologationService::resumo($cfg) : ['checks'=>[], 'progresso'=>0, 'status_geral'=>'pendente', 'historico'=>[], 'ultimo'=>null];
-    $ultimoResultado = $_SESSION['tiny_v2_homologacao_ultimo'] ?? null;
-    unset($_SESSION['tiny_v2_homologacao_ultimo']);
-    $pageTitle = 'Tiny V2 - Homologação';
-    require __DIR__.'/../../views/tiny_v2_homologacao.php';
-  }
-
-  private function tinyV2HomologacaoExecutar(): void {
-    PermissionService::require('homologacao','executar');
-    Csrf::validate();
-    try {
-      $_SESSION['tiny_v2_homologacao_ultimo'] = TinyV2HomologationService::executar($_POST);
-    } catch (Throwable $e) {
-      $_SESSION['tiny_v2_homologacao_ultimo'] = ['aprovado'=>false, 'status_final'=>'Erro ao executar homologação Tiny V2', 'trace_id'=>RequestContext::id(), 'erro'=>$e->getMessage(), 'executado_em'=>date('Y-m-d H:i:s')];
-      Audit::exception($e, 'tiny.v2.homologacao.erro', ['codigo_erro'=>'TINY_V2_HOMOLOGATION_ERROR']);
-    }
-    redirect('index.php?page=tiny-v2-homologacao&executado=1');
-  }
 
 
-  private function tinyV3Homologacao(): void {
-    PermissionService::require('homologacao','visualizar');
-    $cfg = IntegrationConfig::get();
-    $skuPadrao = trim((string)($_GET['sku'] ?? 'HUB-TESTE-001'));
-    $pedidoPadrao = trim((string)($_GET['pedido_teste'] ?? ''));
-    $resumo = class_exists('TinyV3HomologationService') ? TinyV3HomologationService::resumo($cfg) : ['checks'=>[], 'progresso'=>0, 'status_geral'=>'pendente', 'historico'=>[], 'ultimo'=>null];
-    $ultimoResultado = $_SESSION['tiny_v3_homologacao_ultimo'] ?? null;
-    unset($_SESSION['tiny_v3_homologacao_ultimo']);
-    $pageTitle = 'Tiny V3 - Homologação';
-    require __DIR__.'/../../views/tiny_v3_homologacao.php';
-  }
-
-  private function tinyV3HomologacaoExecutar(): void {
-    PermissionService::require('homologacao','executar');
-    Csrf::validate();
-    try {
-      $_SESSION['tiny_v3_homologacao_ultimo'] = TinyV3HomologationService::executar($_POST);
-    } catch (Throwable $e) {
-      $_SESSION['tiny_v3_homologacao_ultimo'] = ['aprovado'=>false, 'status_final'=>'Erro ao executar homologação Tiny V3', 'trace_id'=>RequestContext::id(), 'erro'=>$e->getMessage(), 'executado_em'=>date('Y-m-d H:i:s')];
-      Audit::exception($e, 'tiny.v3.homologacao.erro', ['codigo_erro'=>'TINY_V3_HOMOLOGATION_ERROR']);
-    }
-    redirect('index.php?page=tiny-v3-homologacao&executado=1');
-  }
-
-
-
-  private function validarBanco(): void {
-    PermissionService::require('database','validar');
-    $reparar = false;
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-      Csrf::validate();
-      $reparar = ((string)($_POST['acao'] ?? '') === 'repair_schema');
-      if ($reparar) {
-        Audit::event('database.schema_guard.reparo_manual.solicitado','alerta',[
-          'mensagem'=>'Reparo manual de banco solicitado pela tela Validar Banco.',
-          'acao_recomendada'=>'Confirmar backup recente antes de executar reparos de schema em produção.'
-        ]);
-      }
-    }
-    try {
-      $resultado = (new DatabaseValidationService($this->pdo, ['validation_max_seconds'=>(int)cfg('security.database_validation_max_seconds',20),'repair_max_seconds'=>(int)cfg('security.database_repair_max_seconds',90),'max_checks'=>(int)cfg('security.database_validation_max_checks',320)]))->executar($reparar);
-    } catch(Throwable $e) {
-      try { Audit::exception($e, 'database.validacao.legado.erro'); } catch(Throwable $ignored){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $ignored); }
-      $resultado = ['status'=>'erro','total'=>1,'ok'=>0,'atencao'=>0,'erro'=>1,'checks'=>[['status'=>'erro','titulo'=>'Falha ao validar banco','mensagem'=>$e->getMessage(),'acao'=>'Consultar Auditoria pelo Trace ID e revisar config.php/permissões MySQL.']],'trace_id'=>RequestContext::id(),'executado_em'=>date('Y-m-d H:i:s'),'modo'=>$reparar?'reparo_manual':'validacao_leitura_segura','parcial'=>false,'duracao_ms'=>0,'acao_recomendada'=>'Corrigir erro informado e consultar auditoria pelo Trace ID.'];
-    }
-    $pageTitle = $reparar ? 'Reparar Banco de Dados' : 'Validar Banco de Dados';
-    require __DIR__.'/../../views/validar_banco.php';
-  }
 
   private function columnExistsForUpdate(string $table, string $column): bool {
     try { return Database::columnExists($table, $column); }
@@ -1676,13 +1361,6 @@ class DashboardController {
   }
 
 
-  private function healthModulos(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $checks = class_exists('ModuleHealthService') ? ModuleHealthService::checks() : [];
-    $pageTitle = 'Health Check por Módulo';
-    require __DIR__.'/../../views/health_modulos.php';
-  }
-
   private function menuTestes(): void {
     PermissionService::require('dashboard','visualizar');
     $checks = class_exists('MenuActionTestService') ? MenuActionTestService::run() : [];
@@ -1848,14 +1526,6 @@ class DashboardController {
       Audit::event('categoria_mapeamento.criada','sucesso',['entidade'=>'categorias_mapeamento','entidade_id'=>$pdo->lastInsertId(),'mensagem'=>'Mapeamento de categoria criado.']);
     }
     redirect('index.php?page=categorias-mapeamento&salvo=1');
-  }
-
-  private function sobre(): void {
-    Auth::requireLogin();
-    $pageTitle = 'Sobre';
-    $branding = 'Hub de Integração Enterprise';
-    $assinatura = 'Desenvolvido por Sabas';
-    require __DIR__.'/../../views/sobre.php';
   }
 
   private function producaoReady(): void {
