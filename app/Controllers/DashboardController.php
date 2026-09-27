@@ -112,12 +112,6 @@ class DashboardController {
       case 'usuario-excluir': $this->usuarioExcluir(); break;
       case 'permissoes-salvar': $this->permissoesSalvar(); break;
       case 'trocar-senha': $this->trocarSenha(); break;
-      case 'backup': $this->backup(); break;
-      case 'backup-download': $this->backupDownload(); break;
-      case 'backup-excluir': $this->backupExcluir(); break;
-      case 'backup-importar': $this->backupImportar(); break;
-      case 'backup-restaurar': $this->backupRestaurar(); break;
-      case 'backups': $this->backups(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       case 'configuracoes': $this->configuracoes(); break;
       case 'central-homologacao': $this->centralHomologacao(); break;
@@ -1170,85 +1164,6 @@ class DashboardController {
     redirect('index.php?page=dashboard&senha=ok');
   }
 
-  private function backup(): void {
-    PermissionService::require('backup','gerar');
-    Csrf::validate();
-    $file=BackupService::gerarZip();
-    header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="'.basename($file).'"');
-    readfile($file); exit;
-  }
-
-  private function backups(): void {
-    PermissionService::require('backup','visualizar');
-    BackupSchemaService::ensure();
-    $backups=BackupSchemaService::list(100);
-    $pageTitle='Backups';
-    require __DIR__.'/../../views/backups.php';
-  }
-
-  private function backupDownload(): void {
-    PermissionService::require('backup','baixar');
-    BackupSchemaService::ensure();
-    $id=(int)($_GET['id'] ?? 0);
-    $pdoBackups=Database::forTable('backups_banco');
-    $st=$pdoBackups->prepare('SELECT * FROM backups_banco WHERE id=? LIMIT 1');
-    $st->execute([$id]); $b=$st->fetch();
-    if(!$b){ http_response_code(404); exit('Backup não encontrado.'); }
-    $file=dirname(__DIR__,2).'/storage/backups/'.basename($b['arquivo']);
-    if(!is_file($file)){ http_response_code(404); exit('Arquivo físico não encontrado em storage/backups.'); }
-    Audit::event('backup.download','sucesso',['mensagem'=>'Backup baixado','entidade'=>'backups_banco','entidade_id'=>$id]);
-    header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="'.basename($file).'"');
-    header('Content-Length: '.filesize($file));
-    readfile($file); exit;
-  }
-
-  private function backupExcluir(): void {
-    PermissionService::require('backup','excluir');
-    Csrf::validate();
-    BackupSchemaService::ensure();
-    $id=(int)($_POST['id'] ?? 0);
-    $pdoBackups=Database::forTable('backups_banco');
-    $st=$pdoBackups->prepare('SELECT * FROM backups_banco WHERE id=? LIMIT 1');
-    $st->execute([$id]); $b=$st->fetch();
-    if($b){
-      $file=dirname(__DIR__,2).'/storage/backups/'.basename($b['arquivo']);
-      if(is_file($file)) @unlink($file);
-      $pdoBackups->prepare('DELETE FROM backups_banco WHERE id=?')->execute([$id]);
-      Audit::event('backup.excluir','sucesso',['mensagem'=>'Backup excluído','entidade'=>'backups_banco','entidade_id'=>$id]);
-    }
-    redirect('index.php?page=backups');
-  }
-
-
-  private function backupImportar(): void {
-    PermissionService::require('backup','importar');
-    Csrf::validate();
-    try{
-      BackupService::importarUpload($_FILES['backup_arquivo'] ?? []);
-      $_SESSION['flash_success']='Backup importado com sucesso. Confira o histórico antes de restaurar.';
-    } catch(Throwable $e){
-      $_SESSION['flash_error']=$e->getMessage();
-      Audit::event('backup.importar','erro',['mensagem'=>$e->getMessage()]);
-    }
-    redirect('index.php?page=backups');
-  }
-
-  private function backupRestaurar(): void {
-    PermissionService::require('backup','restaurar');
-    Csrf::validate();
-    $id=(int)($_POST['id'] ?? 0);
-    $confirmacao=(string)($_POST['confirmacao'] ?? '');
-    try{
-      BackupService::restaurarPorId($id, $confirmacao);
-      $_SESSION['flash_success']='Backup restaurado com sucesso. Revise o Health do Sistema e valide as integrações.';
-    } catch(Throwable $e){
-      $_SESSION['flash_error']=$e->getMessage();
-      Audit::event('backup.restaurar','erro',['mensagem'=>$e->getMessage(),'entidade'=>'backups_banco','entidade_id'=>$id]);
-    }
-    redirect('index.php?page=backups');
-  }
 
   /**
    * P2 (reauditoria 2026-08-23): neutraliza injeção de fórmula CSV (CWE-1236). Um campo
