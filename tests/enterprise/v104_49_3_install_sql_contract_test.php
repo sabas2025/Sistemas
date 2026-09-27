@@ -78,7 +78,10 @@ if($faltando===[]){
 
     // I-20: afirmar o N do conjunto antes de afirmar o vazio. Verde sobre nada não é verde.
     hub_check($checks,'O contrato reconhece as 136 tabelas (incluindo MyOuro)', $tabelas===136, $tabelas.' tabela(s)');
-    hub_check($checks,'O contrato reconhece as 1.568 colunas (inclui as 5 credenciais VSM do F6-07)', $colunas===1568, $colunas.' coluna(s)');
+    // F5-01 (auditoria Fase 5, 2026-09-27): 1568 -> 1566. Removidas tiny_v3_manual_access_token e
+    // tiny_v3_manual_refresh_token de configuracoes_integracao (colunas mortas: nunca gravadas, só
+    // lidas como !empty()). DROP em migration 20260927_019 + core.sql, no mesmo commit (I-18).
+    hub_check($checks,'O contrato reconhece as 1.566 colunas (F5-01: -2 colunas mortas do Tiny V3 manual)', $colunas===1566, $colunas.' coluna(s)');
     hub_check($checks,'Nenhuma coluna é rejeitada pelo contrato canônico do instalador',
         $rejeitadas===[], $rejeitadas===[] ? '' : count($rejeitadas).' rejeitada(s): '.implode(', ',array_slice($rejeitadas,0,6)));
 }

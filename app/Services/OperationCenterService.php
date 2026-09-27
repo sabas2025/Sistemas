@@ -99,7 +99,7 @@ class OperationCenterService {
     try { $cfgInt = $cfgInt ?? IntegrationConfig::get(); } catch(Throwable $e){ $cfgInt=[]; }
     $tinyV2Ok = !empty($cfgInt['tiny_v2_token']);
     $tinyV3Operacional = !empty($cfgInt['tiny_v3_operacional']);
-    $tinyV3OAuth = !empty($cfgInt['tiny_v3_access_token']) || !empty($cfgInt['tiny_v3_refresh_token']) || !empty($cfgInt['tiny_v3_client_id']) || !empty($cfgInt['tiny_v3_manual_access_token']);
+    $tinyV3OAuth = !empty($cfgInt['tiny_v3_access_token']) || !empty($cfgInt['tiny_v3_refresh_token']) || !empty($cfgInt['tiny_v3_client_id']);
     $vsmOk = !empty($cfgInt['vsm_url']) && !empty($cfgInt['vsm_token']);
     $vsmUrlOk = !empty($cfgInt['vsm_url']);
 
@@ -188,7 +188,7 @@ class OperationCenterService {
     $v2 = $s['homologacao']['tiny_v2'] ?? [];
     $v3 = $s['homologacao']['tiny_v3'] ?? [];
     $tinyV2Score = !empty($v2['existe']) && ($v2['status']??'')!=='sem_teste' ? (int)($v2['percentual'] ?? 0) : (!empty($cfg['tiny_v2_token']) ? 60 : 0);
-    $tinyV3Score = !empty($v3['existe']) && ($v3['status']??'')!=='sem_teste' ? (int)($v3['percentual'] ?? 0) : ((!empty($cfg['tiny_v3_access_token']) || !empty($cfg['tiny_v3_manual_access_token']) || !empty($cfg['tiny_v3_client_id'])) ? 50 : 0);
+    $tinyV3Score = !empty($v3['existe']) && ($v3['status']??'')!=='sem_teste' ? (int)($v3['percentual'] ?? 0) : ((!empty($cfg['tiny_v3_access_token']) || !empty($cfg['tiny_v3_client_id'])) ? 50 : 0);
     $vsmScore = (!empty($cfg['vsm_url']) && !empty($cfg['vsm_token'])) ? 100 : (!empty($cfg['vsm_url']) ? 50 : 0);
     $items = [
       'Tiny V2'=>['score'=>$tinyV2Score,'real'=>!empty($v2['existe']) && ($v2['status']??'')!=='sem_teste','fonte'=>!empty($v2['trace_id'])?'tiny_v2_homologacao_testes / '.$v2['trace_id']:'configuracoes_integracao','detalhe'=>!empty($v2['trace_id'])?'Último teste real de homologação':'Sem teste salvo; score baseado somente em configuração'],

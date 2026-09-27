@@ -77,7 +77,10 @@ class TinyV2Service implements TinyClientInterface {
   private static function logEndpoint(string $endpoint, string $metodo, int $http, bool $sucesso, int $tempoMs, array $request, $response, ?string $erro=null): void {
     try {
       $pdo=Database::forTable('tiny_v2_endpoint_logs');
-      $st=$pdo->prepare("SHOW TABLES LIKE 'tiny_v2_endpoint_logs'"); $st->execute(); if(!$st->fetch()) return;
+      // F5-02 (auditoria Fase 5, 2026-09-27): a sonda `SHOW TABLES LIKE 'tiny_v2_endpoint_logs'`
+      // por chamada saiu. O TinyV3Service::logEndpoint() nunca sondou - tenta o INSERT e deixa o
+      // catch(Throwable) abaixo tratar tabela ausente como best-effort. Alinhado ao V3: um
+      // round-trip a menos por chamada Tiny V2, mesmo resultado (sem log quando a tabela falta).
       // Auditoria final 2026-09-14 (achado G-01): estas duas colunas eram preenchidas com
       // SensitiveDataService::maskJson(), que declara `string $body`. Mas $request é `array` por
       // assinatura e $response chega como array no caminho de sucesso - array não é coercível
