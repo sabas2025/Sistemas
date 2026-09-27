@@ -49,6 +49,8 @@ class FastRouteDispatcherService {
     HomologacaoController::class => ['selftest','selftest-executar','homologacao','homologacao-acao','homologacao-relatorio','relatorio-homologacao','homologacao-automatica','homologacao-automatica-executar','oauth-v3-checklist'],
     // Fase 3 etapa Laboratório: a tela do Laboratório de Integração, o despachante por $tipo e os quatro simuladores de fila.
     LaboratorioController::class => ['laboratorio','laboratorio-executar','simular-baixa-tiny','simular-produto-vsm','simular-estoque-vsm','simular-status-vsm'],
+    // Fase 3 etapa Usuários & Sessão: gestão de usuários/permissões e troca de senha (o gate de troca obrigatória segue no dispatch, antes do roteamento).
+    UsuarioController::class => ['usuarios','usuario-salvar','usuario-excluir','permissoes-salvar','trocar-senha'],
   ];
 
   /** @var array<string, string>|null */

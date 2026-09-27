@@ -10,6 +10,8 @@ hub_check($checks,'Senha contendo nome do e-mail é bloqueada',!PasswordPolicySe
 $generated=PasswordPolicyService::generateTemporary();
 hub_check($checks,'Senha temporária gerada cumpre a política',PasswordPolicyService::isValid($generated,'novo@example.com')&&strlen($generated)>=16);
 $dash=hub_read('app/Controllers/DashboardController.php');
-hub_check($checks,'Troca de senha incrementa versão da sessão',str_contains($dash,'session_version=COALESCE(session_version,0)+1')&&str_contains($dash,'$_SESSION[\'session_version\']'));
-hub_check($checks,'Senha temporária é exibida somente uma vez',str_contains($dash,'unset($_SESSION[\'senha_temporaria_ultima\'])')&&str_contains(hub_read('views/usuarios.php'),'Senha temporária exibida uma única vez'));
+// Fase 3 (2026-09-27): a gestão de usuários e a troca de senha migraram para o UsuarioController.
+$usr=hub_read('app/Controllers/UsuarioController.php');
+hub_check($checks,'Troca de senha incrementa versão da sessão',str_contains($usr,'session_version=COALESCE(session_version,0)+1')&&str_contains($usr,'$_SESSION[\'session_version\']'));
+hub_check($checks,'Senha temporária é exibida somente uma vez',str_contains($usr,'unset($_SESSION[\'senha_temporaria_ultima\'])')&&str_contains(hub_read('views/usuarios.php'),'Senha temporária exibida uma única vez'));
 hub_finish($checks);
