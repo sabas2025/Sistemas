@@ -60,8 +60,8 @@ foreach ($donos as $ctrl => $rotas) {
 }
 
 // Delegações VIVAS (não estão no dispatchGroups) devem PERMANECER no Dashboard.
-// (auditoria-detalhe deixou de ser delegação viva do Dashboard: foi para o dispatchGroups na etapa Auditoria.)
-hub_check($checks, 'delegação viva fila-morta-reprocessar permanece no Dashboard', str_contains($dash, "case 'fila-morta-reprocessar'"));
+// (auditoria-detalhe e fila-morta-reprocessar deixaram de ser delegações vivas do Dashboard: foram
+//  para o dispatchGroups nas etapas Auditoria e Fila. Não resta delegação viva no switch do Dashboard.)
 // Rotas vivas do próprio Dashboard permanecem.
 // (configuracoes migrou para o ConfiguracaoController na etapa Configurações — não é mais rota do Dashboard.)
 // (produtos migrou para o ProdutoController na etapa Produtos — não é mais rota do Dashboard.)

@@ -59,6 +59,8 @@ class FastRouteDispatcherService {
     AuditoriaController::class => ['auditoria','auditoria-detalhe','auditoria-codigo','auditoria-hash-chain','auditoria-assinar-trace','auditoria-exportar-pdf','auditoria-exportar-enterprise'],
     // Fase 3 etapa Produtos: mapeamento de produtos, recebidos da VSM, pendências e pendentes de integração — consolidados no ProdutoController.
     ProdutoController::class => ['produtos','produtos-pendencias','produtos-vsm','produtos-pendentes-integracao','produto-pendente-integracao-comparar','produto-pendente-integracao-acao','produto-pendencia-acao'],
+    // Fase 3 etapa Fila: fila de integração (lista/reprocessar/criar-teste), analytics V24 e fila morta/DLQ (lista/reprocessar) — consolidadas no FilaController.
+    FilaController::class => ['fila','fila-reprocessar','fila-criar-teste','fila-morta-reprocessar','fila-analytics-v24','fila-morta'],
   ];
 
   /** @var array<string, string>|null */
