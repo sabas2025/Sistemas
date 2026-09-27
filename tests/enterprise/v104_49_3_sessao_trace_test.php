@@ -27,14 +27,16 @@ hub_check($checks, 'O handler mora no AuditoriaController, com dispatch',
     str_contains($aud, 'public function dispatch(string $page)') && str_contains($aud, 'public function detalhe()'));
 
 $dash = hub_read('app/Controllers/DashboardController.php');
-// A segunda metade é uma asserção NEGATIVA, e negativa sobre arquivo ausente passa por engano
-// (hub_read devolve string vazia). O $dash !== '' à frente é o que a torna honesta — achado I-20.
-hub_check($checks, 'O DashboardController delega a rota e não guarda mais o handler',
-    $dash !== ''
-    && str_contains($dash, "case 'auditoria-detalhe': (new AuditoriaController())->dispatch(\$page); break;")
-    && !str_contains($dash, 'private function auditoriaDetalhe'));
+$disp = hub_read('app/Services/FastRouteDispatcherService.php');
+// Fase 3 (2026-09-27): na etapa Auditoria, auditoria-detalhe deixou de ser delegação viva no
+// switch do Dashboard e passou a ser roteada pelo dispatchGroups; o handler de assinatura
+// (auditoriaAssinarTrace) migrou junto para o AuditoriaController. As asserções NEGATIVAS trazem
+// o $dash !== '' à frente para não passarem por engano sobre arquivo ausente (achado I-20).
+hub_check($checks, 'auditoria-detalhe é roteada pelo dispatchGroups ao AuditoriaController, fora do Dashboard',
+    (bool)preg_match('/AuditoriaController::class => \[[^\]]*\'auditoria-detalhe\'/', $disp)
+    && $dash !== '' && !str_contains($dash, "case 'auditoria-detalhe'"));
 hub_check($checks, 'O redirect de assinatura continua usando trace_id (era o link que quebrava)',
-    str_contains($dash, "page=auditoria-detalhe&trace_id='.urlencode(\$trace)"));
+    str_contains($aud, "page=auditoria-detalhe&trace_id='.urlencode(\$trace)"));
 
 // O teto que motivou a mudança de lugar: medir, não supor.
 $bytes = strlen($dash);

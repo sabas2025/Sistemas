@@ -55,6 +55,8 @@ class FastRouteDispatcherService {
     ConfiguracaoController::class => ['configuracoes','salvar-configuracoes','salvar-fluxos','regras-sincronizacao','salvar-regras-sincronizacao','categorias-mapeamento','categoria-mapeamento-salvar'],
     // Fase 3 etapa Estoque: telas/ações de estoque (dashboard, config, alertas, consultas VSM), baixas e reconciliação — antes delegadas por fallback ao EstoqueController.
     EstoqueController::class => ['estoque-dashboard','estoque-config','estoque-config-salvar','estoque-alertas','estoque-sku-historico','estoque-consultas-vsm','estoque-consulta-vsm-resultados','estoque-consulta-vsm-testar-sku','estoque-reconciliar-agora','estoque-consulta-vsm-executar','estoque-consulta-tiny-executar','baixas-estoque','reconciliacao','reconciliacao-executar'],
+    // Fase 3 etapa Auditoria: trilha (lista/detalhe), auditoria de código, cadeia de hash, assinatura de trace e exportações (PDF/enterprise) — consolidadas no AuditoriaController.
+    AuditoriaController::class => ['auditoria','auditoria-detalhe','auditoria-codigo','auditoria-hash-chain','auditoria-assinar-trace','auditoria-exportar-pdf','auditoria-exportar-enterprise'],
   ];
 
   /** @var array<string, string>|null */
