@@ -51,7 +51,10 @@ hub_check($checks,'Migration controller aceita padrão YYYYMMDD_NNN',str_contain
 $serviceComplete=true;foreach(array_merge($tables,['vsm_endpoints','vsm_campos_mapeamento','vsm_endpoint_logs']) as $table){if(!str_contains($schemaService,"'{$table}'")){$serviceComplete=false;break;}}
 hub_check($checks,'Reparo assistido Enterprise Core cobre tabelas da migration 002',$serviceComplete);
 
-$delegated=str_contains($dashboard,"(new OrquestracaoController())->dispatch(\$page)")&&!preg_match('/private\s+function\s+(orquestracaoIntegracoes|salvarOrquestracaoIntegracoes|testarOrquestracaoFluxo)\s*\(/',$dashboard);
-hub_check($checks,'Dashboard delega orquestração e não mantém implementação duplicada',$delegated);
+// Fase 3 (A3-03): orquestração é roteada pelo dispatchGroups a OrquestracaoController antes do
+// fallback do Dashboard; o fallback duplicado que existia aqui era código morto e foi removido.
+$dispatcherOrq=hub_read('app/Services/FastRouteDispatcherService.php');
+$delegated=(bool)preg_match('/OrquestracaoController::class => \[[^\]]*\'orquestracao-integracoes\'/',$dispatcherOrq)&&!preg_match('/private\s+function\s+(orquestracaoIntegracoes|salvarOrquestracaoIntegracoes|testarOrquestracaoFluxo)\s*\(/',$dashboard)&&!str_contains($dashboard,"(new OrquestracaoController())->dispatch(\$page)");
+hub_check($checks,'Orquestração roteada por dispatchGroups, sem duplicata no Dashboard',$delegated);
 
 hub_finish($checks);

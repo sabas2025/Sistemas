@@ -26,11 +26,16 @@ class DashboardIntegrityService {
       $checks[] = ['item'=>$label, 'modulo'=>'arquivo', 'status'=>is_file($path)?'ok':'erro', 'mensagem'=>is_file($path)?'Arquivo encontrado':'Arquivo ausente: '.$file];
     }
     $vars = ['k','pedidos','logs','filaResumo','healthCards','syncRules','syncResumo','ultimoDiagVsm','ultimoDiagTiny','ultimoPedidoIntegrado','ultimaFalha','ultimaBaixaVsm','ultimoProdutoTiny','baixasErro','produtosErro','filaTinyVsm','filaVsmTiny','tinyV3Aviso'];
-    foreach ($vars as $v) $checks[] = ['item'=>'Variável dashboard: '.$v, 'modulo'=>'view', 'status'=>'ok', 'mensagem'=>'Definida no DashboardController::dashboard()'];
+    foreach ($vars as $v) $checks[] = ['item'=>'Variável dashboard: '.$v, 'modulo'=>'view', 'status'=>'ok', 'mensagem'=>'Fornecida à tela do dashboard (DashboardHomeController)'];
     $routes = ['dashboard','dashboard-integridade','dashboard-integridade-executar','diagnostico','pedidos','produtos','baixas-estoque','fiscal','integracoes','logs','api/processar-fila'];
+    // A verificação consulta as DUAS fontes de roteamento: o switch legado do DashboardController
+    // (rotas ainda atendidas por ele, incl. as que delegam por fallback) E o dispatchGroups do
+    // FastRouteDispatcherService (rotas migradas para controllers dedicados, como fiscal). Sem a
+    // segunda fonte, toda rota já extraída viraria falso "não localizada" — indicador que mente.
     $controller = is_file(dirname(__DIR__).'/Controllers/DashboardController.php') ? file_get_contents(dirname(__DIR__).'/Controllers/DashboardController.php') : '';
+    $dispatcher = is_file(dirname(__DIR__).'/Services/FastRouteDispatcherService.php') ? file_get_contents(dirname(__DIR__).'/Services/FastRouteDispatcherService.php') : '';
     foreach ($routes as $r) {
-      $ok = ($r === 'dashboard') || str_contains($controller, "case '$r'") || str_contains($controller, 'case "'.$r.'"') || str_starts_with($r,'api/');
+      $ok = ($r === 'dashboard') || str_contains($controller, "case '$r'") || str_contains($controller, 'case "'.$r.'"') || str_starts_with($r,'api/') || str_contains($dispatcher, "'".$r."'");
       $checks[] = ['item'=>'Link/rota: '.$r, 'modulo'=>'rota', 'status'=>$ok?'ok':'erro', 'mensagem'=>$ok?'Rota encontrada no dispatcher':'Rota não localizada no dispatcher'];
     }
     if (class_exists('ModuleHealthService')) { foreach (ModuleHealthService::checks() as $m) { $checks[] = ['item'=>'Health módulo: '.$m['modulo'],'modulo'=>$m['modulo'],'status'=>$m['status'],'mensagem'=>$m['mensagem']]; } }
