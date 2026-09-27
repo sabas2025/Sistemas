@@ -14,6 +14,9 @@ class EstoqueController {
       case 'estoque-reconciliar-agora': $this->reconciliarAgora(); break;
       case 'estoque-consulta-vsm-executar': $this->executarConsultaVsm(); break;
       case 'estoque-consulta-tiny-executar': $this->executarConsultaVsm(); break; // compatibilidade V63
+      case 'baixas-estoque': $this->baixasEstoque(); break;
+      case 'reconciliacao': $this->reconciliacao(); break;
+      case 'reconciliacao-executar': $this->reconciliacaoExecutar(); break;
       default: redirect('index.php?page=estoque-dashboard');
     }
   }
@@ -166,4 +169,37 @@ class EstoqueController {
     $res = EstoqueEnterpriseService::criarReconciliacaoManual();
     redirect('index.php?page=estoque-dashboard&reconciliacao='.$res['id']);
   }
+  private function baixasEstoque(): void {
+    PermissionService::require('estoque','visualizar');
+    $status = $_GET['status'] ?? '';
+    $busca = trim($_GET['busca'] ?? '');
+    $sql = "SELECT * FROM estoque_movimentos WHERE 1=1"; $params=[];
+    if($status !== ''){ $sql .= " AND status=?"; $params[]=$status; }
+    if($busca !== ''){ $sql .= " AND (sku LIKE ? OR referencia LIKE ? OR trace_id LIKE ?)"; $params[]="%$busca%"; $params[]="%$busca%"; $params[]="%$busca%"; }
+    $sql .= " ORDER BY id DESC LIMIT 300";
+    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $movimentos=$st->fetchAll();
+    $resumo=TenantScopeService::run('estoque_movimentos', "SELECT status, COUNT(*) total FROM estoque_movimentos GROUP BY status")->fetchAll();
+    $pageTitle='Baixas de Estoque VSM';
+    require __DIR__.'/../../views/baixas_estoque.php';
+  }
+
+  private function reconciliacao(): void {
+    PermissionService::require('reconciliacao','visualizar');
+    $dados=ReconciliationService::resumo();
+    $pageTitle='Reconciliação de Estoque';
+    require __DIR__.'/../../views/reconciliacao.php';
+  }
+
+  private function reconciliacaoExecutar(): void {
+    PermissionService::require('reconciliacao','executar'); Csrf::validate();
+    $sku=trim($_POST['sku'] ?? ''); $tinyRaw=trim((string)($_POST['estoque_tiny'] ?? '')); $vsmRaw=trim((string)($_POST['estoque_vsm'] ?? ''));
+    if($sku!=='' && $tinyRaw==='' && $vsmRaw==='') {
+      // L-01: reconciliarSku degrada com elegância se o provedor externo estiver fora.
+      $r=ReconciliationService::reconciliarSku($sku);
+      if(($r['status'] ?? '')==='indisponivel') redirect('index.php?page=reconciliacao&erro=provedor_indisponivel');
+    }
+    elseif($sku!=='') { ReconciliationService::registrarManual($sku,(float)$tinyRaw,(float)$vsmRaw,'painel'); }
+    redirect('index.php?page=reconciliacao');
+  }
+
 }

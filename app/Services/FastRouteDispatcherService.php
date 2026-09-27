@@ -53,6 +53,8 @@ class FastRouteDispatcherService {
     UsuarioController::class => ['usuarios','usuario-salvar','usuario-excluir','permissoes-salvar','trocar-senha'],
     // Fase 3 etapa Configurações: tela/salvamento de configurações, fluxos ativos, regras de sincronização e mapeamento de categorias.
     ConfiguracaoController::class => ['configuracoes','salvar-configuracoes','salvar-fluxos','regras-sincronizacao','salvar-regras-sincronizacao','categorias-mapeamento','categoria-mapeamento-salvar'],
+    // Fase 3 etapa Estoque: telas/ações de estoque (dashboard, config, alertas, consultas VSM), baixas e reconciliação — antes delegadas por fallback ao EstoqueController.
+    EstoqueController::class => ['estoque-dashboard','estoque-config','estoque-config-salvar','estoque-alertas','estoque-sku-historico','estoque-consultas-vsm','estoque-consulta-vsm-resultados','estoque-consulta-vsm-testar-sku','estoque-reconciliar-agora','estoque-consulta-vsm-executar','estoque-consulta-tiny-executar','baixas-estoque','reconciliacao','reconciliacao-executar'],
   ];
 
   /** @var array<string, string>|null */
