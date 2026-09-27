@@ -50,7 +50,8 @@ hub_check($checks, 'não registra comparação no caminho de indisponibilidade (
 hub_check($checks, 'caminho de sucesso preservado (registra + audita reconciliacao.sku.real)',
   str_contains($m,'registrarManual') && str_contains($m,'reconciliacao.sku.real'));
 
-$ctrl = $extrair(hub_read('app/Controllers/DashboardController.php'), 'reconciliacaoExecutar');
+// Fase 3 (2026-09-27): reconciliacao(-executar) migrou para o EstoqueController.
+$ctrl = $extrair(hub_read('app/Controllers/EstoqueController.php'), 'reconciliacaoExecutar');
 hub_check($checks, 'controller redireciona com aviso amigável quando indisponível',
   $ctrl !== '' && str_contains($ctrl,'indisponivel') && str_contains($ctrl,'provedor_indisponivel'));
 

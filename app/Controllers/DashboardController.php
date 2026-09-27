@@ -31,18 +31,6 @@ class DashboardController {
       case 'fila-reprocessar': (new FilaController())->dispatch($page); break;
       case 'fila-criar-teste': (new FilaController())->dispatch($page); break;
       case 'produtos': (new ProdutoController())->dispatch($page); break;
-      case 'estoque-dashboard': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-config': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-config-salvar': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-alertas': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-sku-historico': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-consultas-vsm': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-consulta-vsm-resultados': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-consulta-vsm-testar-sku': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-reconciliar-agora': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-consulta-vsm-executar': (new EstoqueController())->dispatch($page); break;
-      case 'estoque-consulta-tiny-executar': (new EstoqueController())->dispatch($page); break;
-      case 'baixas-estoque': $this->baixasEstoque(); break;
       case 'produtos-vsm': $this->produtosVsm(); break;
       case 'produtos-pendencias': (new ProdutoController())->dispatch($page); break;
       case 'produtos-pendentes-integracao': $this->produtosPendentesIntegracao(); break;
@@ -81,8 +69,6 @@ class DashboardController {
       case 'auditoria-exportar-enterprise': $this->auditoriaExportarEnterprise(); break;
       case 'fila-morta': $this->filaMorta(); break;
       case 'fila-morta-reprocessar': (new FilaController())->dispatch($page); break;
-      case 'reconciliacao': $this->reconciliacao(); break;
-      case 'reconciliacao-executar': $this->reconciliacaoExecutar(); break;
       case 'metricas': $this->metricas(); break;
       case 'logs-exportar': $this->logsExportar(); break;
       // Reauditoria 2026-09-14 (achado A-13): antes qualquer rota desconhecida renderizava o
@@ -598,20 +584,6 @@ class DashboardController {
   }
 
 
-  private function baixasEstoque(): void {
-    PermissionService::require('estoque','visualizar');
-    $status = $_GET['status'] ?? '';
-    $busca = trim($_GET['busca'] ?? '');
-    $sql = "SELECT * FROM estoque_movimentos WHERE 1=1"; $params=[];
-    if($status !== ''){ $sql .= " AND status=?"; $params[]=$status; }
-    if($busca !== ''){ $sql .= " AND (sku LIKE ? OR referencia LIKE ? OR trace_id LIKE ?)"; $params[]="%$busca%"; $params[]="%$busca%"; $params[]="%$busca%"; }
-    $sql .= " ORDER BY id DESC LIMIT 300";
-    $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $movimentos=$st->fetchAll();
-    $resumo=TenantScopeService::run('estoque_movimentos', "SELECT status, COUNT(*) total FROM estoque_movimentos GROUP BY status")->fetchAll();
-    $pageTitle='Baixas de Estoque VSM';
-    require __DIR__.'/../../views/baixas_estoque.php';
-  }
-
   private function produtosVsm(): void {
     PermissionService::require('produtos_vsm','visualizar');
     $status = $_GET['status'] ?? '';
@@ -692,25 +664,6 @@ class DashboardController {
     $st=Database::tableConnectionForSql($sql)->prepare($sql); $st->execute($params); $itens=$st->fetchAll();
     $pageTitle='Fila Morta / DLQ';
     require __DIR__.'/../../views/fila_morta.php';
-  }
-
-  private function reconciliacao(): void {
-    PermissionService::require('reconciliacao','visualizar');
-    $dados=ReconciliationService::resumo();
-    $pageTitle='Reconciliação de Estoque';
-    require __DIR__.'/../../views/reconciliacao.php';
-  }
-
-  private function reconciliacaoExecutar(): void {
-    PermissionService::require('reconciliacao','executar'); Csrf::validate();
-    $sku=trim($_POST['sku'] ?? ''); $tinyRaw=trim((string)($_POST['estoque_tiny'] ?? '')); $vsmRaw=trim((string)($_POST['estoque_vsm'] ?? ''));
-    if($sku!=='' && $tinyRaw==='' && $vsmRaw==='') {
-      // L-01: reconciliarSku degrada com elegância se o provedor externo estiver fora.
-      $r=ReconciliationService::reconciliarSku($sku);
-      if(($r['status'] ?? '')==='indisponivel') redirect('index.php?page=reconciliacao&erro=provedor_indisponivel');
-    }
-    elseif($sku!=='') { ReconciliationService::registrarManual($sku,(float)$tinyRaw,(float)$vsmRaw,'painel'); }
-    redirect('index.php?page=reconciliacao');
   }
 
   private function metricas(): void {

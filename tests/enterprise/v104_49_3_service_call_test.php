@@ -81,7 +81,11 @@ foreach ($arquivos as $arquivo) {
     }
 }
 
-hub_check($checks, "Chamadas (new Classe(...))->metodo() conferidas: {$conferidas}", $conferidas >= 30);
+// Piso anti-"conjunto vazio": garante que a varredura achou chamadas de verdade (não que passou
+// por não ter lido nada). O número cai à medida que a decomposição da Fase 3 troca delegações
+// (new X())->dispatch() por entradas no dispatchGroups — legítimo; o que importa é $faltando/$arity
+// vazios acima. Piso rebaixado de 30 para 20 na etapa Estoque (11 delegações viraram dispatchGroups).
+hub_check($checks, "Chamadas (new Classe(...))->metodo() conferidas: {$conferidas}", $conferidas >= 20);
 hub_check($checks, 'Nenhum método de serviço inexistente: '.(implode(' | ', $faltando) ?: 'nenhum'), $faltando === []);
 hub_check($checks, 'Nenhum construtor chamado com argumentos de menos: '.(implode(' | ', $arity) ?: 'nenhum'), $arity === []);
 
