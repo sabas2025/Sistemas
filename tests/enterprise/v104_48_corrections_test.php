@@ -5,7 +5,8 @@ $checks=[];$queue=hub_read('app/Services/QueueService.php');$token=hub_read('app
 hub_check($checks,'Lease padrão configurável',isset($cfg['security']['queue_lease_minutes'])&&(int)$cfg['security']['queue_lease_minutes']===5&&str_contains($queue,'leaseMinutes(?string $type'));
 hub_check($checks,'Lease por tipo configurável',isset($cfg['security']['queue_lease_minutes_by_type'])&&str_contains($queue,'queue_lease_by_type_json'));
 hub_check($checks,'Instalador grava installation_id e lease',str_contains($install,"'installation_id'")&&str_contains($install,'queue_lease_minutes_by_type'));
-hub_check($checks,'Painel permite configurar lease',str_contains($view,'queue_lease_minutes')&&str_contains($controller,'queue_lease_by_type_json'));
+// Fase 3 (2026-09-27): salvarConfiguracoes migrou para o ConfiguracaoController.
+hub_check($checks,'Painel permite configurar lease',str_contains($view,'queue_lease_minutes')&&str_contains(hub_read('app/Controllers/ConfiguracaoController.php'),'queue_lease_by_type_json'));
 hub_check($checks,'Heartbeat exige posse',str_contains($queue,'heartbeat(int $id, ?string $owner')&&str_contains($queue,'locked_by=?'));
 hub_check($checks,'Resultado exige posse',str_contains($queue,'marcarResultado(int $id, bool $sucesso, array $retorno')&&str_contains($queue,"status=\'processando\' AND locked_by=?"));
 hub_check($checks,'API propaga proprietário',str_contains($api,"\$item['locked_by']")&&str_contains($api,'QueueService::heartbeat'));

@@ -52,7 +52,9 @@ foreach ($urlHelpers as $h) {
 }
 // 5) Dashboard passou a chamar o helper compartilhado
 hub_check($checks, 'DashboardController usa PublicUrlService::tinyV3RedirectUri', str_contains($dash, 'PublicUrlService::tinyV3RedirectUri('));
-hub_check($checks, 'DashboardController usa PublicUrlService::appBaseUrl', str_contains($dash, 'PublicUrlService::appBaseUrl('));
+// Fase 3 (2026-09-27): o formulário de Configurações (que consumia appBaseUrl) migrou para o
+// ConfiguracaoController; o DashboardController segue usando tinyV3RedirectUri no callback OAuth.
+hub_check($checks, 'ConfiguracaoController usa PublicUrlService::appBaseUrl', str_contains(hub_read('app/Controllers/ConfiguracaoController.php'), 'PublicUrlService::appBaseUrl('));
 // nenhum $this-><helper de url> remanescente
 foreach ($urlHelpers as $h) {
     hub_check($checks, "DashboardController não chama mais \$this->{$h}", $dash !== '' && !str_contains($dash, '$this->'.$h.'('));

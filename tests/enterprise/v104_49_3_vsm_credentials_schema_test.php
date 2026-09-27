@@ -57,8 +57,9 @@ hub_check($checks, 'o serviço grava só colunas existentes (Database::columnExi
 hub_check($checks, 'o serviço descarta o JWT em cache ao salvar credenciais', str_contains($svc, 'vsm_access_token=NULL'));
 hub_check($checks, 'o serviço usa keepIfMasked (não apaga segredo mascarado)', str_contains($svc, 'Secrets::keepIfMasked'));
 
-$dash = hub_read('app/Controllers/DashboardController.php');
-hub_check($checks, 'DashboardController delega a gravação ao serviço',
+// Fase 3 (2026-09-27): salvarConfiguracoes migrou para o ConfiguracaoController.
+$dash = hub_read('app/Controllers/ConfiguracaoController.php');
+hub_check($checks, 'ConfiguracaoController delega a gravação ao serviço',
     str_contains($dash, 'VsmCredentialsConfigService::salvarDoFormulario'));
 
 // --- 6) View oferece os campos ---
