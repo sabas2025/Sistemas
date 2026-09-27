@@ -5,10 +5,14 @@ class DatabaseMaintenanceController extends BaseModuleController {
     if ($page === 'validar-banco') { $this->validarBanco(); return; }
     if ($page === 'health-modulos') { $this->healthModulos(); return; }
     if ($page === 'mapa-banco') { $this->mapaBanco(); return; }
+    if ($page === 'bancos-modulos') { $this->bancosModulos(); return; }
+    if ($page === 'bancos-modulos-instalar') { $this->bancosModulosInstalar(); return; }
+    if ($page === 'atualizador-seguro') { $this->atualizadorSeguro(); return; }
+    if ($page === 'atualizador-seguro-executar') { $this->atualizadorSeguroExecutar(); return; }
     if (str_starts_with($page, 'atualizar-v')) { $this->updateLegadoBloqueado($page); return; }
     redirect('index.php?page=central-tecnica');
   }
-  public static function routes(): array { return ['validar-banco','health-modulos','mapa-banco']; }
+  public static function routes(): array { return ['validar-banco','health-modulos','mapa-banco','bancos-modulos','bancos-modulos-instalar','atualizador-seguro','atualizador-seguro-executar']; }
 
   private function validarBanco(): void {
     PermissionService::require('database','validar');
@@ -127,4 +131,37 @@ class DatabaseMaintenanceController extends BaseModuleController {
     $_SESSION['flash_error'] = 'Update legado bloqueado na '.(class_exists('SystemVersionService')?SystemVersionService::label():'V104.31').'. Use Validar Banco, Health de Módulos ou o schema consolidado current.';
     redirect('index.php?page=central-tecnica');
   }
+  private function bancosModulos(): void {
+    PermissionService::require('database','validar');
+    $relatorio = ModuleDatabaseService::relatorio();
+    $pageTitle = 'Bancos por Módulo';
+    require __DIR__.'/../../views/bancos_modulos.php';
+  }
+
+  private function bancosModulosInstalar(): void {
+    PermissionService::require('database','validar');
+    Csrf::validate();
+    $modulo = trim((string)($_POST['modulo'] ?? 'todos'));
+    if ($modulo === 'todos') $resultado = MultiDbMigrationService::instalarTodos();
+    else $resultado = [$modulo => MultiDbMigrationService::instalarModulo($modulo)];
+    $_SESSION['multidb_v42_resultado'] = $resultado;
+    redirect('index.php?page=bancos-modulos&instalado=1');
+  }
+
+  private function atualizadorSeguro(): void {
+    PermissionService::require('database','validar');
+    $arquivos = glob(dirname(__DIR__,2).'/database/update_v*.sql') ?: [];
+    sort($arquivos, SORT_NATURAL);
+    $pageTitle='Atualizador Seguro Universal';
+    require __DIR__.'/../../views/atualizador_seguro.php';
+  }
+
+  private function atualizadorSeguroExecutar(): void {
+    PermissionService::require('database','validar');
+    Csrf::validate();
+    $relatorio = (new UniversalUpgradeService(dirname(__DIR__,2)))->run();
+    $_SESSION['upgrade_report_v32'] = $relatorio;
+    redirect('index.php?page=atualizador-seguro&executado=1');
+  }
+
 }

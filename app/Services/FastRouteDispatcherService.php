@@ -31,7 +31,7 @@ class FastRouteDispatcherService {
     TinyHomologacaoController::class => ['tiny-v2-homologacao','tiny-v2-homologacao-executar','tiny-v3-homologacao','tiny-v3-homologacao-executar'],
     BackupController::class => ['backup','backup-download','backup-excluir','backup-importar','backup-restaurar','backups'],
     OrquestracaoController::class => ['orquestracao-integracoes','salvar-orquestracao-integracoes','testar-orquestracao-fluxo'],
-    DatabaseMaintenanceController::class => ['validar-banco','health-modulos','mapa-banco'],
+    DatabaseMaintenanceController::class => ['validar-banco','health-modulos','mapa-banco','bancos-modulos','bancos-modulos-instalar','atualizador-seguro','atualizador-seguro-executar'],
     ConfigDiagnosticController::class => ['diagnostico-config-real'],
     SecurityAssistedTestController::class => ['security-assisted-test','security-assisted-test-run','security-assisted-test-download'],
     CommercialController::class => ['planos-comerciais','licencas-clientes','licencas-clientes-demo','conectores-plugaveis','painel-cobranca','painel-cobranca-demo','ambiente-demo','ambiente-demo-reset','cliente-portal','suporte-sla','suporte-sla-demo','documentos-comerciais','documento-comercial'],

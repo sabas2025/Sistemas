@@ -28,10 +28,6 @@ class DashboardController {
       case 'pedidos': (new PedidoController())->dispatch($page); break;
       case 'pedido-detalhe': (new PedidoController())->dispatch($page); break;
       case 'integracoes': $this->integracoes(); break;
-      case 'bancos-modulos': $this->bancosModulos(); break;
-      case 'bancos-modulos-instalar': $this->bancosModulosInstalar(); break;
-      case 'atualizador-seguro': $this->atualizadorSeguro(); break;
-      case 'atualizador-seguro-executar': $this->atualizadorSeguroExecutar(); break;
       case 'logs': $this->logs(); break;
       case 'notificacoes': $this->notificacoes(); break;
       case 'notificacao-lida': $this->marcarNotificacaoLida(); break;
@@ -564,22 +560,6 @@ class DashboardController {
     require __DIR__.'/../../views/integracoes.php';
   }
 
-  private function atualizadorSeguro(): void {
-    PermissionService::require('database','validar');
-    $arquivos = glob(dirname(__DIR__,2).'/database/update_v*.sql') ?: [];
-    sort($arquivos, SORT_NATURAL);
-    $pageTitle='Atualizador Seguro Universal';
-    require __DIR__.'/../../views/atualizador_seguro.php';
-  }
-
-  private function atualizadorSeguroExecutar(): void {
-    PermissionService::require('database','validar');
-    Csrf::validate();
-    $relatorio = (new UniversalUpgradeService(dirname(__DIR__,2)))->run();
-    $_SESSION['upgrade_report_v32'] = $relatorio;
-    redirect('index.php?page=atualizador-seguro&executado=1');
-  }
-
 
   private function fiscal(): void {
     PermissionService::require('configuracoes','visualizar');
@@ -601,23 +581,6 @@ class DashboardController {
     redirect('index.php?page=fiscal&reenviar=1');
   }
 
-  private function bancosModulos(): void {
-    PermissionService::require('database','validar');
-    $relatorio = ModuleDatabaseService::relatorio();
-    $pageTitle = 'Bancos por Módulo';
-    require __DIR__.'/../../views/bancos_modulos.php';
-  }
-
-
-  private function bancosModulosInstalar(): void {
-    PermissionService::require('database','validar');
-    Csrf::validate();
-    $modulo = trim((string)($_POST['modulo'] ?? 'todos'));
-    if ($modulo === 'todos') $resultado = MultiDbMigrationService::instalarTodos();
-    else $resultado = [$modulo => MultiDbMigrationService::instalarModulo($modulo)];
-    $_SESSION['multidb_v42_resultado'] = $resultado;
-    redirect('index.php?page=bancos-modulos&instalado=1');
-  }
 
 
 
