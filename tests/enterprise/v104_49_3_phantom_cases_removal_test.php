@@ -64,7 +64,8 @@ foreach ($donos as $ctrl => $rotas) {
 hub_check($checks, 'delegação viva fila-morta-reprocessar permanece no Dashboard', str_contains($dash, "case 'fila-morta-reprocessar'"));
 // Rotas vivas do próprio Dashboard permanecem.
 // (configuracoes migrou para o ConfiguracaoController na etapa Configurações — não é mais rota do Dashboard.)
-foreach (['pedidos','produtos','integracoes','logs','diagnostico'] as $r) {
+// (produtos migrou para o ProdutoController na etapa Produtos — não é mais rota do Dashboard.)
+foreach (['pedidos','integracoes','logs','diagnostico'] as $r) {
     hub_check($checks, "rota viva {$r} permanece no Dashboard", str_contains($dash, "case '{$r}'"));
 }
 
