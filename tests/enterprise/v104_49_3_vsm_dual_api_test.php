@@ -42,8 +42,9 @@ hub_check($checks, 'schema guard cobre a coluna', $guard !== '' && str_contains(
 // ---- wiring config/controller -------------------------------------------------------------
 $cfg = hub_read('app/Services/IntegrationConfig.php');
 hub_check($checks, 'IntegrationConfig traz vsm_url_consulta no default', $cfg !== '' && str_contains($cfg, "'vsm_url_consulta'"));
-$ctrl = hub_read('app/Controllers/DashboardController.php');
-hub_check($checks, 'DashboardController salva vsm_url_consulta (UPDATE dinâmico compatível)',
+// Fase 3 (2026-09-27): salvarConfiguracoes migrou para o ConfiguracaoController.
+$ctrl = hub_read('app/Controllers/ConfiguracaoController.php');
+hub_check($checks, 'ConfiguracaoController salva vsm_url_consulta (UPDATE dinâmico compatível)',
   $ctrl !== '' && str_contains($ctrl, "'vsm_url_consulta' => trim(")
   && str_contains($ctrl, "['vsm_url_consulta','vsm_api_principal'"));
 $view = hub_read('views/configuracoes.php');

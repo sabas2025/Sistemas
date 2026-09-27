@@ -51,6 +51,8 @@ class FastRouteDispatcherService {
     LaboratorioController::class => ['laboratorio','laboratorio-executar','simular-baixa-tiny','simular-produto-vsm','simular-estoque-vsm','simular-status-vsm'],
     // Fase 3 etapa Usuários & Sessão: gestão de usuários/permissões e troca de senha (o gate de troca obrigatória segue no dispatch, antes do roteamento).
     UsuarioController::class => ['usuarios','usuario-salvar','usuario-excluir','permissoes-salvar','trocar-senha'],
+    // Fase 3 etapa Configurações: tela/salvamento de configurações, fluxos ativos, regras de sincronização e mapeamento de categorias.
+    ConfiguracaoController::class => ['configuracoes','salvar-configuracoes','salvar-fluxos','regras-sincronizacao','salvar-regras-sincronizacao','categorias-mapeamento','categoria-mapeamento-salvar'],
   ];
 
   /** @var array<string, string>|null */
