@@ -61,6 +61,8 @@ class FastRouteDispatcherService {
     ProdutoController::class => ['produtos','produtos-pendencias','produtos-vsm','produtos-pendentes-integracao','produto-pendente-integracao-comparar','produto-pendente-integracao-acao','produto-pendencia-acao'],
     // Fase 3 etapa Fila: fila de integração (lista/reprocessar/criar-teste), analytics V24 e fila morta/DLQ (lista/reprocessar) — consolidadas no FilaController.
     FilaController::class => ['fila','fila-reprocessar','fila-criar-teste','fila-morta-reprocessar','fila-analytics-v24','fila-morta'],
+    // Fase 3 etapa Central Técnica / Prod-Ready: central técnica, diagnóstico, integridade do dashboard, menu de testes, ficha técnica 100%, hospedagem e painéis Production-Ready.
+    CentralTecnicaController::class => ['central-tecnica','diagnostico','dashboard-integridade','dashboard-integridade-executar','menu-testes','ficha-tecnica-100','hosting-infinityfree','producao-ready','production-ready-v24','production-ready-v25','production-ready-v26','relatorio-prontidao-producao'],
   ];
 
   /** @var array<string, string>|null */
