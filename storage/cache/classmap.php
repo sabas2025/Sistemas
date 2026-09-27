@@ -236,6 +236,7 @@ return [
   'TwoFactorService' => 'app/Services/TwoFactorService.php',
   'UniversalUpgradeService' => 'app/Services/UniversalUpgradeService.php',
   'UpgradeSqlService' => 'app/Services/UpgradeSqlService.php',
+  'UsuarioController' => 'app/Controllers/UsuarioController.php',
   'V50Controller' => 'app/Legacy/Controllers/V50Controller.php',
   'V51Controller' => 'app/Legacy/Controllers/V51Controller.php',
   'VisualProfileService' => 'app/Services/VisualProfileService.php',
