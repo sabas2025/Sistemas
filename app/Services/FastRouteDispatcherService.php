@@ -17,7 +17,7 @@ class FastRouteDispatcherService {
     MyOuroController::class => ['myouro-configuracoes','myouro-salvar','myouro-testar','integracao-vincular-empresa'],
     ApiVsmWebhookController::class => ['api/webhook/vsm/pedido','api/webhook/vsm/produto','api/webhook/vsm/estoque','api/webhook/vsm/pedido-retorno'],
     ApiTinyController::class => ['api/webhook/tiny/evento','api/tiny/webhook/estoque','api/tiny/webhook/produto','api/tiny/webhook/nota-fiscal','api/tiny/webhook/situacao-pedido','api/tiny/webhook/pedido'],
-    SistemaController::class => ['sobre','tutorial-sistema'],
+    SistemaController::class => ['sobre','tutorial-sistema','atualizacao'],
     PwaController::class => ['pwa-status'],
     ProductionGoLiveController::class => ['entrada-producao','entrada-producao-validar','entrada-producao-lock-install'],
     OperationCenterController::class => ['centro-operacoes','alertas-operacionais','dashboard-executivo'],
