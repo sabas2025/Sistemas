@@ -229,9 +229,18 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `config/config.example.php`, `CHECKSUMS-SHA256.txt`, `storage/cache/classmap.php`; e o FIM
   fechando: extrair e `sha256sum -c CHECKSUMS-SHA256.txt` = todos `OK`, zero `FAILED`.
   Ferramental de desenvolvimento que **não** é do produto sai por `export-ignore` no
-  `.gitattributes` (hoje `.claude/` e o próprio `.gitattributes`) — `git archive` os pula sozinho,
-  e nenhum deles está no manifesto FIM, então o `sha256sum -c` fecha mesmo sem eles. Ao notar
-  outra pasta de dev vazando no zip (ex.: `.github/`), adicione-a ali, não limpe à mão.
+  `.gitattributes` (hoje `.claude/`, `.agents/`, `.github/`, `.gitignore` e o próprio
+  `.gitattributes`) — `git archive` os pula sozinho. Ao notar outra pasta de dev vazando no zip,
+  acrescente-a ali, não limpe à mão. **Atenção ao manifesto FIM ao fazer isso:** a maioria desses
+  caminhos nunca esteve no `CHECKSUMS-SHA256.txt`, mas `.github/workflows/hub-ci.yml` e
+  `pwa-quality.yml` **estavam** (2 linhas) — ao mandar `.github/` para o `export-ignore` foi
+  preciso removê-las do manifesto (914 → 912), senão o `sha256sum -c` sobre o zip acusaria as duas
+  como **faltando**. Regra: caminho que entra no `export-ignore` **não pode** ter linha no
+  manifesto (`git archive` não o empacota; o `sha256sum -c` procuraria um arquivo que não veio). O
+  `.htaccess` da RAIZ é do produto — fica no zip e no manifesto, não vai para o `export-ignore`.
+  A pegadinha do symlink: `.claude/skills/security-audit` aponta para `.agents/skills/security-audit/SKILL.md`,
+  arquivo versionado à parte, então excluir só `.claude/` deixava o alvo do symlink vazar — por isso
+  `.agents/` também entra.
 - **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
   era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
   do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
