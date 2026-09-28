@@ -18,7 +18,7 @@ class VisualProfileService {
   public static function allowedPages(string $mode): array {
     $base=['dashboard','centro-operacoes','dashboard-executivo','alertas-operacionais','pedidos','produtos','estoque-dashboard','monitor-divergencias','fiscal','baixas-estoque','notificacoes'];
     $super=array_merge($base,['reconciliacao','divergencia-estoque','fila','fila-morta','logs','auditoria','evidencias-homologacao','fiscal-dashboard','estoque-consultas-vsm']);
-    $admin=array_merge($super,['integracoes','orquestracao-integracoes','regras-sincronizacao','tiny-webhooks','usuarios','configuracoes','backups','homologacao','homologacao-automatica','teste-real-tiny','central-tecnica']);
+    $admin=array_merge($super,['integracoes','orquestracao-integracoes','regras-sincronizacao','tiny-webhooks','usuarios','configuracoes','backups','homologacao','homologacao-automatica','teste-real-tiny','central-tecnica','atualizacao']);
     $dev=array_values(array_unique(array_merge($admin, RouteModuleRegistry::technicalPages())));
     return match($mode){ 'operador'=>$base, 'supervisor'=>$super, 'admin'=>$admin, default=>$dev };
   }

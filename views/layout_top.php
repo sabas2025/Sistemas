@@ -118,6 +118,7 @@ $pageDescription = $pageDescription ?? ($pageDescriptions[$active] ?? 'Operaçã
         'security-assisted-test'=>['bi-shield-check','Teste Segurança Assistido','seguranca','visualizar'],
         'security-fim'=>['bi-fingerprint','Integridade de Arquivos','seguranca','visualizar'],
         'tutorial-sistema'=>['bi-book','Tutorial','configuracoes','visualizar'],
+        'atualizacao'=>['bi-arrow-repeat','Atualização do Hub','configuracoes','visualizar'],
         'planos-comerciais'=>['bi-cash-coin','Planos Comerciais','configuracoes','visualizar'],
         'licencas-clientes'=>['bi-key','Licenças por Cliente','configuracoes','visualizar'],
         'conectores-plugaveis'=>['bi-plug','Conectores Plugáveis','configuracoes','visualizar'],
@@ -137,7 +138,7 @@ $pageDescription = $pageDescription ?? ($pageDescriptions[$active] ?? 'Operaçã
         'Operação' => ['dashboard','centro-operacoes','dashboard-executivo','alertas-operacionais','pedidos','produtos','estoque-dashboard','monitor-divergencias','fiscal','notificacoes'],
         'Gestão' => ['central-homologacao','integracoes','diagnostico-config-real','tiny-v2-homologacao','tiny-v3-homologacao','evidencias-homologacao','reconciliacao','logs','configuracoes','backups','entrada-producao','producao-ready','central-tecnica'],
         'Comercial' => ['planos-comerciais','licencas-clientes','conectores-plugaveis','painel-cobranca','ambiente-demo','cliente-portal','suporte-sla','documentos-comerciais','producao-comercial','producao-comercial-final','analise-comercial-tecnica'],
-        'Sistema' => ['sobre','pwa-status','tutorial-sistema'],
+        'Sistema' => ['atualizacao','sobre','pwa-status','tutorial-sistema'],
         'Segurança' => ['seguranca-extrema','security-center','security-soc','security-events','security-ips','security-circuit-breakers','security-assisted-test','security-code-audit','security-inventory','security-backup-trust','security-health','security-audit-signatures','security-fim','security-score','security-hardening','security-ssl','security-user-audit','security-pentest'],
       ];
       ?>
