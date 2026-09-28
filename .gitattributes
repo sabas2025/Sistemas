@@ -1,0 +1,5 @@
+# Ferramental de desenvolvimento que NÃO faz parte do produto Hub.
+# `git archive` (usado para gerar o zip de instalação) exclui estas entradas
+# automaticamente, então todo pacote sai "somente para o Hub".
+.claude/ export-ignore
+.gitattributes export-ignore

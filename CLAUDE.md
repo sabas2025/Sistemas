@@ -228,6 +228,10 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `storage/cache/security`, sessões nem backups de runtime; **com** `public/install.php`,
   `config/config.example.php`, `CHECKSUMS-SHA256.txt`, `storage/cache/classmap.php`; e o FIM
   fechando: extrair e `sha256sum -c CHECKSUMS-SHA256.txt` = todos `OK`, zero `FAILED`.
+  Ferramental de desenvolvimento que **não** é do produto sai por `export-ignore` no
+  `.gitattributes` (hoje `.claude/` e o próprio `.gitattributes`) — `git archive` os pula sozinho,
+  e nenhum deles está no manifesto FIM, então o `sha256sum -c` fecha mesmo sem eles. Ao notar
+  outra pasta de dev vazando no zip (ex.: `.github/`), adicione-a ali, não limpe à mão.
 - **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
   era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
   do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
