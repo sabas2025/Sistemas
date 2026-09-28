@@ -122,8 +122,8 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
 
 <div class="col-12"><section class="integration-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-sliders"></i> Fluxos ativos</h2><p>A fonte oficial para ligar/desligar fluxos é a Orquestração. Esta tela de Configurações mantém apenas dados de conexão.</p></div><span class="integration-card-badge">Governança</span></div><div class="alert alert-light border small mb-0"><b>Modelo recomendado:</b> pedido gerado no Tiny → HUB valida → VSM; NF-e autorizada e estoque oficial voltam da VSM para Tiny. <a href="index.php?page=orquestracao-integracoes" class="btn btn-sm btn-outline-primary ms-2">Abrir Escolher fluxos ativos</a></div>
   <input type="hidden" name="bloquear_inativo_com_estoque" value="1">
-</div></section></div>
-</div><div class="integration-savebar"><span>Revise Tiny e VSM antes de salvar. Tokens mascarados são preservados.</span><button class="btn btn-primary"><i class="bi bi-save"></i> Salvar configurações</button></div></div></form>
+</section></div>
+</div><div class="integration-savebar"><span>Revise Tiny e VSM antes de salvar. Tokens mascarados são preservados.</span><button class="btn btn-primary"><i class="bi bi-save"></i> Salvar configurações</button></div></form>
 
 <div id="sec-testes" class="integration-test-grid"><form method="post" action="index.php?page=testar-tiny" class="panel integration-panel tiny-test">
 <?=Csrf::input()?>
