@@ -917,6 +917,14 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   dentro do comentário que explica por que ele saiu dali. **Tire comentários antes de varrer**, ou
   ancore a asserção no código (`e($r['ok'])`, `'nome_da_tabela'` entre aspas) e não no texto.
 
+**Implantação real (memória) — hub01**
+- **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo
+  aaPanel/宝塔). A raiz do Hub — a pasta que contém `public/`, `app/`, `config/`, `storage/` — é esse
+  diretório; o app é servido por `hub01.ctba.top/public/`. É o **destino** do
+  `scripts/ops/deploy.sh` (ex.: `./scripts/ops/deploy.sh <pacote>.zip /www/wwwroot/hub01.ctba.top`).
+  Ao dar instruções de deploy/atualização deste cliente, use esse caminho, não o placeholder
+  `/var/www/hubNN`. Novos clientes por subdomínio seguem o mesmo molde: `/www/wwwroot/<sub>.ctba.top`.
+
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
   drenados, backup verificado). `ALTER` de chave primária reconstrói tabela e índices: segundos
