@@ -210,11 +210,24 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **Consulta com nome de tabela interpolado** escapa de varredura que procura `FROM <tabela>`
   literal. Foi assim que `count()`/`tableRows()` quase ficaram sem isolamento.
 - **Regenerar `CHECKSUMS-SHA256.txt` por último**, sobre a árvore congelada, e limpar artefatos de
-  execução local (`storage/cache/security`, `storage/audit-*`) antes de empacotar.
+  execução local (`storage/cache/security`, os `.log`/`.jsonl` de `storage/logs`) antes de empacotar.
   Com o Hub no repositório há uma armadilha nova: **editar este `CLAUDE.md` invalida a linha dele
   no manifesto**, que passa a acusar `FAILED`. Nada na CI verifica o manifesto, então a falha é
   silenciosa — indicador que mente. Ao mexer neste arquivo, regenere a linha:
   `sha256sum CLAUDE.md` e substitua a entrada `./CLAUDE.md` no `CHECKSUMS-SHA256.txt`.
+- **O zip de instalação sai SEMPRE limpo — gere-o por `git archive`, nunca zipando o working tree.**
+  `git archive --format=zip --prefix=hub/ -o hub-<versao>-<sha>.zip HEAD` empacota **só a árvore
+  versionada**: por construção não leva `config/config.php` (segredos reais do ambiente),
+  `storage/` de runtime (logs, cache, sessões, `install.lock`, `install-authorization.json`,
+  backups), `node_modules` nem `.git`. Zipar o working tree é o erro a evitar — ele pode arrastar
+  qualquer um desses. **NÃO rode `rm -rf storage/audit-*`**: `storage/audit-signatures/.htaccess`
+  e `index.html` são **placeholders versionados** (bloqueio de diretório) e precisam ir no pacote;
+  apagá-los suja a árvore e some com proteção (aconteceu nesta linha — restaurados com
+  `git checkout --`). Verificação obrigatória do zip antes de entregar: **sem** `config/config.php`,
+  `install.lock`, `install-authorization.json`, `node_modules`, `.git`, `*.log`, `*.jsonl`,
+  `storage/cache/security`, sessões nem backups de runtime; **com** `public/install.php`,
+  `config/config.example.php`, `CHECKSUMS-SHA256.txt`, `storage/cache/classmap.php`; e o FIM
+  fechando: extrair e `sha256sum -c CHECKSUMS-SHA256.txt` = todos `OK`, zero `FAILED`.
 - **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
   era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
   do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
