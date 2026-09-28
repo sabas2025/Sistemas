@@ -147,21 +147,21 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 - `SECURITY.md` — modelo de ameaças e **decisões deliberadas** (por que a rota degrada aberta, por
   que o callback OAuth roda fora do gate de sessão, por que a v1 de webhook ainda é aceita, por que
   o redirecionamento HTTPS saiu do `.htaccess`).
-- `RELATORIO-V104.49.3-R6-AUDITORIA-E-CORRECOES-2026-09-14.md`
-- `RELATORIO-V104.49.3-R7-MELHORIAS-APLICADAS-2026-09-14.md`
+- `docs/relatorios/RELATORIO-V104.49.3-R6-AUDITORIA-E-CORRECOES-2026-09-14.md`
+- `docs/relatorios/RELATORIO-V104.49.3-R7-MELHORIAS-APLICADAS-2026-09-14.md`
 - `RELATORIO-AUDITORIA-FINAL-COMPLETA-2026-09-14.md` — auditoria completa final (achados G-01 a G-06)
-- `RELATORIO-CORRECOES-G01-G02-2026-09-14.md` — G-01 e G-02 aplicados e validados. **Ressalva viva:**
+- `docs/relatorios/RELATORIO-CORRECOES-G01-G02-2026-09-14.md` — G-01 e G-02 aplicados e validados. **Ressalva viva:**
   `SensitiveDataService::KEYS` cobre `nome_cliente`/`cliente_nome`, **não** uma chave `nome` solta —
   ampliar o catálogo afeta o log do sistema inteiro, é decisão de produto
-- `RELATORIO-CORRECAO-G03-2026-09-14.md` — jitter no reagendamento das filas. **O achado apontava
+- `docs/relatorios/RELATORIO-CORRECAO-G03-2026-09-14.md` — jitter no reagendamento das filas. **O achado apontava
   um ponto; havia quatro** (`QueueService`, `EnterpriseIdempotencyGuardService`,
   `EstoqueEnterpriseService`, `FiscalEnterpriseService`). Ao mexer em backoff, procure os quatro
-- `RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
+- `docs/relatorios/RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
   classmap). **As três tabelas que elas escreviam continuam no schema** (`connector_operational_checks`,
   `comercial_demo_reset_logs`, `system_release_checks`): estão em `database/modules/core.sql`, no
   `schema_inventory_current.json` e em três portões de CI — não faça `DROP`
-- `RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md` — auditoria pelas 12 fases deste documento
-- `RELATORIO-CAPACIDADE-100-CLIENTES-500-PEDIDOS-MIN-2026-09-14.md` — **meta de carga e o adendo
+- `docs/relatorios/RELATORIO-AUDITORIA-PROMPT-HUB-2026-09-14.md` — auditoria pelas 12 fases deste documento
+- `docs/relatorios/RELATORIO-CAPACIDADE-100-CLIENTES-500-PEDIDOS-MIN-2026-09-14.md` — **meta de carga e o adendo
   com as 8 correções**; leia antes de mexer em rate limit, retenção, sessão ou tipo de chave
 
 **Serviços centrais criados nesta linha — use-os, não crie paralelos**
@@ -210,11 +210,50 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - **Consulta com nome de tabela interpolado** escapa de varredura que procura `FROM <tabela>`
   literal. Foi assim que `count()`/`tableRows()` quase ficaram sem isolamento.
 - **Regenerar `CHECKSUMS-SHA256.txt` por último**, sobre a árvore congelada, e limpar artefatos de
-  execução local (`storage/cache/security`, `storage/audit-*`) antes de empacotar.
+  execução local (`storage/cache/security`, os `.log`/`.jsonl` de `storage/logs`) antes de empacotar.
   Com o Hub no repositório há uma armadilha nova: **editar este `CLAUDE.md` invalida a linha dele
   no manifesto**, que passa a acusar `FAILED`. Nada na CI verifica o manifesto, então a falha é
   silenciosa — indicador que mente. Ao mexer neste arquivo, regenere a linha:
   `sha256sum CLAUDE.md` e substitua a entrada `./CLAUDE.md` no `CHECKSUMS-SHA256.txt`.
+- **O zip de instalação sai SEMPRE limpo — gere-o por `git archive`, nunca zipando o working tree.**
+  `git archive --format=zip --prefix=hub/ -o hub-<versao>-<sha>.zip HEAD` empacota **só a árvore
+  versionada**: por construção não leva `config/config.php` (segredos reais do ambiente),
+  `storage/` de runtime (logs, cache, sessões, `install.lock`, `install-authorization.json`,
+  backups), `node_modules` nem `.git`. Zipar o working tree é o erro a evitar — ele pode arrastar
+  qualquer um desses. **NÃO rode `rm -rf storage/audit-*`**: `storage/audit-signatures/.htaccess`
+  e `index.html` são **placeholders versionados** (bloqueio de diretório) e precisam ir no pacote;
+  apagá-los suja a árvore e some com proteção (aconteceu nesta linha — restaurados com
+  `git checkout --`). Verificação obrigatória do zip antes de entregar: **sem** `config/config.php`,
+  `install.lock`, `install-authorization.json`, `node_modules`, `.git`, `*.log`, `*.jsonl`,
+  `storage/cache/security`, sessões nem backups de runtime; **com** `public/install.php`,
+  `config/config.example.php`, `CHECKSUMS-SHA256.txt`, `storage/cache/classmap.php`; e o FIM
+  fechando: extrair e `sha256sum -c CHECKSUMS-SHA256.txt` = todos `OK`, zero `FAILED`.
+  Ferramental de desenvolvimento que **não** é do produto sai por `export-ignore` no
+  `.gitattributes` (hoje `.claude/`, `.agents/`, `.github/`, `.gitignore` e o próprio
+  `.gitattributes`) — `git archive` os pula sozinho. Ao notar outra pasta de dev vazando no zip,
+  acrescente-a ali, não limpe à mão. **Atenção ao manifesto FIM ao fazer isso:** a maioria desses
+  caminhos nunca esteve no `CHECKSUMS-SHA256.txt`, mas `.github/workflows/hub-ci.yml` e
+  `pwa-quality.yml` **estavam** (2 linhas) — ao mandar `.github/` para o `export-ignore` foi
+  preciso removê-las do manifesto (914 → 912), senão o `sha256sum -c` sobre o zip acusaria as duas
+  como **faltando**. Regra: caminho que entra no `export-ignore` **não pode** ter linha no
+  manifesto (`git archive` não o empacota; o `sha256sum -c` procuraria um arquivo que não veio). O
+  `.htaccess` da RAIZ é do produto — fica no zip e no manifesto, não vai para o `export-ignore`.
+  A pegadinha do symlink: `.claude/skills/security-audit` aponta para `.agents/skills/security-audit/SKILL.md`,
+  arquivo versionado à parte, então excluir só `.claude/` deixava o alvo do symlink vazar — por isso
+  `.agents/` também entra.
+- **Os relatórios históricos vivem em `docs/relatorios/`, fora do zip.** A raiz acumulou 134 `.md` e
+  ficou poluída (2026-09-28). Os **122** relatórios de auditoria/versão (`RELATORIO-*`, `AUDITORIA-*`,
+  `VALIDACAO-*`) foram para `docs/relatorios/`, que é `export-ignore` — preservados no repositório
+  (rastreabilidade que o CLAUDE.md exige), mas **fora do pacote do cliente**. Pela regra do
+  `export-ignore` acima, as 122 linhas saíram do `CHECKSUMS-SHA256.txt` (912 → **790**). **Ficam na
+  raiz e no zip** os 12 documentos operacionais/atuais que o operador usa: `README.md`,
+  `LEIA-ME-INSTALACAO-E-ATUALIZACAO.md`, `SECURITY.md`, os `GUIA-*`, o `CHECKLIST-GO-LIVE`, o
+  `RUNBOOK-MIGRATION-012`, `UPGRADE-R7` (código aponta para ele), `DOC-API-TINY-REFERENCIA`,
+  `NOTA-DECISAO-H01`, `PROPOSTA-T01` e este `CLAUDE.md`. **Relatório novo de auditoria nasce em
+  `docs/relatorios/`, não na raiz** — e, por estar sob `export-ignore`, não recebe linha no
+  manifesto. Ao citar um relatório movido neste arquivo, use o caminho `docs/relatorios/<nome>`
+  (as referências antigas já foram reapontadas). O `docs/` legado (architecture, comercial,
+  operations, security, testing) **não** foi mexido: continua no zip e no manifesto (44 linhas).
 - **Classificar rota por prefixo é a mesma armadilha da substring.** O achado C-01: todo `api/*`
   era tratado como rota sensível de painel, então os webhooks de entrada tinham 20 req/min e o IP
   do Tiny seria bloqueado a 500 pedidos/min. Webhook de entrada tem superfície própria
@@ -900,7 +939,7 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   tela Fila, por HTTP: usuário sem empresa vê as duas linhas; usuário da empresa 1 vê as duas;
   usuário da empresa 2 **não vê** a linha da empresa 1 — antes veria, porque ela seria NULL.
   **Continua em aberto com DUAS OU MAIS empresas.** Correção do relato anterior desta linha, medida no
-  código e travada em `RELATORIO-DESENHO-H01-MULTIEMPRESA-2026-09-21.md`: com 2+ empresas a entrada sem
+  código e travada em `docs/relatorios/RELATORIO-DESENHO-H01-MULTIEMPRESA-2026-09-21.md`: com 2+ empresas a entrada sem
   sessão **não grava NULL — recusa explicitamente**. `IntegrationTenantService::boundEmpresaId()` exige
   `COUNT(empresas ativas)=1`; com duas ela **lança** `TENANT_SINGLE_COMPANY_REQUIRED`, que
   `enforceRequest()` mapeia para **HTTP 409**, e `applyToInsert()` lançaria `TENANT_CONTEXT_REQUIRED`

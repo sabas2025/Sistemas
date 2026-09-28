@@ -1,0 +1,13 @@
+# Ferramental de desenvolvimento que NÃO faz parte do produto Hub.
+# `git archive` (usado para gerar o zip de instalação) exclui estas entradas
+# automaticamente, então todo pacote sai "somente para o Hub".
+# (O .htaccess da RAIZ é do produto — não entra aqui.)
+.claude/ export-ignore
+.agents/ export-ignore
+.github/ export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+
+# Relatórios históricos de auditoria/versão: preservados no repositório
+# (rastreabilidade), mas fora do pacote de instalação do cliente.
+docs/relatorios/ export-ignore
