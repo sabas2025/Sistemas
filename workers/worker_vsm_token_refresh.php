@@ -32,6 +32,14 @@ WorkerCliGuardService::enforce(basename(__FILE__));
 require_once __DIR__.'/../app/Core/Helpers.php';
 App::setupErrors();
 
+// EH-1 (escala horizontal): o VsmTokenService::refresh já trava no nível de serviço; o lock aqui faz
+// o segundo processo PULAR limpo (exit 0) em vez de correr até o lock de serviço e logar FALHA.
+if (!SchedulerLockService::acquire('worker_vsm_token_refresh')) {
+    echo "[OK] Outra execução de worker_vsm_token_refresh já está em andamento — pulando (lock).\n";
+    exit(0);
+}
+register_shutdown_function(static fn() => SchedulerLockService::release('worker_vsm_token_refresh'));
+
 // Renova quando faltam menos de 30 min para o JWT (~2h) vencer, mantendo-o quente para o cron horário.
 const VSM_WARM_MINUTES = 30;
 

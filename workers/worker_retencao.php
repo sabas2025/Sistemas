@@ -28,6 +28,14 @@ WorkerCliGuardService::enforce(basename(__FILE__));
 require_once __DIR__.'/../app/Core/Helpers.php';
 App::setupErrors();
 
+// EH-1 (escala horizontal): execução lógica única. Se o cron disparar duas vezes, houver execução
+// manual concorrente ou (futuro) 2 nós, o segundo processo pula limpo em vez de duplicar o expurgo.
+if (!SchedulerLockService::acquire('worker_retencao')) {
+    echo "[OK] Outra execução de worker_retencao já está em andamento — pulando (lock).\n";
+    exit(0);
+}
+register_shutdown_function(static fn() => SchedulerLockService::release('worker_retencao'));
+
 $inicio = microtime(true);
 $total = 0;
 $falhou = false;

@@ -36,6 +36,14 @@ WorkerCliGuardService::enforce(basename(__FILE__));
 require_once __DIR__.'/../app/Core/Helpers.php';
 App::setupErrors();
 
+// EH-1 (escala horizontal): o TinyV3TokenService::refresh já trava no nível de serviço; o lock aqui
+// faz o segundo processo PULAR limpo (exit 0) em vez de correr até o lock de serviço e logar FALHA.
+if (!SchedulerLockService::acquire('worker_tiny_v3_refresh')) {
+    echo "[OK] Outra execução de worker_tiny_v3_refresh já está em andamento — pulando (lock).\n";
+    exit(0);
+}
+register_shutdown_function(static fn() => SchedulerLockService::release('worker_tiny_v3_refresh'));
+
 // Renova quando a última renovação foi há mais de METADE da janela do refresh token (24h),
 // bem antes de ele morrer. O access token (4h) já estará expirado num Hub ocioso, então este
 // limite é a rede de segurança para o caso de rotação do refresh token.

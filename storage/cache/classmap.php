@@ -183,6 +183,7 @@ return [
   'RouteRateLimiterService' => 'app/Services/RouteRateLimiterService.php',
   'SafeDb' => 'app/Services/SafeDb.php',
   'SafeSqlUpgradeService' => 'app/Services/SafeSqlUpgradeService.php',
+  'SchedulerLockService' => 'app/Services/SchedulerLockService.php',
   'SchemaMigrationService' => 'app/Services/SchemaMigrationService.php',
   'SchemaRuntimePolicyService' => 'app/Services/SchemaRuntimePolicyService.php',
   'SecretStrengthService' => 'app/Services/SecretStrengthService.php',
