@@ -168,6 +168,51 @@ class PedidoCicloVidaService {
     $sql.=' ORDER BY id DESC LIMIT 300'; $st=self::pdo()->prepare($sql); $st->execute($params); return $st->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  /**
+   * Resumo fiscal REAL (fluxo VSM → HUB → Tiny), lido do ciclo de vida do pedido
+   * (pedidos_hub / pedidos_nfe_xml). Substitui, na tela fiscal, o resumo do subsistema
+   * notas_fiscais/nfe_integracao que nenhum fluxo alimenta. Somente leitura, escopado por
+   * empresa via TenantScopeService, e defensivo (guarda de existência de tabela).
+   */
+  public static function resumoFiscal(): array {
+    $out = ['xml_recebidos'=>0,'validados'=>0,'aguardando_tiny'=>0,'enviados_tiny'=>0,'erros'=>0,'tabelas'=>[]];
+    foreach (['pedidos_hub','pedidos_nfe_xml','pedidos_status_historico','pedidos_payloads'] as $t) {
+      $out['tabelas'][$t] = Database::tableExists($t) ? 'ok' : 'ausente';
+    }
+    if (($out['tabelas']['pedidos_nfe_xml'] ?? '') !== 'ok') return $out;
+    try { $out['xml_recebidos']   = (int)TenantScopeService::run('pedidos_nfe_xml', 'SELECT COUNT(*) c FROM pedidos_nfe_xml')->fetch()['c']; } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $out['validados']       = (int)TenantScopeService::run('pedidos_nfe_xml', 'SELECT COUNT(*) c FROM pedidos_nfe_xml WHERE validado=1')->fetch()['c']; } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $out['aguardando_tiny'] = (int)TenantScopeService::run('pedidos_nfe_xml', 'SELECT COUNT(*) c FROM pedidos_nfe_xml WHERE validado=1 AND enviado_tiny_em IS NULL')->fetch()['c']; } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $out['enviados_tiny']   = (int)TenantScopeService::run('pedidos_nfe_xml', 'SELECT COUNT(*) c FROM pedidos_nfe_xml WHERE enviado_tiny_em IS NOT NULL')->fetch()['c']; } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    try { $out['erros']           = (int)TenantScopeService::run('pedidos_nfe_xml', "SELECT COUNT(*) c FROM pedidos_nfe_xml WHERE validado=0 OR status_xml IN('erro_xml','erro_envio_tiny')")->fetch()['c']; } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); }
+    return $out;
+  }
+
+  /** Últimas NF-e/XML recebidas da VSM e vinculadas ao pedido (leitura). */
+  public static function ultimasNfe(int $limit=50): array {
+    if (!Database::tableExists('pedidos_nfe_xml')) return [];
+    $limit = max(1,min(200,$limit));
+    try {
+      return TenantScopeService::run('pedidos_nfe_xml',
+        'SELECT x.id, x.chave_nfe, x.numero_nfe, x.serie, x.status_xml, x.validado, x.enviado_tiny_em, p.id AS pedido_hub_id, p.pedido_tiny_id, p.numero_pedido, p.status_hub, p.trace_id
+         FROM pedidos_nfe_xml x JOIN pedidos_hub p ON p.id=x.pedido_hub_id
+         ORDER BY x.id DESC LIMIT '.$limit, [], 'x')->fetchAll(PDO::FETCH_ASSOC);
+    } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); return []; }
+  }
+
+  /** XML/NF-e validado, aguardando envio ao Tiny (leitura). A ação de reenvio vive no ciclo de vida. */
+  public static function aguardandoTiny(int $limit=50): array {
+    if (!Database::tableExists('pedidos_nfe_xml')) return [];
+    $limit = max(1,min(200,$limit));
+    try {
+      return TenantScopeService::run('pedidos_nfe_xml',
+        "SELECT x.id, x.chave_nfe, x.numero_nfe, x.serie, x.status_xml, p.id AS pedido_hub_id, p.pedido_tiny_id, p.numero_pedido, p.status_hub, p.trace_id
+         FROM pedidos_nfe_xml x JOIN pedidos_hub p ON p.id=x.pedido_hub_id
+         WHERE x.validado=1 AND x.enviado_tiny_em IS NULL
+         ORDER BY x.id DESC LIMIT ".$limit, [], 'x')->fetchAll(PDO::FETCH_ASSOC);
+    } catch(Throwable $e){ if (class_exists('BestEffortLogService')) BestEffortLogService::warning(__METHOD__, $e); return []; }
+  }
+
   public static function detalhe(int $id): array {
     self::ensureSchema(); $pdo=self::pdo();
     $s = TenantScopeService::run('pedidos_hub', 'SELECT * FROM pedidos_hub WHERE id=? LIMIT 1', [$id]); $pedido=$s->fetch(PDO::FETCH_ASSOC); if(!$pedido) throw new RuntimeException('Pedido não encontrado.');

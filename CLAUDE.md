@@ -969,6 +969,21 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
 - `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.
+- **Fiscal Modelo A (código morto) — remoção pendente de autorização.** Auditoria 2026-09-29: as
+  tabelas `notas_fiscais`/`nfe_integracao`/`nfe_xml`/`nfe_status_historico`/`notas_fiscais_eventos`
+  e os serviços `FiscalIntegrationService`/`FiscalEnterpriseService` descrevem um fluxo **Hub → VSM**
+  que **nenhum fluxo alimenta** (grep de `INSERT/UPDATE` vazio fora dos próprios serviços). O fluxo
+  fiscal REAL é **VSM → HUB → Tiny**, em `PedidoCicloVidaService` (`pedidos_hub`/`pedidos_nfe_xml`),
+  com tela `page=pedido-ciclo-vida`. A tela `page=fiscal` foi **reapontada** para o fluxo real
+  (read-only) — mas ainda leem o Modelo A: `DashboardController` (resumo/notas no dashboard),
+  `XmlNfeHomologationService`, `RealtimeHealthService`, e as sub-telas `fiscal-dashboard`,
+  `fiscal-xml`, `fiscal-reconciliacao`, `fiscal-health`. **Não removido** (sem `DROP`, sem apagar
+  código) — aguarda autorização. **Não confundir com `fila_fiscal`**, que É usada (`worker_fiscal`).
+- **Fiscal etapa 5 (Tiny → Hub "finalizado") não fecha o ciclo — decisão de produto.** O webhook
+  `api/tiny/webhook/situacao-pedido` só **registra/audita**; não atualiza `pedidos_hub`. O ciclo
+  marca `concluido` no **envio** ao Tiny (`enviarXmlParaTiny`), não na **confirmação** do Tiny. Se o
+  produto quiser "aguardar a finalização no Tiny e então marcar finalizado", falta ligar esse
+  webhook ao `PedidoCicloVidaService` — muda regra de negócio, aguarda decisão.
 
 **Ordem de implantação das migrations de capacidade:** backup verificado → `011` (índices) →
 `013` (logs + sessões) → `015` (remove o índice duplicado da fila; barata, sem janela) → agendar
