@@ -11,7 +11,9 @@ $manifest=json_decode(file_get_contents($root.'/public/manifest.webmanifest'),tr
 $assetVersion=preg_match("/HUB_VERSION\s*=\s*'([^']+)'/",$sw,$versionMatch)?(string)$versionMatch[1]:'';
 vcheck($checks,'CSS visual dedicado',$assetVersion!==''&&str_contains($layout,'integration-center.min.css?v='.$assetVersion)&&strlen($css)>5000);
 vcheck($checks,'Configuração destaca Tiny/VSM',str_contains($config,'integration-summary-card tiny')&&str_contains($config,'integration-summary-card vsm')&&str_contains($config,'id="sec-vsm"'));
-vcheck($checks,'Ficha Tiny V3 hierárquica',str_contains($tiny,'integration-hero--tiny')&&str_contains($tiny,'integration-tabs')&&str_contains($tiny,'id="tiny-central"'));
+// As abas migraram para o componente padrão views/partials/hub_tabs.php (incluído por require),
+// então a classe integration-tabs mora no partial; aqui o marcador do componente é data-hub-tabgroup.
+vcheck($checks,'Ficha Tiny V3 hierárquica',str_contains($tiny,'integration-hero--tiny')&&str_contains($tiny,'data-hub-tabgroup="tinyv3"')&&str_contains($tiny,'id="tiny-central"'));
 vcheck($checks,'Responsividade e standalone',str_contains($css,'@media (max-width:767.98px)')&&str_contains($css,'@media (display-mode:standalone)'));
 vcheck($checks,'PWA usa a mesma paleta',($manifest['background_color']??'')==='#f4f7fb'&&($manifest['theme_color']??'')==='#2563eb');
 vcheck($checks,'Service worker inclui CSS novo',$assetVersion!==''&&str_contains($sw,'integration-center.min.css?v='.$assetVersion));
