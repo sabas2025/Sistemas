@@ -14,17 +14,17 @@ class FiscalController extends BaseModuleController {
   public static function routes(): array { return ['fiscal','fiscal-reenviar','fiscal-dashboard','fiscal-xml','fiscal-timeline','fiscal-reconciliacao','fiscal-health']; }
   public function index(): void {
     PermissionService::require('fiscal','visualizar');
-    $erroFiscal = null;
-    $resumoFiscal=FiscalIntegrationService::resumo();
-    $dashboardFiscal=FiscalEnterpriseService::dashboard();
-    $reconciliacaoFiscal=FiscalEnterpriseService::reconciliacao();
-    $notas=[]; $nfeIntegracoes=[]; $erroFiscal=null;
+    // A tela fiscal reflete o fluxo REAL VSM → HUB → Tiny (ciclo de vida do pedido:
+    // pedidos_hub / pedidos_nfe_xml), e não o subsistema notas_fiscais/nfe_integracao,
+    // que nenhum fluxo alimenta. Somente leitura.
+    $erroFiscal=null; $resumo=[]; $aguardando=[]; $ultimas=[];
     try {
-      $notas=FiscalIntegrationService::listar($_GET['status'] ?? '',100);
-      $nfeIntegracoes=TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50', [], 'i')->fetchAll();
+      $resumo     = PedidoCicloVidaService::resumoFiscal();
+      $aguardando = PedidoCicloVidaService::aguardandoTiny(50);
+      $ultimas    = PedidoCicloVidaService::ultimasNfe(50);
     } catch(Throwable $e){ $erroFiscal=$e->getMessage(); }
     $pageTitle='XML / NF-e Enterprise';
-    $this->view('fiscal',compact('pageTitle','resumoFiscal','dashboardFiscal','reconciliacaoFiscal','notas','nfeIntegracoes','erroFiscal'));
+    $this->view('fiscal',compact('pageTitle','resumo','aguardando','ultimas','erroFiscal'));
   }
   public function dashboardFiscal(): void { PermissionService::require('fiscal','visualizar'); $pageTitle='Dashboard XML/NF-e'; $dashboard=FiscalEnterpriseService::dashboard(); $reconciliacao=FiscalEnterpriseService::reconciliacao(); $this->view('fiscal_dashboard',compact('pageTitle','dashboard','reconciliacao')); }
   public function xml(): void { PermissionService::require('fiscal','visualizar'); $pageTitle='XML Fiscal'; $xmls=FiscalEnterpriseService::xmls($_GET['status'] ?? ''); $this->view('fiscal_xml',compact('pageTitle','xmls')); }
