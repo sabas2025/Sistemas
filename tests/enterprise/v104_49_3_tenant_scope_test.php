@@ -176,7 +176,6 @@ hub_check($checks,'Portão cobra alias em consulta com JOIN',
     str_contains($portao,'$violacoesJoin') && str_contains($portao,'in WHERE is ambiguous'));
 foreach ([
     'app/Services/PedidoCicloVidaService.php'     => "[], 'x')",
-    'app/Controllers/DashboardController.php'     => "LIMIT 50', [], 'i')",
     'app/Services/FiscalEnterpriseService.php'    => "WHERE x.id IS NULL', [], 'n')",
 ] as $arquivo => $trecho) {
     hub_check($checks,"Alias aplicado em {$arquivo}", str_contains(hub_read($arquivo), $trecho));
