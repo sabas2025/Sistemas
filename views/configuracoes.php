@@ -17,7 +17,7 @@ $tinyV3Ready = !empty($config['tiny_v3_client_id']) && !empty($config['tiny_v3_c
 $vsmReady = trim((string)($config['vsm_url'] ?? '')) !== '' && trim((string)($config['vsm_token'] ?? '')) !== '';
 $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((string)($config['tiny_webhook_secret'] ?? '')) !== '';
 ?>
-<div class="integration-page integration-config-page">
+<div class="integration-page integration-config-page hub-tabgroup" data-hub-tabgroup="config">
 <div class="alert alert-info">Nova conexão independente: <a href="index.php?page=myouro-configuracoes">MyOuro GraphQL — Consultas e vínculo da empresa</a>. Não substitua a URL REST VSM por /graphql.</div>
 <div class="integration-hero integration-hero--config">
   <div>
@@ -36,14 +36,14 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
   <div class="integration-summary-card vsm"><small>VSM</small><strong><?= $vsmReady ? 'Conexão configurada' : 'Token ou URL pendente' ?></strong><span><?=e($config['vsm_ambiente'] ?? 'homologacao')?></span></div>
   <div class="integration-summary-card security"><small>Webhooks</small><strong><?= $webhookReady ? 'Proteção configurada' : 'Segredo pendente' ?></strong><span>Secrets e limites de entrada</span></div>
 </div>
-<nav class="integration-section-nav" aria-label="Seções da configuração">
-  <a href="#sec-geral"><i class="bi bi-sliders"></i> Geral</a>
-  <a href="#sec-tiny"><i class="bi bi-cloud-arrow-up"></i> Tiny</a>
-  <a href="#sec-vsm"><i class="bi bi-diagram-3"></i> VSM</a>
-  <a href="#sec-webhooks"><i class="bi bi-shield-lock"></i> Webhooks</a>
-  <a href="#sec-fila"><i class="bi bi-hourglass-split"></i> Fila</a>
-  <a href="#sec-testes"><i class="bi bi-activity"></i> Testes</a>
-</nav>
+<?php $hubTabs=[
+  ['id'=>'geral','label'=>'Geral','icon'=>'bi-sliders'],
+  ['id'=>'tiny','label'=>'Tiny','icon'=>'bi-cloud-arrow-up'],
+  ['id'=>'webhooks','label'=>'Webhooks','icon'=>'bi-shield-lock'],
+  ['id'=>'vsm','label'=>'VSM','icon'=>'bi-diagram-3'],
+  ['id'=>'fila','label'=>'Fila','icon'=>'bi-hourglass-split'],
+  ['id'=>'testes','label'=>'Testes','icon'=>'bi-activity'],
+]; $hubTabsLabel='Seções da configuração'; require __DIR__.'/partials/hub_tabs.php'; ?>
 <form method="post" action="index.php?page=salvar-configuracoes" class="panel integration-panel">
 <?=Csrf::input()?>
 <div class="panel-header"><h2>Configurações de integração</h2><span class="text-muted">Credenciais e parâmetros operacionais organizados por domínio</span></div>
@@ -58,7 +58,7 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
     <b>VSM homologação:</b> <code>https://conectavenda.homolog.vsm.com.br</code>
   </div>
 </div>
-<section id="sec-geral" class="integration-card mb-3"><div class="integration-card-title"><div><h2>Ambiente e seleção operacional</h2><p>Defina o ambiente geral e a versão Tiny ativa antes de configurar credenciais.</p></div><span class="integration-card-badge"><i class="bi bi-shield-check"></i> Homologação primeiro</span></div><div class="row g-3">
+<section id="sec-geral" data-hub-pane="geral" class="integration-card mb-3"><div class="integration-card-title"><div><h2>Ambiente e seleção operacional</h2><p>Defina o ambiente geral e a versão Tiny ativa antes de configurar credenciais.</p></div><span class="integration-card-badge"><i class="bi bi-shield-check"></i> Homologação primeiro</span></div><div class="row g-3">
 <div class="col-md-3"><label class="form-label">Ambiente</label><select class="form-select" name="ambiente"><option value="homologacao" <?=($config['ambiente']??'')==='homologacao'?'selected':''?>>Homologação</option><option value="producao" <?=($config['ambiente']??'')==='producao'?'selected':''?>>Produção</option></select></div>
 <div class="col-md-3"><label class="form-label">Versão Tiny</label><select class="form-select" name="tiny_versao"><option value="v2" <?=($config['tiny_versao']??'')==='v2'?'selected':''?>>Tiny V2 operacional</option><option value="v3" <?=($config['tiny_versao']??'')==='v3'?'selected':''?>>Tiny V3 preparado</option></select><div class="form-text text-warning">Tiny V3 só deve ser ativado após implementação/homologação real.</div></div>
 <div class="col-md-6"><label class="form-label">Webhook Secret</label><input class="form-control" name="webhook_secret" value="<?=e(Secrets::mask($config['webhook_secret']??''))?>"><div class="form-text">Enviar no header <code>X-HUB-SECRET</code>. Para trocar, apague tudo e digite um novo segredo.</div></div>
@@ -70,7 +70,7 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
 </div></section>
 
 
-<div class="col-12"><section id="sec-tiny" class="integration-card tiny-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-cloud-arrow-up"></i> Tiny V3 — OAuth e ficha técnica</h2><p>Mantenha Tiny V2 como fallback. Ative Tiny V3 somente após homologar OAuth, permissões, produtos, estoque, pedidos e NF-e.</p></div><span class="integration-card-badge">Tiny V3</span></div><div class="alert alert-light border small mb-3"><b>Referência Swagger Tiny V3:</b> <code>https://erp.tiny.com.br/public-api/v3/swagger/</code></div><div class="row g-3">
+<div class="col-12"><section id="sec-tiny" data-hub-pane="tiny" hidden class="integration-card tiny-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-cloud-arrow-up"></i> Tiny V3 — OAuth e ficha técnica</h2><p>Mantenha Tiny V2 como fallback. Ative Tiny V3 somente após homologar OAuth, permissões, produtos, estoque, pedidos e NF-e.</p></div><span class="integration-card-badge">Tiny V3</span></div><div class="alert alert-light border small mb-3"><b>Referência Swagger Tiny V3:</b> <code>https://erp.tiny.com.br/public-api/v3/swagger/</code></div><div class="row g-3">
   <div class="col-md-6"><label class="form-label">Tiny V3 Auth URL</label><input class="form-control" name="tiny_v3_auth_url" value="<?=e($config['tiny_v3_auth_url']??'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/auth')?>" placeholder="URL de autorização OAuth"></div>
   <div class="col-md-6"><label class="form-label">Tiny V3 Token URL</label><input class="form-control" name="tiny_v3_token_url" value="<?=e($config['tiny_v3_token_url']??'https://accounts.tiny.com.br/realms/tiny/protocol/openid-connect/token')?>" placeholder="URL para renovar token"></div>
   <div class="col-md-6"><label class="form-label">Client ID</label><input class="form-control" name="tiny_v3_client_id" value="<?=e($config['tiny_v3_client_id']??'')?>"></div>
@@ -80,7 +80,7 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
   <div class="col-12"><a class="btn btn-outline-info" href="index.php?page=tiny-v3-ficha"><i class="bi bi-file-earmark-code"></i> Abrir ficha técnica Tiny V3</a></div>
 </div></section></div>
 
-<div class="col-12"><section id="sec-webhooks" class="integration-card security-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-shield-lock"></i> Segurança dos Webhooks Tiny/Olist</h2><p>Use esta camada para evitar eventos falsos, payload grande, CNPJ não autorizado ou excesso de reenvios.</p></div><span class="integration-card-badge">Entrada protegida</span></div><div class="row g-3">
+<div class="col-12"><section id="sec-webhooks" data-hub-pane="webhooks" hidden class="integration-card security-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-shield-lock"></i> Segurança dos Webhooks Tiny/Olist</h2><p>Use esta camada para evitar eventos falsos, payload grande, CNPJ não autorizado ou excesso de reenvios.</p></div><span class="integration-card-badge">Entrada protegida</span></div><div class="row g-3">
   <div class="col-md-6"><label class="form-label">Tiny Webhook Secret</label><input class="form-control" name="tiny_webhook_secret" value="<?=e(Secrets::mask($config['tiny_webhook_secret']??''))?>"><div class="form-text">Quando ativado, o Tiny/integrador deve enviar <code>X-TINY-HUB-SECRET</code> ou <code>X-HUB-SECRET</code>.</div></div>
   <div class="col-md-6"><label class="form-label">CNPJs autorizados</label><input class="form-control" name="tiny_webhook_cnpj_autorizados" value="<?=e($config['tiny_webhook_cnpj_autorizados']??'')?>" placeholder="00000000000000,11111111111111"><div class="form-text">Opcional. Separe por vírgula. Deixe vazio para aceitar qualquer CNPJ em homologação.</div></div>
   <div class="col-md-4"><label class="form-label">Rate limit/minuto</label><input type="number" min="1" class="form-control" name="tiny_webhook_rate_limit" value="<?=e($config['tiny_webhook_rate_limit']??60)?>"></div>
@@ -88,7 +88,7 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
   <div class="col-md-4 d-flex align-items-end"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="tiny_webhook_exigir_secret" value="1" <?=!empty($config['tiny_webhook_exigir_secret'])?'checked':''?>><label class="form-check-label"><b>Exigir secret nos webhooks Tiny</b></label></div></div>
 </div></section></div>
 
-<div class="col-12"><section id="sec-vsm" class="integration-card vsm-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-diagram-3"></i> VSM / Conecta Venda</h2><p>Para o HUB Tiny ⇄ VSM, use <b>pedidos-integradora</b> como API principal. O Swagger <b>pedidos-loja</b> fica opcional e só deve ser usado se a VSM solicitar endpoint específico de loja.</p></div><span class="integration-card-badge">VSM principal</span></div><?php $vsmSt = $config['vsm_status_operacional'] ?? ['modo'=>'Homologação','detalhe'=>'URL de homologação configurada','acao'=>'Produção bloqueada até liberação manual']; ?><div class="alert alert-warning border small"><b>Status operacional VSM:</b> <?=e($vsmSt['modo'])?> — <?=e($vsmSt['detalhe'])?>.<br><span><?=e($vsmSt['acao'])?></span></div><div class="row g-3">
+<div class="col-12"><section id="sec-vsm" data-hub-pane="vsm" hidden class="integration-card vsm-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-diagram-3"></i> VSM / Conecta Venda</h2><p>Para o HUB Tiny ⇄ VSM, use <b>pedidos-integradora</b> como API principal. O Swagger <b>pedidos-loja</b> fica opcional e só deve ser usado se a VSM solicitar endpoint específico de loja.</p></div><span class="integration-card-badge">VSM principal</span></div><?php $vsmSt = $config['vsm_status_operacional'] ?? ['modo'=>'Homologação','detalhe'=>'URL de homologação configurada','acao'=>'Produção bloqueada até liberação manual']; ?><div class="alert alert-warning border small"><b>Status operacional VSM:</b> <?=e($vsmSt['modo'])?> — <?=e($vsmSt['detalhe'])?>.<br><span><?=e($vsmSt['acao'])?></span></div><div class="row g-3">
   <div class="col-md-6"><label class="form-label">VSM URL — API de gravação</label><input class="form-control" name="vsm_url" value="<?=e($config['vsm_url']??'https://conectavenda.homolog.vsm.com.br')?>"><div class="form-text">Base usada para <b>gravação</b>: enviar pedido e baixa de estoque. Pré-preenchido para homologação; troque para produção só após a VSM liberar a URL oficial.</div></div>
   <div class="col-md-6"><label class="form-label">VSM URL — API de consulta</label><input class="form-control" name="vsm_url_consulta" value="<?=e($config['vsm_url_consulta']??'')?>" placeholder="Deixe vazio para usar a mesma URL de gravação"><div class="form-text">Base usada para <b>consulta</b> (consulta de estoque). As duas APIs ficam ativas — nenhuma é principal ou secundária. Vazio = usa a URL de gravação.</div></div>
   <div class="col-md-6"><label class="form-label">VSM Token (legado)</label><input class="form-control" name="vsm_token" value="<?=e(Secrets::mask($config['vsm_token']??''))?>"><div class="form-text">Bearer estático antigo. Para a VSM Conecta Venda use as credenciais abaixo (clientToken/clientSecret).</div></div>
@@ -105,7 +105,7 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
   <div class="col-12"><label class="form-label">Observação operacional VSM</label><textarea class="form-control" name="vsm_api_observacao" rows="2" placeholder="Ex.: API principal validada pela VSM em homologação, pedido via pedidos-integradora."><?=e($config['vsm_api_observacao']??'')?></textarea></div>
 </div></section></div>
 
-<div class="col-12"><section id="sec-fila" class="integration-card queue-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-hourglass-split"></i> Fila, lease e heartbeat</h2><p>O lease define por quanto tempo um worker mantém a posse do item. Tempos diferentes evitam duplicidade em operações longas sem atrasar a recuperação de tarefas curtas.</p></div><span class="integration-card-badge">Concorrência segura</span></div><div class="row g-3">
+<div class="col-12"><section id="sec-fila" data-hub-pane="fila" hidden class="integration-card queue-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-hourglass-split"></i> Fila, lease e heartbeat</h2><p>O lease define por quanto tempo um worker mantém a posse do item. Tempos diferentes evitam duplicidade em operações longas sem atrasar a recuperação de tarefas curtas.</p></div><span class="integration-card-badge">Concorrência segura</span></div><div class="row g-3">
   <div class="col-md-4"><label class="form-label">Timeout sem heartbeat (minutos)</label><input type="number" min="10" max="240" class="form-control" name="queue_processing_timeout_minutes" value="<?=e($config['queue_processing_timeout_minutes']??30)?>"><div class="form-text">Libera item abandonado quando o worker não renova o heartbeat.</div></div>
   <div class="col-md-4"><label class="form-label">Lease padrão (minutos)</label><input type="number" min="1" max="120" class="form-control" name="queue_lease_minutes" value="<?=e($config['queue_lease_minutes']??5)?>"><div class="form-text">Fallback para tipos não listados abaixo.</div></div>
   <div class="col-md-4"><label class="form-label">Pedido Tiny → VSM</label><input type="number" min="1" max="120" class="form-control" name="queue_lease_pedido_tiny_para_vsm" value="<?=e($config['queue_lease_map']['pedido_tiny_para_vsm']??5)?>"></div>
@@ -116,12 +116,12 @@ $webhookReady = trim((string)($config['webhook_secret'] ?? '')) !== '' || trim((
   <div class="col-md-4"><label class="form-label">Status VSM → Tiny</label><input type="number" min="1" max="120" class="form-control" name="queue_lease_produto_vsm_status_para_tiny" value="<?=e($config['queue_lease_map']['produto_vsm_status_para_tiny']??5)?>"></div>
 </div></section></div>
 
-<div class="col-12"><section class="integration-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-sliders"></i> Fluxos ativos</h2><p>A fonte oficial para ligar/desligar fluxos é a Orquestração. Esta tela de Configurações mantém apenas dados de conexão.</p></div><span class="integration-card-badge">Governança</span></div><div class="alert alert-light border small mb-0"><b>Modelo recomendado:</b> pedido gerado no Tiny → HUB valida → VSM; NF-e autorizada e estoque oficial voltam da VSM para Tiny. <a href="index.php?page=orquestracao-integracoes" class="btn btn-sm btn-outline-primary ms-2">Abrir Escolher fluxos ativos</a></div>
+<div class="col-12"><section data-hub-pane="fila" hidden class="integration-card mb-3"><div class="integration-card-title"><div><h2><i class="bi bi-sliders"></i> Fluxos ativos</h2><p>A fonte oficial para ligar/desligar fluxos é a Orquestração. Esta tela de Configurações mantém apenas dados de conexão.</p></div><span class="integration-card-badge">Governança</span></div><div class="alert alert-light border small mb-0"><b>Modelo recomendado:</b> pedido gerado no Tiny → HUB valida → VSM; NF-e autorizada e estoque oficial voltam da VSM para Tiny. <a href="index.php?page=orquestracao-integracoes" class="btn btn-sm btn-outline-primary ms-2">Abrir Escolher fluxos ativos</a></div>
   <input type="hidden" name="bloquear_inativo_com_estoque" value="1">
 </section></div>
 </div><div class="integration-savebar"><span>Revise Tiny e VSM antes de salvar. Tokens mascarados são preservados.</span><button class="btn btn-primary"><i class="bi bi-save"></i> Salvar configurações</button></div></form>
 
-<div id="sec-testes" class="integration-test-grid"><form method="post" action="index.php?page=testar-tiny" class="panel integration-panel tiny-test">
+<div id="sec-testes" data-hub-pane="testes" hidden class="integration-test-grid"><form method="post" action="index.php?page=testar-tiny" class="panel integration-panel tiny-test">
 <?=Csrf::input()?>
 <div class="panel-header"><h2>Teste de conexão Tiny</h2><span class="text-muted">Executa consulta simples e registra retorno na Auditoria</span></div>
 <div class="p-4 row g-3 align-items-end"><div class="col-md-6"><label class="form-label">SKU para teste</label><input class="form-control" name="sku" placeholder="Digite um SKU/código ou use TESTE"></div><div class="col-md-3"><button class="btn btn-outline-primary w-100">Testar Tiny</button></div></div>
