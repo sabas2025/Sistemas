@@ -13,7 +13,13 @@
   $fimFalta    = is_array($fim ?? null) ? count($fim['faltantes'] ?? []) : 0;
 ?>
 
-<div class="panel mb-3">
+<div class="hub-tabgroup" data-hub-tabgroup="atualizacao">
+<?php $hubTabs=[
+  ['id'=>'versao','label'=>'Versão','icon'=>'bi-arrow-repeat'],
+  ['id'=>'atualizar','label'=>'Como atualizar','icon'=>'bi-terminal'],
+  ['id'=>'integridade','label'=>'Integridade','icon'=>'bi-shield-check'],
+]; $hubTabsLabel='Seções da atualização'; require __DIR__.'/partials/hub_tabs.php'; ?>
+<div class="panel mb-3" data-hub-pane="versao">
   <div class="panel-header"><h2><i class="bi bi-arrow-repeat"></i> Atualização do Hub</h2><span class="text-muted">Status da versão e passo a passo seguro para atualizar</span></div>
   <div class="p-4">
     <div class="row g-3">
@@ -46,7 +52,7 @@
   </div>
 </div>
 
-<div class="panel mb-3">
+<div class="panel mb-3" data-hub-pane="atualizar" hidden>
   <div class="panel-header"><h2><i class="bi bi-terminal"></i> Como atualizar (no servidor)</h2><span class="text-muted">Atualiza o código preservando config e dados; faz backup e confere a integridade</span></div>
   <div class="p-4">
     <p>Na pasta da instalação, com o pacote novo baixado, rode o utilitário <code><?=e($deploy)?></code>. Ele preserva <code>config/config.php</code> e todo o <code>storage/</code> (logs, backups, sessões), cria um backup automático e confere o FIM ao final.</p>
@@ -60,7 +66,7 @@
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" data-hub-pane="integridade" hidden>
   <div class="panel-header"><h2><i class="bi bi-shield-check"></i> Integridade da instalação</h2><span class="text-muted">Confere se os arquivos batem com o manifesto assinado</span></div>
   <div class="p-4">
     <?php if($fimStatus==='ok'): ?>
@@ -74,5 +80,6 @@
     <?php endif; ?>
     <a class="btn btn-outline-secondary btn-sm" href="index.php?page=security-fim"><i class="bi bi-fingerprint"></i> Abrir Integridade de Arquivos</a>
   </div>
+</div>
 </div>
 <?php require __DIR__.'/layout_bottom.php'; ?>
