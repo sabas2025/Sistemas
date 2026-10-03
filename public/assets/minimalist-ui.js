@@ -118,7 +118,24 @@
   function initKeyboardShortcuts(){
     document.addEventListener('keydown',function(e){if(e.target.matches('input,textarea,select,[contenteditable="true"]'))return;if(e.key==='/'&&!e.ctrlKey&&!e.metaKey){const search=document.getElementById('menuSearch');if(search){e.preventDefault();search.focus();}}if(e.altKey&&e.key.toLowerCase()==='h'){e.preventDefault();location.href='index.php?page=dashboard';}});
   }
+  function initHubTabs(){
+    // Componente de abas padrão (views/partials/hub_tabs.php): um container
+    // [data-hub-tabgroup] com uma nav [data-hub-tabs] e N seções [data-hub-pane].
+    // Substitui data-bs-toggle="tab" (que não tem handler no bundle lite do Hub).
+    document.querySelectorAll('[data-hub-tabgroup]').forEach(function(group){
+      const btns=group.querySelectorAll('[data-hub-tab]');
+      const panes=group.querySelectorAll('[data-hub-pane]');
+      if(!btns.length||!panes.length) return;
+      function activate(name){
+        btns.forEach(function(b){const on=b.getAttribute('data-hub-tab')===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');});
+        panes.forEach(function(p){p.hidden=p.getAttribute('data-hub-pane')!==name;});
+      }
+      group.addEventListener('click',function(e){const b=e.target.closest('[data-hub-tab]');if(!b||!group.contains(b))return;e.preventDefault();activate(b.getAttribute('data-hub-tab'));});
+      const initial=group.querySelector('[data-hub-tab].active')||btns[0];
+      if(initial) activate(initial.getAttribute('data-hub-tab'));
+    });
+  }
 
-  function init(){initMenuGroups();classifyTables();improveIconButtons();markPageActions();addBackToTop();initDensity();initFavorites();initTheme();initConnectionStatus();initCommandPalette();initKeyboardShortcuts();enhanceLongTables();normalizeStatusLabels();enhanceTraceErrors();protectHorizontalOverflow();}
+  function init(){initMenuGroups();classifyTables();improveIconButtons();markPageActions();addBackToTop();initDensity();initFavorites();initTheme();initConnectionStatus();initCommandPalette();initKeyboardShortcuts();enhanceLongTables();normalizeStatusLabels();enhanceTraceErrors();initHubTabs();protectHorizontalOverflow();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

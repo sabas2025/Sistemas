@@ -65,17 +65,17 @@ function badge_bool($ok){ return $ok ? '<span class="badge bg-success">OK</span>
 
 <div id="tiny-central" class="panel integration-panel mb-3">
   <div class="panel-header"><h2>Tiny V3 — OAuth, tokens e diagnóstico</h2><span class="text-muted">Central única para configuração e homologação</span></div>
-  <div class="p-3">
-    <ul class="nav nav-pills integration-tabs" id="tinyV3Tabs" role="tablist">
-      <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-oauth" type="button">OAuth</button></li>
-      <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-token" type="button">Token Manual / Legado</button></li>
-      <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-diagnostico" type="button">Diagnóstico</button></li>
-      <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-testes" type="button">Testes por módulo</button></li>
-      <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-endpoints" type="button">Endpoints</button></li>
-    </ul>
+  <div class="p-3 hub-tabgroup" data-hub-tabgroup="tinyv3">
+    <?php $hubTabs=[
+      ['id'=>'oauth','label'=>'OAuth'],
+      ['id'=>'token','label'=>'Token Manual / Legado'],
+      ['id'=>'diagnostico','label'=>'Diagnóstico'],
+      ['id'=>'testes','label'=>'Testes por módulo'],
+      ['id'=>'endpoints','label'=>'Endpoints'],
+    ]; $hubTabsLabel='Seções Tiny V3'; require __DIR__.'/partials/hub_tabs.php'; ?>
 
-    <div class="tab-content pt-3">
-      <div class="tab-pane fade show active" id="tab-oauth" role="tabpanel">
+    <div class="pt-3">
+      <div class="hub-tabpane" data-hub-pane="oauth" role="tabpanel">
         <div class="row g-3">
           <div class="col-md-6"><div class="integration-tab-card"><b>Base API</b><code class="integration-url"><?=e($config['tiny_v3_url'] ?: 'https://api.tiny.com.br/public-api/v3')?></code></div></div>
           <div class="col-md-6"><div class="integration-tab-card"><b>Swagger oficial</b><code class="integration-url">https://erp.tiny.com.br/public-api/v3/swagger/</code></div></div>
@@ -97,7 +97,7 @@ function badge_bool($ok){ return $ok ? '<span class="badge bg-success">OK</span>
         <div class="alert alert-info mt-3 mb-0"><b>Fluxo correto:</b> o <code>install.php</code> não coleta credenciais Tiny. Configure Client ID, Client Secret, Redirect URI e tokens somente no painel, com auditoria.</div>
       </div>
 
-      <div class="tab-pane fade" id="tab-token" role="tabpanel">
+      <div class="hub-tabpane" data-hub-pane="token" role="tabpanel" hidden>
         <div class="alert alert-warning"><b>Uso controlado:</b> token manual é legado de homologação. Em produção, use OAuth por ambiente.</div>
         <form class="row g-3" method="post" action="index.php?page=tiny-v3-token-salvar"><?=Csrf::input()?>
           <div class="col-md-6"><label class="form-label">Access Token</label><input class="form-control" name="access_token" autocomplete="off" placeholder="Cole o access_token somente para teste controlado"></div>
@@ -118,7 +118,7 @@ function badge_bool($ok){ return $ok ? '<span class="badge bg-success">OK</span>
         </tbody></table></div>
       </div>
 
-      <div class="tab-pane fade" id="tab-diagnostico" role="tabpanel">
+      <div class="hub-tabpane" data-hub-pane="diagnostico" role="tabpanel" hidden>
         <div class="row g-3 mb-3">
           <div class="col-md-4"><div class="integration-tab-card"><b>Client ID</b><br><?=badge_bool($diag['client_id'] ?? false)?><p class="text-muted mb-0 mt-2">Deve vir do aplicativo criado no Tiny/Olist.</p></div></div>
           <div class="col-md-4"><div class="integration-tab-card"><b>Client Secret</b><br><?=badge_bool($diag['client_secret'] ?? false)?><p class="text-muted mb-0 mt-2">Salvo criptografado; não aparece completo.</p></div></div>
@@ -134,7 +134,7 @@ function badge_bool($ok){ return $ok ? '<span class="badge bg-success">OK</span>
         </tbody></table></div>
       </div>
 
-      <div class="tab-pane fade" id="tab-testes" role="tabpanel">
+      <div class="hub-tabpane" data-hub-pane="testes" role="tabpanel" hidden>
         <form class="row g-3" method="post" action="index.php?page=tiny-v3-testar-modulo"><?=Csrf::input()?>
           <div class="col-md-3"><label class="form-label">Módulo</label><select class="form-select" name="modulo"><option value="token">Testar token/base</option><option value="listar_produtos">Listar produtos</option><option value="produto">Obter produto por SKU</option><option value="estoque">Consultar estoque por SKU</option><option value="pedido">Consultar pedido por ID</option><option value="nota_fiscal">Consultar NF-e por ID</option></select></div>
           <div class="col-md-3"><label class="form-label">SKU</label><input class="form-control" name="sku" placeholder="SKU real"></div>
@@ -145,7 +145,7 @@ function badge_bool($ok){ return $ok ? '<span class="badge bg-success">OK</span>
         </form>
       </div>
 
-      <div class="tab-pane fade" id="tab-endpoints" role="tabpanel">
+      <div class="hub-tabpane" data-hub-pane="endpoints" role="tabpanel" hidden>
         <form method="post" action="index.php?page=tiny-v3-endpoints-salvar"><?=Csrf::input()?>
           <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Chave</th><th>Endpoint efetivo</th><th>Padrão sugerido</th></tr></thead><tbody><?php foreach($endpoints as $k=>$v): ?><tr><td><code><?=e($k)?></code></td><td><input class="form-control form-control-sm" name="tiny_v3_<?=e($k)?>" value="<?=e($endpointValues[$k] ?? $v)?>"></td><td><code><?=e($v)?></code></td></tr><?php endforeach; ?></tbody></table></div>
           <button class="btn btn-primary"><i class="bi bi-save"></i> Salvar endpoints V3</button>

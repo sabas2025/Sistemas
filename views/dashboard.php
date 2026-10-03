@@ -43,16 +43,17 @@
   <div class="col-lg-3 col-md-6"><div class="kpi"><div class="icon"><i class="bi bi-receipt"></i></div><div class="label">XML processados</div><div class="value"><?=e($fiscalResumo['xml_processados'] ?? 0)?></div></div></div>
 </div>
 
-<!-- ===== ABAS POR DOMÍNIO ===== -->
-<div class="panel">
+<!-- ===== ABAS POR DOMÍNIO (componente padrão hub_tabs) ===== -->
+<?php $hubTabs=[
+  ['id'=>'op','label'=>'Operação','icon'=>'bi-diagram-3'],
+  ['id'=>'fila','label'=>'Fila','icon'=>'bi-arrow-repeat'],
+  ['id'=>'prod','label'=>'Produtos & Estoque','icon'=>'bi-box-seam'],
+  ['id'=>'fiscal','label'=>'Fiscal','icon'=>'bi-file-earmark-code'],
+  ['id'=>'saude','label'=>'Saúde','icon'=>'bi-activity'],
+]; $hubTabsLabel='Domínios do dashboard'; ?>
+<div class="panel hub-tabgroup" data-hub-tabgroup="dashboard">
   <div class="p-3 pb-0">
-    <div class="nav nav-pills integration-tabs" data-hub-tabs role="tablist" aria-label="Domínios do dashboard">
-      <button class="nav-link active" type="button" role="tab" data-hub-tab="op" aria-selected="true"><i class="bi bi-diagram-3"></i> Operação</button>
-      <button class="nav-link" type="button" role="tab" data-hub-tab="fila" aria-selected="false"><i class="bi bi-arrow-repeat"></i> Fila</button>
-      <button class="nav-link" type="button" role="tab" data-hub-tab="prod" aria-selected="false"><i class="bi bi-box-seam"></i> Produtos &amp; Estoque</button>
-      <button class="nav-link" type="button" role="tab" data-hub-tab="fiscal" aria-selected="false"><i class="bi bi-file-earmark-code"></i> Fiscal</button>
-      <button class="nav-link" type="button" role="tab" data-hub-tab="saude" aria-selected="false"><i class="bi bi-activity"></i> Saúde</button>
-    </div>
+    <?php require __DIR__.'/partials/hub_tabs.php'; ?>
   </div>
 
   <!-- ABA: OPERAÇÃO -->
@@ -210,20 +211,4 @@
   </section>
 </div>
 
-<script nonce="<?=App::cspNonce()?>">
-(function(){
-  var nav=document.querySelector('[data-hub-tabs]');
-  if(!nav) return;
-  var btns=nav.querySelectorAll('[data-hub-tab]');
-  var panes=document.querySelectorAll('[data-hub-pane]');
-  function activate(name){
-    btns.forEach(function(b){var on=b.getAttribute('data-hub-tab')===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');});
-    panes.forEach(function(p){p.hidden=p.getAttribute('data-hub-pane')!==name;});
-  }
-  nav.addEventListener('click',function(e){var b=e.target.closest('[data-hub-tab]');if(!b)return;e.preventDefault();activate(b.getAttribute('data-hub-tab'));});
-  var valid=false, initial=(location.hash||'').replace('#','');
-  btns.forEach(function(b){ if(b.getAttribute('data-hub-tab')===initial) valid=true; });
-  activate(valid?initial:'op');
-})();
-</script>
 <?php require __DIR__.'/layout_bottom.php'; ?>
