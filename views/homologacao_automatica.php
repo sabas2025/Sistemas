@@ -1,5 +1,10 @@
 <?php require __DIR__.'/layout_top.php'; ?>
-<div class="panel mb-4">
+<div class="hub-tabgroup" data-hub-tabgroup="homolog">
+<?php $hubTabs=[
+  ['id'=>'executar','label'=>'Executar','icon'=>'bi-play-circle'],
+  ['id'=>'relatorios','label'=>'Relatórios','icon'=>'bi-clipboard-data'],
+]; $hubTabsLabel='Seções da homologação automática'; require __DIR__.'/partials/hub_tabs.php'; ?>
+<div class="panel mb-4" data-hub-pane="executar">
   <div class="panel-header">
     <div><h2>Homologação Automática</h2><span class="text-muted">Assistente analítico para validar Tiny V3, VSM, fila, auditoria e liberar operação com segurança.</span></div>
     <div class="d-flex gap-2 flex-wrap">
@@ -19,7 +24,7 @@
   </div>
 </div>
 <?php if(!empty($ultimoRelatorio)): $r=json_decode($ultimoRelatorio['relatorio_json'] ?? '{}', true) ?: []; ?>
-<div class="panel mb-4">
+<div class="panel mb-4" data-hub-pane="relatorios" hidden>
   <div class="panel-header"><div><h2>Último relatório</h2><span class="text-muted">Trace ID: <?=e($ultimoRelatorio['trace_id'] ?? '')?></span></div><span class="badge <?=!empty($ultimoRelatorio['aprovado'])?'bg-success':'bg-warning text-dark'?>"><?=!empty($ultimoRelatorio['aprovado'])?'APROVADO':'PENDENTE/FALHA'?></span></div>
   <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>Teste</th><th>Status</th><th>Mensagem</th><th>Ação recomendada</th></tr></thead><tbody>
     <?php foreach(($r['testes'] ?? []) as $t): ?>
@@ -29,7 +34,7 @@
   </tbody></table></div>
 </div>
 <?php endif; ?>
-<div class="panel">
+<div class="panel" data-hub-pane="relatorios" hidden>
   <div class="panel-header"><div><h2>Histórico de homologações automáticas</h2><span class="text-muted">Últimos 30 relatórios gerados.</span></div></div>
   <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>Data</th><th>Trace ID</th><th>Status</th><th>Resumo</th><th>Tiny V3 liberado</th></tr></thead><tbody>
     <?php foreach(($relatorios ?? []) as $row): $res=json_decode($row['resumo_json'] ?? '{}', true) ?: []; ?>
@@ -37,5 +42,6 @@
     <?php endforeach; ?>
     <?php if(empty($relatorios)): ?><tr><td colspan="5" class="text-muted">Nenhuma homologação automática executada ainda.</td></tr><?php endif; ?>
   </tbody></table></div>
+</div>
 </div>
 <?php require __DIR__.'/layout_bottom.php'; ?>
