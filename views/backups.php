@@ -13,14 +13,20 @@ function backup_size_fmt($bytes){ $bytes=(int)$bytes; if($bytes>=1073741824) ret
 <?php if($flashSuccess): ?><div class="alert alert-success"><i class="bi bi-check-circle"></i> <?=e($flashSuccess)?></div><?php endif; ?>
 <?php if($flashError): ?><div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <?=e($flashError)?></div><?php endif; ?>
 
-<div class="row g-3 mb-3">
+<div class="hub-tabgroup" data-hub-tabgroup="backups">
+<?php $hubTabs=[
+  ['id'=>'resumo','label'=>'Resumo & Ações','icon'=>'bi-cloud-arrow-down'],
+  ['id'=>'historico','label'=>'Histórico','icon'=>'bi-database-check'],
+  ['id'=>'praticas','label'=>'Boas práticas','icon'=>'bi-shield-lock'],
+]; $hubTabsLabel='Seções de backups'; require __DIR__.'/partials/hub_tabs.php'; ?>
+<div class="row g-3 mb-3" data-hub-pane="resumo">
   <div class="col-md-3"><div class="panel h-100"><div class="text-muted small">Backups registrados</div><div class="display-6 fw-bold"><?=e($totalBackups)?></div><span class="badge bg-primary-subtle text-primary">Histórico local</span></div></div>
   <div class="col-md-3"><div class="panel h-100"><div class="text-muted small">Último backup</div><div class="h5 mb-1"><?= $ultimoBackup ? e(date('d/m/Y H:i', strtotime($ultimoBackup['criado_em']))) : '—' ?></div><span class="badge bg-success-subtle text-success"><?= $ultimoBackup ? e($ultimoBackup['status']) : 'Sem registro' ?></span></div></div>
   <div class="col-md-3"><div class="panel h-100"><div class="text-muted small">Volume armazenado</div><div class="h4 mb-1"><?=e(backup_size_fmt($totalBytes))?></div><span class="badge bg-secondary-subtle text-secondary">storage/backups</span></div></div>
   <div class="col-md-3"><div class="panel h-100"><div class="text-muted small">Integridade operacional</div><div class="h4 mb-1"><?= $totalBackups ? e(round(($sucesso/max(1,$totalBackups))*100)) : 0 ?>%</div><span class="badge bg-warning-subtle text-warning">Validar antes de restaurar</span></div></div>
 </div>
 
-<div class="row g-3 mb-3">
+<div class="row g-3 mb-3" data-hub-pane="resumo">
   <div class="col-lg-4">
     <div class="panel h-100">
       <div class="panel-header"><div><h2><i class="bi bi-cloud-arrow-down"></i> Gerar backup</h2><p class="text-muted mb-0">Cria um ZIP com SQL completo do banco atual.</p></div></div>
@@ -58,7 +64,7 @@ function backup_size_fmt($bytes){ $bytes=(int)$bytes; if($bytes>=1073741824) ret
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" data-hub-pane="historico" hidden>
   <div class="panel-header">
     <div>
       <h2><i class="bi bi-database-check"></i> Histórico de backups</h2>
@@ -107,7 +113,7 @@ function backup_size_fmt($bytes){ $bytes=(int)$bytes; if($bytes>=1073741824) ret
   </table></div>
 </div>
 
-<div class="panel mt-3">
+<div class="panel mt-3" data-hub-pane="praticas" hidden>
   <div class="panel-header"><div><h2><i class="bi bi-shield-lock"></i> Boas práticas de restauração</h2></div></div>
   <div class="row g-3 small">
     <div class="col-md-3"><b>1. Ambiente</b><br><span class="text-muted">Prefira restaurar primeiro em homologação.</span></div>
@@ -115,5 +121,6 @@ function backup_size_fmt($bytes){ $bytes=(int)$bytes; if($bytes>=1073741824) ret
     <div class="col-md-3"><b>3. Health check</b><br><span class="text-muted">Após restaurar, valide banco, filas e módulos.</span></div>
     <div class="col-md-3"><b>4. Auditoria</b><br><span class="text-muted">Toda ação registra Trace ID para rastreabilidade.</span></div>
   </div>
+</div>
 </div>
 <?php require __DIR__.'/layout_bottom.php'; ?>
