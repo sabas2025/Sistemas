@@ -167,13 +167,12 @@ class DashboardMetricsService {
   }
 
   private static function workerCards(): array {
-    $workers = [
+    // Laço is_file()→card consolidado em WorkerCardsService (A3-N3); a lista é específica deste painel.
+    return WorkerCardsService::build([
       ['arquivo'=>'worker_estoque.php','titulo'=>'Estoque'],
       ['arquivo'=>'worker_consulta_estoque_vsm.php','titulo'=>'Consulta VSM'],
       ['arquivo'=>'worker_fila.php','titulo'=>'Fila'],
-    ];
-    $out=[]; foreach($workers as $w){ $file=__DIR__.'/../../public/'.$w['arquivo']; $exists=is_file($file); $out[]=['titulo'=>$w['titulo'],'arquivo'=>$w['arquivo'],'status'=>$exists?'online':'erro','detalhe'=>$exists?'Arquivo disponível para agendamento':'Arquivo não encontrado']; }
-    return $out;
+    ]);
   }
 
   private static function assertTable(string $table): void { if(!in_array($table, self::SAFE_TABLES, true)) throw new InvalidArgumentException('Tabela não permitida.'); }

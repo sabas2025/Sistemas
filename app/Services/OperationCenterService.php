@@ -51,20 +51,14 @@ class OperationCenterService {
   }
 
   public static function workerCards(): array {
-    $workers = [
+    // Laço is_file()→card consolidado em WorkerCardsService (A3-N3); a lista é específica deste painel.
+    return WorkerCardsService::build([
       ['arquivo'=>'worker_estoque.php','titulo'=>'Estoque'],
       ['arquivo'=>'worker_consulta_estoque_vsm.php','titulo'=>'Consulta VSM'],
       ['arquivo'=>'worker_fila.php','titulo'=>'Fila'],
       ['arquivo'=>'worker_backup.php','titulo'=>'Backups'],
       ['arquivo'=>'worker_notificacoes.php','titulo'=>'Notificações'],
-    ];
-    $out=[];
-    foreach($workers as $w){
-      $file = __DIR__.'/../../public/'.$w['arquivo'];
-      $exists = is_file($file);
-      $out[] = ['titulo'=>$w['titulo'],'arquivo'=>$w['arquivo'],'status'=>$exists?'online':'erro','detalhe'=>$exists?'Arquivo disponível para cron/agendamento':'Arquivo não encontrado'];
-    }
-    return $out;
+    ]);
   }
 
   public static function ultimoHomologacao(string $table): array {

@@ -252,6 +252,7 @@ return [
   'VsmTokenService' => 'app/Services/VsmTokenService.php',
   'WafService' => 'app/Services/WafService.php',
   'WebhookSecurityService' => 'app/Services/WebhookSecurityService.php',
+  'WorkerCardsService' => 'app/Services/WorkerCardsService.php',
   'WorkerCliGuardService' => 'app/Services/WorkerCliGuardService.php',
   'WorkerHeartbeatService' => 'app/Services/WorkerHeartbeatService.php',
   'XmlNfeController' => 'app/Controllers/XmlNfeController.php',
