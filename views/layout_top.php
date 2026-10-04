@@ -165,7 +165,7 @@ $pageDescription = $pageDescription ?? ($pageDescriptions[$active] ?? 'Operaçã
       ?><a data-menu-group="<?=e($groupName)?>" class="<?=$isActive?'active':''?>" href="index.php?page=<?=$key?>"><i class="bi <?=$it[0]?>"></i><span><?=$it[1]?></span></a><?php endforeach; endforeach; ?>
       <?php if(PermissionService::can('fila','reprocessar')): ?><form method="post" action="index.php?page=api/processar-fila" class="px-3 mt-2"><?= Csrf::input() ?><button class="btn btn-sm btn-outline-light w-100"><i class="bi bi-play-circle"></i> Processar Fila</button></form><?php endif; ?>
     <?php if(PermissionService::can('backup','gerar')): ?><form method="post" action="index.php?page=backup" class="px-3 mt-2"><?= Csrf::input() ?><button class="btn btn-sm btn-outline-light w-100">Backup ZIP</button></form><?php endif; ?></nav>
-    <div class="sidebar-footer"><small>Ambiente: <b><?=e(strtoupper($ambientePainel))?></b></small><br><small>Versão: <b><?=e(class_exists('SystemVersionService') ? SystemVersionService::label() : 'V104.49.3')?></b></small></div>
+    <div class="sidebar-footer"><small>Ambiente da integração: <b><?=e(strtoupper($ambientePainel))?></b></small><br><small>Versão: <b><?=e(class_exists('SystemVersionService') ? SystemVersionService::label() : 'V104.49.3')?></b></small></div>
   </aside>
   <main class="main" id="hubMainContent" tabindex="-1">
     <header class="topbar">
@@ -173,7 +173,7 @@ $pageDescription = $pageDescription ?? ($pageDescriptions[$active] ?? 'Operaçã
         <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Abrir menu lateral" aria-controls="sidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
         <div><h1><?=e($pageTitle ?? 'Dashboard')?></h1><?php if(trim((string)$pageDescription)!==''): ?><p><?=e($pageDescription)?></p><?php endif; ?></div>
       </div>
-      <div class="topbar-actions"><div class="env-badge <?=($ambientePainel==='producao'?'env-prod':'env-homolog')?>"><?=e(strtoupper($ambientePainel))?></div><div class="userbox">
+      <div class="topbar-actions"><div class="env-badge <?=($ambientePainel==='producao'?'env-prod':'env-homolog')?>" title="Ambiente da integração (Tiny/VSM)"><?=e(strtoupper($ambientePainel))?></div><div class="userbox">
         <a class="btn btn-sm btn-outline-secondary" href="index.php?page=pwa-status" title="Status do PWA"><i class="bi bi-phone-flip"></i> PWA</a>
         <button class="btn btn-sm btn-outline-primary pwa-install-btn d-none" type="button" data-pwa-install title="Instalar aplicativo do Hub"><i class="bi bi-phone"></i> Instalar App</button>
         <button class="btn btn-sm btn-outline-secondary" type="button" data-pwa-refresh title="Atualizar PWA" aria-label="Atualizar aplicativo PWA"><i class="bi bi-arrow-clockwise"></i></button>

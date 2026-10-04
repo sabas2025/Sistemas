@@ -32,7 +32,7 @@
             <tr><th style="width:42%">Release</th><td><?=e($sv ? SystemVersionService::RELEASE : '—')?></td></tr>
             <?php if($build!==''): ?><tr><th>Build</th><td><?=e($build)?></td></tr><?php endif; ?>
             <?php if($releaseData!==''): ?><tr><th>Data da release</th><td><?=e($releaseData)?></td></tr><?php endif; ?>
-            <tr><th>Ambiente</th><td><?=e(strtoupper((string)$ambiente))?></td></tr>
+            <tr><th>Ambiente da aplicação</th><td><?=e(strtoupper((string)$ambiente))?> <span class="text-muted">(app_env)</span></td></tr>
           </table>
         </div>
       </div>
