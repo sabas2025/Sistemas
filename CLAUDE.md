@@ -400,18 +400,24 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   isolamento de verdade: povoe duas empresas, entre por HTTP e olhe a tela; e confirme o mecanismo
   injetando a empresa na sessão, para separar "filtro quebrado" de "filtro nunca ligado".
 
-- **O `DashboardController` está a poucas dezenas de bytes do teto que a CI impõe.**
-  `tests/enterprise/v104_48_1_architecture_test.php` exige que ele fique **abaixo de 160 KB**, para
-  impedir que o controller-deus volte a crescer. Ao acrescentar o campo *Empresa* na tela de
-  usuários (2026-09-15) o arquivo passou o teto por **1.089 bytes**, e o teste pegou. A resposta
-  certa não é levantar o limite — é o que a guarda pede: **lógica nova de domínio entra por
-  serviço**. Extraído para `EmpresaCatalogService` (listar, e ler+validar o `empresa_id` do
-  formulário numa chamada só), o controller ficou em 163.788 bytes, folga de 52. Em 2026-09-15 a
-  correção do I-12 devolveu fôlego ao mover `filaMortaReprocessar()` para o `FilaController`, que o
-  `RouteModuleRegistry` já declarava como dono: 163.547 bytes, folga de 293. O I-17 repetiu a
-  receita com `auditoriaDetalhe()` → `AuditoriaController`: **162.893 bytes, folga de 947**. O
-  caminho para ganhar espaço é esse — devolver handler ao controller que o registry aponta —, não
-  levantar o limite. O arquivo continua precisando ser decomposto. Ao mexer nele, meça antes:
+- **O `DashboardController` JÁ FOI decomposto; a guarda de 160 KB continua, agora com folga enorme.**
+  `tests/enterprise/v104_48_1_architecture_test.php` exige que ele fique **abaixo de 160 KB** (163840
+  bytes), para impedir que o controller-deus volte a crescer. **História:** por muito tempo ele viveu
+  colado no teto — a extração de `EmpresaCatalogService` o deixou em 163.788 bytes (folga 52), o I-12
+  (`filaMortaReprocessar()` → `FilaController`) em 163.547 (folga 293), o I-17 (`auditoriaDetalhe()` →
+  `AuditoriaController`) em 162.893 (folga 947). Depois disso a **campanha Fase 3** (PRs #53–#58)
+  extraiu os domínios grandes (Estoque, Auditoria, Produtos, Fila, Central Técnica, Bancos, Segurança,
+  Tiny, Homologação, VSM) para controllers dedicados, roteados pelo
+  `FastRouteDispatcherService::$dispatchGroups` **antes** do fallback do Dashboard. **2026-10-04:**
+  removida a resídua morta que a Fase 3 deixou para trás — 7 handlers órfãos (`pedidos`,
+  `pedidoDetalhe`, `fila`, `filaReprocessar`, `filaCriarTeste`, `produtos`, `produtosPendencias`) mais
+  o cluster de helpers de SQL-safety que só eles alimentavam (`SAFE_TABLES`/`SAFE_COLUMNS`,
+  `safeIdentifier/safeColumn/safeSqlFragment/safeOrderBy`, `count`, `safeCount`, `tableRows`,
+  `tableOne`, `statusDot`, `workerCards`, `operationalSummary`) e a propriedade `$pdo` nunca lida:
+  **32.116 → 15.037 bytes, folga de ~148 KB**. Sobraram só handlers vivos (`logs`, `logsExportar`,
+  `metricas`, `integracoes`, `notificacoes`, `notificacao-lida`, `tiny-v3-callback`) sem dono dedicado.
+  A regra permanece: **lógica nova de domínio entra por serviço / pelo controller que o
+  `RouteModuleRegistry` aponta**, nunca levantando o limite. Ao mexer nele, meça antes:
   `wc -c app/Controllers/DashboardController.php` contra 163840.
 
 - **Jitter de fila é ADITIVO, nunca simétrico.** O achado G-03: `random(0, atraso)` (*full jitter*)
