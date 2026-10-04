@@ -25,7 +25,7 @@ class FastRouteDispatcherService {
     EvidenceController::class => ['evidencias-homologacao','evidencia-trace'],
     ProductionSecurityController::class => ['producao-segura','producao-segura-executar'],
     V50Controller::class => ['tiny-validacao','tiny-validacao-executar','vsm-simulador','vsm-simulador-executar','limpeza-retencao','limpeza-retencao-executar'],
-    XmlNfeController::class => ['fiscal','fiscal-reenviar','fiscal-dashboard','fiscal-xml','fiscal-timeline','fiscal-reconciliacao','fiscal-health'],
+    XmlNfeController::class => ['fiscal'],
     V51Controller::class => ['produto-novo-politica','produto-novo-politica-salvar','pedidos-validacao-vsm','pedido-validacao-detalhe','pedido-validacao-enfileirar','pedido-ciclo-vida','pedido-ciclo-detalhe','pedido-ciclo-enviar-tiny'],
     CentralHomologacaoController::class => ['central-homologacao'],
     TinyHomologacaoController::class => ['tiny-v2-homologacao','tiny-v2-homologacao-executar','tiny-v3-homologacao','tiny-v3-homologacao-executar'],

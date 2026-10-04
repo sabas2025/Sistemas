@@ -17,7 +17,7 @@ class RouteModuleRegistry {
       'PedidoController'=>['pedidos','pedido-detalhe'],
       'ProdutoController'=>['produtos','produtos-vsm','produtos-pendencias','produto-pendencia-acao'],
       'EstoqueController'=>['baixas-estoque','divergencia-estoque','divergencia-acao','reconciliacao','reconciliacao-executar'],
-      'FiscalController'=>['fiscal','fiscal-reenviar','nfe','notas-fiscais'],
+      'FiscalController'=>['fiscal','nfe','notas-fiscais'],
       'TinyController'=>['tiny-webhooks','tiny-v3-ficha','tiny-v2-ficha-tecnica','teste-real-tiny','tiny-v3-testar','tiny-validacao'],
       'VsmController'=>['vsm-ficha-tecnica','testar-vsm','vsm-endpoints','vsm-campos','vsm-saude','vsm-logs','vsm-testes','vsm-simulador'],
       'FilaController'=>['fila','fila-reprocessar','fila-morta','fila-morta-reprocessar'],

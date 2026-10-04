@@ -113,7 +113,6 @@
     ['grupo'=>'📌 Outras rotas','rota'=>'index.php?page=dashboard-integridade-executar','controller'=>'DashboardController.php'],
     ['grupo'=>'🧪 Diagnóstico / Homologação','rota'=>'index.php?page=health-modulos','controller'=>'DashboardController.php'],
     ['grupo'=>'🧪 Diagnóstico / Homologação','rota'=>'index.php?page=menu-testes','controller'=>'DashboardController.php'],
-    ['grupo'=>'🧾 XML / NF-e','rota'=>'index.php?page=fiscal-reenviar','controller'=>'DashboardController.php'],
     ['grupo'=>'🧾 XML / NF-e','rota'=>'index.php?page=fiscal','controller'=>'DashboardController.php'],
     ['grupo'=>'🟨 Tiny','rota'=>'index.php?page=tiny-webhooks','controller'=>'DashboardController.php'],
     ['grupo'=>'🟨 Tiny','rota'=>'index.php?page=tiny-v3-ficha','controller'=>'DashboardController.php'],

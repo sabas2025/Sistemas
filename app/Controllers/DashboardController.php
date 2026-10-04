@@ -561,27 +561,4 @@ class DashboardController {
   }
 
 
-  private function fiscal(): void {
-    PermissionService::require('configuracoes','visualizar');
-    $resumoFiscal = class_exists('FiscalIntegrationService') ? FiscalIntegrationService::resumo() : [];
-    $notas = [];
-    try { $notas = FiscalIntegrationService::listar($_GET['status'] ?? '', 100); } catch(Throwable $e) { $erroFiscal = $e->getMessage(); }
-    $nfeIntegracoes=[]; try { $nfeIntegracoes = TenantScopeService::run('nfe_integracao', 'SELECT i.*, n.numero, n.serie, n.chave_acesso FROM nfe_integracao i LEFT JOIN notas_fiscais n ON n.id=i.nota_fiscal_id ORDER BY i.id DESC LIMIT 50', [], 'i')->fetchAll(); } catch(Throwable $e) { $erroFiscal = ($erroFiscal ?? '').' '.$e->getMessage(); }
-    $pageTitle = 'XML / NF-e';
-    require __DIR__.'/../../views/fiscal.php';
-  }
-
-
-  private function fiscalReenviar(): void {
-    PermissionService::require('configuracoes','visualizar');
-    Csrf::validate();
-    $id=(int)($_POST['id'] ?? 0);
-    if ($id>0 && class_exists('FiscalIntegrationService')) FiscalIntegrationService::marcarReenvio($id);
-    Audit::event('fiscal.reenviar','sucesso',['mensagem'=>'NF-e marcada para reenvio à VSM.','entidade'=>'nfe_integracao','entidade_id'=>$id]);
-    redirect('index.php?page=fiscal&reenviar=1');
-  }
-
-
-
-
 }

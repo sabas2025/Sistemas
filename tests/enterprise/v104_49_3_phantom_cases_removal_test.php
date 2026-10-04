@@ -49,7 +49,7 @@ $donos = [
   'OrquestracaoController' => ['orquestracao-integracoes','salvar-orquestracao-integracoes','testar-orquestracao-fluxo'],
   'SistemaController' => ['sobre'],
   'DatabaseMaintenanceController' => ['health-modulos','validar-banco'],
-  'XmlNfeController' => ['fiscal','fiscal-reenviar','fiscal-xml','fiscal-health'],
+  'XmlNfeController' => ['fiscal'],
   'CentralHomologacaoController' => ['central-homologacao'],
   'TinyHomologacaoController' => ['tiny-v2-homologacao','tiny-v3-homologacao'],
 ];

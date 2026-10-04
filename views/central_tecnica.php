@@ -33,12 +33,7 @@
         ['estoque-sku-historico','bi-graph-up','Histórico por SKU','Movimentações e auditoria por produto.'],
       ],
       'XML/NF-e' => [
-        ['fiscal-dashboard','bi-receipt','Dashboard XML/NF-e','NF-e recebidas, pendentes, erros e concluídas.'],
-        ['fiscal','bi-receipt-cutoff','Central XML/NF-e','XML, NF-e, reenvio e controle VSM → HUB → Tiny.'],
-        ['fiscal-xml','bi-filetype-xml','Visualizador XML','Consulta, validação e download de XML.'],
-        ['fiscal-timeline','bi-diagram-3','Timeline XML/NF-e','Etapas do retorno VSM e envio ao Tiny.'],
-        ['fiscal-reconciliacao','bi-arrow-left-right','Reconciliação XML/NF-e','Divergências Tiny x Hub x VSM.'],
-        ['fiscal-health','bi-heart-pulse','Saúde XML/NF-e','Fila fiscal, XML, banco e auditoria.'],
+        ['fiscal','bi-receipt-cutoff','Central XML/NF-e','Fluxo fiscal VSM → HUB → Tiny: NF-e/XML vinculados ao pedido (somente leitura).'],
       ],
       'Pedidos e Produtos' => [
         ['pedido-ciclo-vida','bi-diagram-3','Ciclo do Pedido','Pedido Tiny, envio VSM, retorno XML e status no Tiny.'],
