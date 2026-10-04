@@ -83,8 +83,6 @@ return [
   'FilaController' => 'app/Controllers/FilaController.php',
   'FileIntegrityService' => 'app/Services/FileIntegrityService.php',
   'FiscalController' => 'app/Controllers/FiscalController.php',
-  'FiscalEnterpriseService' => 'app/Services/FiscalEnterpriseService.php',
-  'FiscalIntegrationService' => 'app/Services/FiscalIntegrationService.php',
   'HealthCheckService' => 'app/Services/HealthCheckService.php',
   'HeavyQueryOptimizerService' => 'app/Services/HeavyQueryOptimizerService.php',
   'HomologacaoController' => 'app/Controllers/HomologacaoController.php',

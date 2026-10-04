@@ -25,9 +25,10 @@ class RetryPolicyService {
    * Auditoria final 2026-09-14 (achado G-03) — jitter do reagendamento de fila.
    *
    * O jitter do sleep() acima cobre o retry DENTRO de uma requisição. O reagendamento das filas
-   * (proxima_tentativa) era determinístico em quatro pontos: QueueService::marcarResultado(),
-   * EnterpriseIdempotencyGuardService::markGuardFailureQueueItem(),
-   * EstoqueEnterpriseService::proximaTentativa() e FiscalEnterpriseService::proximaTentativa().
+   * (proxima_tentativa) era determinístico em três pontos: QueueService::marcarResultado(),
+   * EnterpriseIdempotencyGuardService::markGuardFailureQueueItem() e
+   * EstoqueEnterpriseService::proximaTentativa(). (O quarto ponto histórico,
+   * FiscalEnterpriseService::proximaTentativa(), saiu com a remoção do Fiscal Modelo A — ver CLAUDE.md.)
    * Quando a VSM ou o Tiny falha rápido (503 imediato), muitos itens terminam no mesmo segundo,
    * recebem o mesmo atraso e voltam a ficar elegíveis no MESMO segundo - o provedor recebe uma
    * rajada sincronizada em vez de uma rampa. O caso pior era o guard de idempotência, com 300s

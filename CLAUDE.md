@@ -155,7 +155,8 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
   ampliar o catálogo afeta o log do sistema inteiro, é decisão de produto
 - `docs/relatorios/RELATORIO-CORRECAO-G03-2026-09-14.md` — jitter no reagendamento das filas. **O achado apontava
   um ponto; havia quatro** (`QueueService`, `EnterpriseIdempotencyGuardService`,
-  `EstoqueEnterpriseService`, `FiscalEnterpriseService`). Ao mexer em backoff, procure os quatro
+  `EstoqueEnterpriseService` e o então `FiscalEnterpriseService`). **Hoje são três**: o quarto saiu
+  com a remoção do Fiscal Modelo A (ver pendência abaixo). Ao mexer em backoff, procure os três
 - `docs/relatorios/RELATORIO-REMOCAO-CLASSES-ORFAS-2026-09-14.md` — remoção das 5 classes órfãs (244 → 239 no
   classmap). **As três tabelas que elas escreviam continuam no schema** (`connector_operational_checks`,
   `comercial_demo_reset_logs`, `system_release_checks`): estão em `database/modules/core.sql`, no
@@ -969,16 +970,27 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
 - `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.
-- **Fiscal Modelo A (código morto) — remoção pendente de autorização.** Auditoria 2026-09-29: as
-  tabelas `notas_fiscais`/`nfe_integracao`/`nfe_xml`/`nfe_status_historico`/`notas_fiscais_eventos`
-  e os serviços `FiscalIntegrationService`/`FiscalEnterpriseService` descrevem um fluxo **Hub → VSM**
-  que **nenhum fluxo alimenta** (grep de `INSERT/UPDATE` vazio fora dos próprios serviços). O fluxo
-  fiscal REAL é **VSM → HUB → Tiny**, em `PedidoCicloVidaService` (`pedidos_hub`/`pedidos_nfe_xml`),
-  com tela `page=pedido-ciclo-vida`. A tela `page=fiscal` foi **reapontada** para o fluxo real
-  (read-only) — mas ainda leem o Modelo A: `DashboardController` (resumo/notas no dashboard),
-  `XmlNfeHomologationService`, `RealtimeHealthService`, e as sub-telas `fiscal-dashboard`,
-  `fiscal-xml`, `fiscal-reconciliacao`, `fiscal-health`. **Não removido** (sem `DROP`, sem apagar
-  código) — aguarda autorização. **Não confundir com `fila_fiscal`**, que É usada (`worker_fiscal`).
+- **Fiscal Modelo A (código morto) — CÓDIGO REMOVIDO (2026-10-04), TABELAS MANTIDAS.** O subsistema
+  descrevia um fluxo **Hub → VSM** que **nenhum fluxo alimentava**. O fluxo fiscal REAL é
+  **VSM → HUB → Tiny**, em `PedidoCicloVidaService` (`pedidos_hub`/`pedidos_nfe_xml`), servido por
+  `page=fiscal` (read-only, via `FiscalController::index`) e `page=pedido-ciclo-vida`. Removido em
+  duas PRs, com autorização explícita ("Código + manter tabelas"):
+  - **F1 (#83):** sub-telas/rotas/leituras mortas — views `fiscal_dashboard`/`fiscal_xml`/
+    `fiscal_timeline`/`fiscal_reconciliacao`/`fiscal_health`, rotas `fiscal-*`, métodos órfãos do
+    `DashboardController`, cards da Central Técnica.
+  - **F2:** o pipeline — serviços `FiscalEnterpriseService` e `FiscalIntegrationService` e os workers
+    `worker_fiscal.php`/`worker_xml_nfe.php` (4 arquivos, `workers/` + shims `public/`). Os 2
+    consumidores vivos foram **re-apontados para o fluxo real** (`PedidoCicloVidaService::resumoFiscal()`):
+    `RealtimeHealthService::fiscal()` (card de Segurança) e `XmlNfeHomologationService::resumoOperacional()`
+    (a classe PERMANECE — `validarChaveNfe()` é usado pelo intake real). Go-live e monitores de worker
+    re-apontados: **o XML/NF-e não tem worker — o envio ao Tiny é SÍNCRONO** (`enviarXmlParaTiny`, no
+    retorno da VSM em `ApiController` + ação manual no ciclo do pedido).
+  - **TABELAS MANTIDAS** (sem `DROP`): `notas_fiscais`, `nfe_integracao`, `nfe_xml`,
+    `nfe_status_historico`, `notas_fiscais_eventos`, `fila_fiscal`, `fiscal_reconciliacao_snapshots`.
+    **Correção do relato anterior:** `fila_fiscal` NÃO era "usada por worker_fiscal" num sentido vivo —
+    seu único alimentador era `FiscalEnterpriseService::reprocessar` (morto), então a fila ficava sempre
+    vazia. Hoje seus leitores (`DashboardMetricsService`, `OperationCenterService`) só contam linhas → 0.
+    Workers reais passaram de 13 para **12**; os pontos de reagendamento G-03 de 4 para **3**.
 - **Fiscal etapa 5 (Tiny → Hub "finalizado") não fecha o ciclo — decisão de produto.** O webhook
   `api/tiny/webhook/situacao-pedido` só **registra/audita**; não atualiza `pedidos_hub`. O ciclo
   marca `concluido` no **envio** ao Tiny (`enviarXmlParaTiny`), não na **confirmação** do Tiny. Se o

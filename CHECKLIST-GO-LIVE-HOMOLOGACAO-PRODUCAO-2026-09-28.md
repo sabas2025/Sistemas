@@ -84,9 +84,10 @@ Homologação é onde se fecha a lacuna acima. Ordem sugerida:
       `commercial.tenant_scope_required` para 2+ empresas sem antes resolver o H-01 — ver
       `NOTA-DECISAO-H01-E-PERGUNTA-VSM-2026-09-28.md` (respostas da VSM pendentes).
 - [ ] **B8. Cron dos workers.** Agendar `workers/worker_fila.php`, `worker_estoque.php`,
-      `worker_fiscal.php`, `worker_reconciliacao.php`, `worker_retencao.php`,
+      `worker_reconciliacao.php`, `worker_retencao.php`,
       `worker_tiny_v3_refresh.php`, `worker_vsm_token_refresh.php` etc. via CLI/cron (nunca por HTTP —
-      os shims públicos bloqueiam navegador).
+      os shims públicos bloqueiam navegador). O XML/NF-e **não** tem worker: o envio ao Tiny é
+      síncrono (retorno da VSM + ação manual no ciclo do pedido).
 - [ ] **B9. Go-live guard verde.** Abrir **Entrada em Produção** (`ProductionGoLiveService`) e
       confirmar que **todas as checagens acendem verdes** — é o gate final do próprio Hub.
 

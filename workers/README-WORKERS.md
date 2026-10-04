@@ -44,8 +44,9 @@ O custo por item é dominado pela chamada HTTP à VSM ou ao Tiny. Um processo é
 > aqui. Use `processed` no JSON de saída do worker e o tempo de execução para calcular a sua taxa,
 > e dimensione a partir dela.
 
-E lembre que **500 pedidos/min gera mais de 500 itens**: os fluxos de estoque e fiscal enfileiram os
-seus. Conte com folga.
+E lembre que **500 pedidos/min gera mais de 500 itens**: o fluxo de estoque enfileira os seus.
+Conte com folga. (O XML/NF-e **não** usa worker: o envio ao Tiny é síncrono, no retorno da VSM e
+por ação manual no ciclo do pedido — ver CLAUDE.md, remoção do Fiscal Modelo A.)
 
 ### Exemplo — 4 processos paralelos, a cada minuto
 
@@ -65,11 +66,9 @@ acúmulo de processos. Com a fila vazia, cada um sai na primeira iteração — 
 
 ```bash
 php workers/worker_estoque.php 20
-php workers/worker_fiscal.php 20
 php workers/worker_consulta_estoque_vsm.php --force 100
 php workers/worker_reconciliacao.php
 php workers/worker_notificacoes.php
-php workers/worker_xml_nfe.php
 php workers/worker_backup.php
 ```
 
