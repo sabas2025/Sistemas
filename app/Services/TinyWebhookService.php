@@ -82,7 +82,28 @@ class TinyWebhookService {
     try{
       $st=$pdo->prepare('INSERT INTO tiny_webhooks(tipo,cnpj,id_ecommerce,referencia,hash_payload,status,payload,headers,trace_id,mensagem) VALUES(?,?,?,?,?,?,?,?,?,?)');
       $st->execute([$tipo,$cnpj,$idEcommerce,$ref,$hash,$status,json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),$headers,RequestContext::id(),$mensagem]);
-      return (int)$pdo->lastInsertId();
+      $webhookId = (int)$pdo->lastInsertId();
+      // Fase 11 (extensão O11-1): correlação na RECEPÇÃO do webhook. Só aqui existe o webhook_id, e
+      // o trace gravado (T1) é o mesmo carimbado no item da fila — então esta linha e as de fila
+      // (IntegrationEventService) se costuram por trace_id numa busca. Best-effort, não toca a
+      // autenticação do webhook. Não corre no caminho de duplicata (23000), que retorna 0.
+      if (class_exists('EventCorrelationService')) {
+        $isProduto = str_contains($tipo,'produto');
+        $isEstoque = str_contains($tipo,'estoque');
+        $isPedido  = str_contains($tipo,'pedido');
+        $isFiscal  = str_contains($tipo,'nota') || str_contains($tipo,'nfe') || str_contains($tipo,'fiscal');
+        EventCorrelationService::registrar([
+          'trace_id'    => RequestContext::id(),
+          'origem'      => 'tiny',
+          'tipo_evento' => 'webhook.'.$tipo,
+          'webhook_id'  => $webhookId,
+          'pedido_id'   => $isPedido ? $ref : null,
+          'produto_sku' => ($isProduto || $isEstoque) ? $ref : null,
+          'nf_chave'    => $isFiscal ? $ref : null,
+          'detalhes'    => ['cnpj'=>$cnpj !== '' ? $cnpj : null, 'status'=>$status, 'referencia'=>$ref],
+        ]);
+      }
+      return $webhookId;
     }catch(PDOException $e){
       if((string)$e->getCode()==='23000'){
         $pdo->prepare('UPDATE tiny_webhooks SET recebido_repetido=recebido_repetido+1, ultima_repeticao=NOW(), mensagem=? WHERE tipo=? AND referencia=? AND hash_payload=?')
