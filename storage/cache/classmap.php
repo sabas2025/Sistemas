@@ -78,6 +78,7 @@ return [
   'EstoqueEnterpriseService' => 'app/Services/EstoqueEnterpriseService.php',
   'EstoqueMapper' => 'app/Services/EstoqueMapper.php',
   'EstoqueVsmSchedulerService' => 'app/Services/EstoqueVsmSchedulerService.php',
+  'EventCorrelationService' => 'app/Services/EventCorrelationService.php',
   'EvidenceController' => 'app/Controllers/EvidenceController.php',
   'FastRouteDispatcherService' => 'app/Services/FastRouteDispatcherService.php',
   'FilaController' => 'app/Controllers/FilaController.php',
