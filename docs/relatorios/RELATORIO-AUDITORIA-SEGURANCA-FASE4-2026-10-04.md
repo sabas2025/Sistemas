@@ -29,7 +29,7 @@ proteção de webhook · headers/CSP/cookies · CORS · exposição de erro. Pol
 | Classe | Resultado |
 |---|---|
 | SQLi via request | **0** interpolação de `$_GET/$_POST` em query |
-| SQLi interno | 2 ocorrências, ambas seguras: `IntegrationReplayGuardService` (`(int)$days`), `Database::indexExistsOn` (`$pdo->quote($index)`; `$table` só de catálogo interno) |
+| SQLi interno | 2 ocorrências, ambas seguras: `IntegrationReplayGuardService` (`(int)$days`), `Database::indexExistsOn` (identificador validado por `^[a-zA-Z0-9_]+$` na linha 448 antes da interpolação + `$pdo->quote($index)`) |
 | XSS | toda saída de `$_GET` em view passa por `e()` ou é comparada a literal; nenhum echo cru |
 | CSRF | rotas de mutação com `Csrf::validate()` (spot-check: `tinyV3TokenRenovar/Revogar`); forms com `Csrf::input()`; token por sessão estável |
 | Open redirect | **0** `redirect()` com dado de request |
@@ -39,18 +39,22 @@ proteção de webhook · headers/CSP/cookies · CORS · exposição de erro. Pol
 | CORS | **0** `Access-Control-Allow-Origin: *` |
 | Headers/CSP/cookies | `App.php`: X-Frame-Options SAMEORIGIN, X-Content-Type-Options nosniff, Referrer-Policy no-referrer, Permissions-Policy restritiva, CSP com nonce, HSTS condicional; cookies HttpOnly/SameSite=Strict/Secure-condicional (medido em rodadas anteriores) |
 
-## Achado (Informativo / Baixa)
+## Achado
 
-### S4-N1 — `Database::indexExistsOn()` interpola o identificador `$table` sem validá-lo contra catálogo
-- **Evidência:** `app/Core/Database.php:462` — `'SHOW INDEX FROM `'.$table.'` WHERE Key_name = '.$quoted`. `$quoted` usa `$pdo->quote()` (ok); `$table` entra cru entre crases.
-- **Arquivo/classe/método:** `app/Core/Database.php` → `indexExistsOn(PDO $pdo, string $table, string $index)`.
-- **Gravidade:** Informativa (defesa-em-profundidade).
-- **Causa raiz:** `SHOW INDEX` não aceita placeholder para o nome da tabela; o identificador é interpolado sem allowlist/regex.
-- **Impacto real:** **nenhum hoje.** Os 4 chamadores — `DatabaseAutoRepairService`, `DatabaseValidationService` e 2 internos de `Database` — passam nomes de um catálogo fixo de schema, nunca entrada de request. Não é alcançável por usuário.
-- **Cenário de falha:** só se um futuro chamador passasse `$table` vindo de request — aí seria injeção de identificador.
-- **Correção recomendada:** validar o identificador (allowlist do inventário de schema, ou regex `^[A-Za-z0-9_]+$`) antes de interpolar, em `indexExistsOn` (e conferir irmãos `tableExistsOn`/`columnExistsOn`, que já usam `information_schema` com placeholder).
-- **Risco da correção:** baixo. **Compatibilidade:** total. **Como testar:** portões + chamar com nome fora do padrão deve ser recusado. **Como reverter:** git revert.
-- **Status:** `confirmado`, não aplicado — endurecimento sem risco medido; a fase 4/10 pedem evidência antes de agir.
+### S4-N1 — `Database::indexExistsOn()` interpola `$table` sem validar — **FALSO POSITIVO (retificado 2026-10-04)**
+- **Veredito final:** `não identificado` (defeito inexistente). A proteção recomendada **já existe** no código.
+- **Evidência da retificação:** `app/Core/Database.php:448`, primeira linha do método, **antes** de qualquer
+  interpolação:
+  `if (!preg_match('/^[a-zA-Z0-9_]+$/', $table) || !preg_match('/^[a-zA-Z0-9_]+$/', $index)) return false;`
+  Qualquer `$table`/`$index` com caractere fora de `[A-Za-z0-9_]` retorna `false` antes de alcançar o
+  `SHOW INDEX FROM `...`` da linha 462. `columnExistsOn` (linha 420) tem a mesma guarda. Não há como
+  quebrar a crase nem injetar identificador.
+- **Como o falso positivo surgiu (lição de método):** a auditoria leu o trecho com `sed -n '455,465p'`,
+  começando **depois** da guarda da linha 448 — viu a interpolação (462) mas não a validação (448). É a
+  armadilha de "janela de contexto" já documentada no `CLAUDE.md`. Correção de método: ao avaliar
+  interpolação de identificador, **ler o método inteiro**, não um recorte.
+- **Ação:** nenhuma. Aplicar uma guarda nova seria redundante e criaria falsa sensação de que havia buraco.
+- **Status:** `não identificado` (retificado de `confirmado`).
 
 ## Decisões deliberadas re-confirmadas (não são defeito — `SECURITY.md`)
 
@@ -61,8 +65,9 @@ aceitação da assinatura v1 de webhook, dívida com prazo (3.3) · rota por igu
 
 ## Veredito
 
-Postura de segurança sólida. Sem achado novo Crítico/Alto/Médio nesta rodada. O único item (S4-N1)
-é endurecimento opcional de defesa-em-profundidade, sem caminho de exploração atual.
+Postura de segurança sólida. Sem achado novo Crítico/Alto/Médio nesta rodada. **Nenhum item acionável:**
+o único candidato (S4-N1) foi **retificado como falso positivo** — a validação de identificador já existe
+em `indexExistsOn`/`columnExistsOn` (regex `^[a-zA-Z0-9_]+$` antes da interpolação).
 
 ## Pendências de segurança que NÃO são código (recap do `CLAUDE.md`/`SECURITY.md`)
 
