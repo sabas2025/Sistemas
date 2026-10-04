@@ -680,12 +680,18 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   gargalo seria a otimização prematura que a fase 10 proíbe. Ficam registrados aqui para que a
   próxima auditoria não os "descubra" como novidade.
 
-- **O schema não tem NENHUMA chave estrangeira, e ~20 colunas `*_id` não têm índice.** Medido:
-  zero FKs nas 135 tabelas. É coerente com hospedagem compartilhada e com migrations condicionais,
-  e mudá-lo seria alteração estrutural sem autorização. As colunas sem índice (entre elas
-  `evento_correlacao.fila_id` e `integration_events.fila_id`) só justificam índice **com evidência
-  de gargalo medida** — criar vinte de uma vez custa escrita nas tabelas mais quentes. Registrado,
-  não aplicado.
+- **O schema tem EXATAMENTE UMA chave estrangeira, e ~20 colunas `*_id` não têm índice.**
+  Até 2026-09-16 eram **zero FKs em 135 tabelas**; a feature MyOuro (migration `20260917_017`)
+  introduziu a tabela `myouro_conexoes` (136ª tabela) com
+  `CONSTRAINT fk_myouro_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id)` — a **única FK do
+  schema**, presente igual em `core.sql` e na migration (paridade nova×atualização confere), InnoDB,
+  `empresas` criada antes, e o `UNIQUE uk_myouro_empresa (empresa_id)` já serve de índice da FK (sem
+  duplicado). Instala verde na matriz CI (MySQL 8 + MariaDB 11.4). **Ao mexer em `myouro_conexoes`,
+  lembre que ela é a exceção à postura FK-free** — não copie o padrão para outras tabelas sem
+  autorização; o resto do schema continua sem FK, coerente com hospedagem compartilhada e migrations
+  condicionais. As colunas sem índice (entre elas `evento_correlacao.fila_id` e
+  `integration_events.fila_id`) só justificam índice **com evidência de gargalo medida** — criar
+  vinte de uma vez custa escrita nas tabelas mais quentes. Registrado, não aplicado.
 
 - **As migrations NÃO são varridas de diretório: não existe executor automático.** A lista em
   `SchemaMigrationService::checksum()` tem cinco arquivos, e oito outros existem em
