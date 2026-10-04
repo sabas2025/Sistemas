@@ -110,7 +110,7 @@ comportamento desejado).
 `ALTER ... MODIFY` de chave primária **reconstrói tabela e índices** e **bloqueia** as tabelas.
 Custo proporcional ao volume (medido no Passo 0). **Quanto antes, mais barato.**
 
-1. **Pare os workers:** `worker_fila`, `worker_estoque`, `worker_fiscal`, `worker_reconciliacao`.
+1. **Pare os workers:** `worker_fila`, `worker_estoque`, `worker_reconciliacao`.
 2. **Suspenda/drene** a entrada de webhooks (um INSERT concorrente fica bloqueado até o fim do ALTER).
 3. **Confirme o backup do Passo 0.**
 4. Rode e confira:

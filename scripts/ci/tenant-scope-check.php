@@ -31,10 +31,8 @@ const EXCECOES = [
     // --- Infraestrutura de fila: processam trabalho de todas as empresas, por definição. ---
     'workers/worker_fila.php'                        => 'Worker de fila: drena a fila da instalação inteira; escopo por empresa tornaria itens de outras empresas eternos.',
     'workers/worker_estoque.php'                     => 'Worker de estoque: processamento em lote da instalação.',
-    'workers/worker_fiscal.php'                      => 'Worker fiscal: processamento em lote da instalação.',
     'workers/worker_reconciliacao.php'               => 'Worker de reconciliação: varredura da instalação.',
     'workers/worker_notificacoes.php'                => 'Worker de notificações: varre pendências da instalação.',
-    'workers/worker_xml_nfe.php'                     => 'Worker de XML: processamento em lote da instalação.',
     'workers/worker_consulta_estoque_vsm.php'        => 'Worker de consulta VSM: execução agendada da instalação.',
     'workers/worker_backup.php'                      => 'Worker de backup: opera sobre o banco inteiro.',
     'workers/worker_homologacao.php'                 => 'Worker de homologação: cenário de teste da instalação.',

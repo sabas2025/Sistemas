@@ -14,8 +14,21 @@ class XmlNfeHomologationService {
   }
   public static function resumoOperacional(): array {
     $base = ['total'=>0,'pendentes'=>0,'erros'=>0,'xml_sem_envio'=>0,'erro_integracao'=>0,'ultimo_trace'=>null,'status'=>'pendente','checks'=>self::checksBase()];
-    try { if (class_exists('FiscalIntegrationService')) $base = array_merge($base, FiscalIntegrationService::resumo() ?: []); } catch (Throwable $e) { $base['erros']++; }
-    try { if (class_exists('FiscalEnterpriseService')) $base = array_merge($base, FiscalEnterpriseService::reconciliacao() ?: []); } catch (Throwable $e) { $base['erros']++; }
+    // Fluxo real VSM → HUB → Tiny (pedidos_nfe_xml), via PedidoCicloVidaService::resumoFiscal().
+    // O subsistema Modelo A (FiscalIntegrationService/FiscalEnterpriseService) foi removido por ser
+    // código morto — ver CLAUDE.md. Mapeamento explícito dos campos usados por esta tela.
+    try {
+      if (class_exists('PedidoCicloVidaService')) {
+        $rf = PedidoCicloVidaService::resumoFiscal() ?: [];
+        $base['total']          = (int)($rf['xml_recebidos'] ?? 0);
+        $base['validados']      = (int)($rf['validados'] ?? 0);
+        $base['pendentes']      = (int)($rf['aguardando_tiny'] ?? 0);
+        $base['xml_sem_envio']  = (int)($rf['aguardando_tiny'] ?? 0);
+        $base['enviados_tiny']  = (int)($rf['enviados_tiny'] ?? 0);
+        $base['erros']          = (int)($rf['erros'] ?? 0);
+        $base['erro_integracao']= (int)($rf['erros'] ?? 0);
+      }
+    } catch (Throwable $e) { $base['erros']++; }
     $base['status'] = ((int)($base['erros'] ?? 0) > 0 || (int)($base['erro_integracao'] ?? 0) > 0) ? 'atencao' : (((int)($base['total'] ?? 0) > 0) ? 'ok' : 'pendente');
     return $base;
   }

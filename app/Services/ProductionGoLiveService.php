@@ -73,8 +73,11 @@ class ProductionGoLiveService {
     $add('VSM','Produto novo sob aprovação', !empty($cfg['sync_bloquear_produto_novo_vsm']) || !empty($cfg['sync_aprovacao_manual_produto_novo_vsm']) ? 'ok' : 'alerta', 'Produto novo automático pode duplicar cadastro e causar divergência.', 'Manter produto novo em aprovação manual no início da produção.');
 
     $xmlStatus = self::xmlNfeResumo();
-    $add('XML/NF-e','Módulo XML/NF-e disponível', $xmlStatus['servico_ok'] ? 'ok' : 'bloqueio', 'Sem módulo XML/NF-e, o retorno VSM → Hub → Tiny não fica rastreável.', 'Validar XmlNfeHomologationService e worker_xml_nfe.php.', $xmlStatus);
-    $add('XML/NF-e','Worker XML/NF-e presente', is_file(__DIR__.'/../../public/worker_xml_nfe.php') ? 'ok' : 'alerta', 'Sem worker dedicado, XML pode depender de ação manual.', 'Configurar cron para worker_xml_nfe.php.');
+    $add('XML/NF-e','Módulo XML/NF-e disponível', $xmlStatus['servico_ok'] ? 'ok' : 'bloqueio', 'Sem módulo XML/NF-e, o retorno VSM → Hub → Tiny não fica rastreável.', 'Validar XmlNfeHomologationService e o ciclo de vida do pedido (PedidoCicloVidaService).', $xmlStatus);
+    // O envio do XML ao Tiny é SÍNCRONO: ocorre no retorno da VSM (ApiController →
+    // PedidoCicloVidaService::enviarXmlParaTiny) e por ação manual no ciclo do pedido. Não há worker
+    // dedicado — o subsistema Modelo A (worker_fiscal/worker_xml_nfe) era código morto, removido (ver CLAUDE.md).
+    $add('XML/NF-e','Envio de XML/NF-e ao Tiny', $xmlStatus['ciclo_ok'] ? 'ok' : 'bloqueio', 'Sem o ciclo de vida do pedido, o XML não é enviado ao Tiny.', 'O envio é síncrono no webhook da VSM e por ação manual; garantir que o retorno da VSM chega ao webhook.');
 
     $backup = self::backupResumo();
     $add('Backups','Backup automático/manual disponível', $backup['estrutura_ok'] ? 'ok' : 'bloqueio', 'Entrar em produção sem backup validado dificulta recuperação.', 'Gerar backup e testar restauração antes de liberar.', $backup);
@@ -173,7 +176,8 @@ class ProductionGoLiveService {
     return [
       'servico_ok'=>class_exists('XmlNfeHomologationService'),
       'controller_ok'=>class_exists('XmlNfeController'),
-      'worker_ok'=>is_file(__DIR__.'/../../public/worker_xml_nfe.php'),
+      // Envio síncrono (sem worker dedicado): a capacidade é o ciclo de vida do pedido.
+      'ciclo_ok'=>class_exists('PedidoCicloVidaService'),
     ];
   }
 

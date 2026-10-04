@@ -26,11 +26,12 @@ function hub_exec_bj(string $rel): string {
 }
 
 // ------------------------------------------------- os quatro pontos de reagendamento
+// O quarto ponto histórico (FiscalEnterpriseService, fila_fiscal) saiu com a remoção do Fiscal
+// Modelo A (código morto) — ver CLAUDE.md. Restam os três pontos de reagendamento reais.
 $pontos = [
     'app/Services/QueueService.php'                      => 'fila_integracao (marcarResultado)',
     'app/Services/EnterpriseIdempotencyGuardService.php' => 'fila_integracao (guard de idempotência)',
     'app/Services/EstoqueEnterpriseService.php'          => 'fila_estoque',
-    'app/Services/FiscalEnterpriseService.php'           => 'fila_fiscal',
 ];
 foreach ($pontos as $arq => $rotulo) {
     $c = hub_exec_bj($arq);
@@ -78,7 +79,7 @@ hub_check($checks,'formato Y-m-d H:i:s preservado',
     (bool)preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', RetryPolicyService::proximaTentativaEm(5)));
 
 // assinaturas públicas preservadas (a correção não pode mudar contrato)
-foreach (['EstoqueEnterpriseService','FiscalEnterpriseService'] as $cls) {
+foreach (['EstoqueEnterpriseService'] as $cls) {
     $fonte = hub_read("app/Services/$cls.php");
     hub_check($checks,"$cls::proximaTentativa(int \$tentativa): ?string preservado",
         str_contains($fonte,'public static function proximaTentativa(int $tentativa): ?string'));

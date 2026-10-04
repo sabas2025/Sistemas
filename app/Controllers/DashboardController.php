@@ -166,7 +166,6 @@ class DashboardController {
 
   private function workerCards(): array {
     $workers = [
-      ['arquivo'=>'worker_fiscal.php','titulo'=>'XML/NF-e'],
       ['arquivo'=>'worker_estoque.php','titulo'=>'Estoque'],
       ['arquivo'=>'worker_consulta_estoque_vsm.php','titulo'=>'Consulta VSM'],
       ['arquivo'=>'worker_fila.php','titulo'=>'Fila'],

@@ -96,7 +96,7 @@ SELECT migration, status, criado_em FROM schema_migrations ORDER BY migration;
 ## 5. Execução (na janela)
 
 **5.1 Parar os workers** (cron ou supervisor) — pelo menos os que escrevem nas tabelas alvo:
-`worker_fila`, `worker_estoque`, `worker_fiscal`, `worker_reconciliacao`. Confirme que nenhum
+`worker_fila`, `worker_estoque`, `worker_reconciliacao`. Confirme que nenhum
 processo `php workers/worker_*` segue vivo:
 ```bash
 ps aux | grep -E 'workers/worker_' | grep -v grep
