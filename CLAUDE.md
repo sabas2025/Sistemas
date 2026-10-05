@@ -181,7 +181,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**80 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**81 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -929,6 +929,21 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   da tabela citado no comentário; e a varredura do I-21 acusou `Database::tableExistsOn()` escrito
   dentro do comentário que explica por que ele saiu dali. **Tire comentários antes de varrer**, ou
   ancore a asserção no código (`e($r['ok'])`, `'nome_da_tabela'` entre aspas) e não no texto.
+
+- **`catch(Throwable)` no worker disfarça erro de SCHEMA de erro de integração.** O achado D-02:
+  `worker_estoque.php` (ramo destino=tiny, fluxo VSM → Tiny) gravava
+  `UPDATE estoque_movimentos SET status=?, retorno_tiny=? …`, mas `retorno_tiny` **não existia** na
+  tabela (só `retorno_vsm`) — nenhuma migration a criava. O `UPDATE` lançava `Unknown column`, o
+  `catch` do worker rebaixava a "falha do item", o movimento nunca virava `sucesso` nesse fluxo e o
+  item era re-tentado — com risco de reescrever o saldo no Tiny a cada retry (a chamada ao Tiny na
+  linha 37 já pode ter tido sucesso antes do UPDATE estourar). Nenhum portão exercita o worker com
+  banco real nesse ramo. Corrigido criando a coluna nos DOIS caminhos (módulo + migration
+  `20261005_020` + consolidado, lição I-18). Travado por
+  `tests/enterprise/v104_49_3_estoque_retorno_tiny_column_test.php` (ancora o schema na coluna que o
+  worker escreve) e pela contagem 1566 → **1567** no contrato do instalador. Relatório:
+  `docs/relatorios/RELATORIO-CORRECAO-D02-ESTOQUE-RETORNO-TINY-2026-10-05.md`. **Ao ler
+  `catch(Throwable)` num worker, confira se o que ele captura pode ser erro de schema (coluna/tabela
+  ausente) — que o retry nunca resolve.**
 
 **Implantação real (memória) — hub01**
 - **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo

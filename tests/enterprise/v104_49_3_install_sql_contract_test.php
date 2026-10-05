@@ -81,7 +81,9 @@ if($faltando===[]){
     // F5-01 (auditoria Fase 5, 2026-09-27): 1568 -> 1566. Removidas tiny_v3_manual_access_token e
     // tiny_v3_manual_refresh_token de configuracoes_integracao (colunas mortas: nunca gravadas, só
     // lidas como !empty()). DROP em migration 20260927_019 + core.sql, no mesmo commit (I-18).
-    hub_check($checks,'O contrato reconhece as 1.566 colunas (F5-01: -2 colunas mortas do Tiny V3 manual)', $colunas===1566, $colunas.' coluna(s)');
+    // D-02 (2026-10-05): 1566 -> 1567. +estoque_movimentos.retorno_tiny (o worker_estoque grava
+    // nela e a coluna não existia). ADD em migration 20261005_020 + módulo estoque.sql, mesmo commit.
+    hub_check($checks,'O contrato reconhece as 1.567 colunas (D-02: +estoque_movimentos.retorno_tiny)', $colunas===1567, $colunas.' coluna(s)');
     hub_check($checks,'Nenhuma coluna é rejeitada pelo contrato canônico do instalador',
         $rejeitadas===[], $rejeitadas===[] ? '' : count($rejeitadas).' rejeitada(s): '.implode(', ',array_slice($rejeitadas,0,6)));
 }
