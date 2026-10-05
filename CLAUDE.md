@@ -181,7 +181,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**83 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**84 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -972,6 +972,21 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   (alguns são fragmentos de interpolação); catalogá-los em bloco é oportunidade futura registrada,
   não aplicada — alguns são estado normal (`QUEUE_EMPTY`, `DUPLICATE_EVENT_IGNORED`), não defeito.
   Relatório: `docs/relatorios/RELATORIO-MELHORIA-ERRORCATALOG-PEDIDO-STATUS-ERRO-2026-10-05.md`.
+
+- **Checagem de rota que olha UMA só fonte mente depois da Fase 3.** A tela *Integridade do
+  Dashboard* mostrava 7 "erros": 6 itens de menu "rota ausente" (Produtos, Estoque, XML/NF-e,
+  Reconciliação, Configurações, Central Técnica) e o botão órfão "Aplicar estrutura fiscal". Todos
+  falsos. `MenuActionTestService::run()` resolvia a rota só no `DashboardController`, mas a Fase 3
+  (PRs #53–#58) moveu esses domínios para controllers dedicados no
+  `FastRouteDispatcherService::$dispatchGroups` — o `DashboardIntegrityService` **irmão já
+  consultava as duas fontes** (comentário dele: "indicador que mente"); este ficou para trás.
+  Corrigido somando a 2ª fonte (dispatcher) e removendo a checagem órfã do botão fiscal (removido
+  com o Fiscal Modelo A, 2026-10-04; o handler sobrevive só como upgrade legado, sem UI). **Ao
+  criar ou copiar checagem de rota, consulte SEMPRE as duas fontes de roteamento** — switch do
+  Dashboard E `$dispatchGroups`. Travado por
+  `tests/enterprise/v104_49_3_menu_action_route_sources_test.php` (exercita `run()`, exige 0 erro;
+  regressão repõe os 7). Relatório:
+  `docs/relatorios/RELATORIO-CORRECAO-INTEGRIDADE-DASHBOARD-INDICADOR-MENTE-2026-10-05.md`.
 
 **Implantação real (memória) — hub01**
 - **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo
