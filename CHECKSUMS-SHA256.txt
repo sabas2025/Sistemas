@@ -146,6 +146,7 @@
 2df65761d3a6cd06b24f93f1ed76bddbedf6c7c9b6e3ca7f1f45b192122d9db3  ./views/reconciliacao.php
 2e695fbb16d02d5aabd4f0e9f45461299407ada9c794ced6742707e3fa64c5c3  ./tests/enterprise/v104_48_1_backup_security_test.php
 2ee18e20496f6e2b379d2334211f13657ecad210d2db7a722817011f1db5ec96  ./app/Services/PedidoMapper.php
+2f15113568621a7c67f9b3a6e122029b7c30e450dd2b440eed67097ffdb8b6f8  ./views/layout_top.php
 3029c0ce264c80e644b89604add870f88b6a098fd173ef1cb880785c7edd8193  ./public/assets/img/favicon-32.png
 306ac6a201c2bfd6a1b1fbeda48f0cce523b36c516ab0e41bf5049be110f3d8e  ./views/commercial_docs.php
 336ba3de72c124b9e1b497326fb3770cb7ab79d8191921f55788f9b06d877dfe  ./views/categorias_mapeamento.php
@@ -222,7 +223,6 @@
 4d04ca903414eea89ea5ef2a936a28104770b76c6e4f82cbbb173acc827cd2a4  ./views/integracoes.php
 4d8ae8ac7cd3f139be6911e68a00c21914693c341dc1ffe39655b521fd16cb1f  ./public/assets/vendor/bootstrap-icons/bootstrap-icons.css
 4df010d220d32571cde72efa9205641313438ddaa79d116c2a4aa9d637a791d0  ./app/Services/EnterpriseAuditHashChainService.php
-4e4e38dc28e72bad812c83be1ec6121d4dd71134564a513df85dc2e160e7a175  ./views/layout_top.php
 4e9e44611141673748accd1c86bf8f42299300ae4c5fd6769cc65c3c627a8109  ./app/Services/SchemaRuntimePolicyService.php
 4f4c372e19cd6564c39eb3cf1c00be7f9bae6a2095ae553a2c526ffa011a85ae  ./app/Services/QrCodeService.php
 4f5ae2b0ba0a4d0eee6dd5743e54a8f5e1237efdfb0ba2b330017430c632d13b  ./views/fila_morta.php
@@ -339,6 +339,7 @@
 7306e48df3c0a1aaddac8c16b9d33b500718c9e64456eee7b77af7e6eb163eb8  ./views/laboratorio.php
 7312fe2742457d083a9267e82828904910c5da9d647d8fc02e612d7c418c418e  ./database/legacy/incrementais_pre_r5_incompativeis_mysql8/update_v104_30_responsivo_vsm_seguro.sql
 731feeffa1eaa5223793c922d99ede1b1f92ad98b3759f7c2ebc55d5b1bd1f2e  ./views/diagnostico.php
+73bb363036d715d1212e842b4d99669ca607afcb95c24e7d745dbd2453e33ec5  ./views/atualizacao.php
 743dab8dae4e62ec4503e50e04efa77ee9bc7d0c09d00e17a4a73976d70c86c9  ./public/assets/img/icon-96.png
 749d4a8059183334ce3ee8bd50af4787b2799c0f94a58462e03669580402d3dd  ./app/Services/SecurityAuditService.php
 74ed475e0944066e70875efdcf09c78bed493a7697473930411a48511dd5eb88  ./app/Services/ErrorCatalog.php
@@ -718,7 +719,6 @@ e868f189d7d9a9dc14ad330d40392cd46d863b71b7d8e2895e9ea8d8cb02618c  ./app/Services
 e9b8d652a59e80b8c542cc1e666502c537d17dcfcf33b8fe71a4ba0c0e738b9a  ./views/produtos.php
 e9ec4f321347ba47f650b0d3a657996014f4459612ae586749f3d45457c00206  ./app/Services/VsmEndpointService.php
 ea33f7250693288eb38ece871cddcd62bf2e0b84e5f1ef4396999ec3e5a95400  ./views/manutencao.php
-ea4f021cb903512b3689e7033bc369c986ad1e7b0830c72f8bca21d528308a32  ./views/atualizacao.php
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 eaeff7c230ac6d95a427d73d2a321b7d3d422cbcbf56eadaee553587a42dab76  ./views/myouro_configuracoes.php
 eb03a6ed71dd2de9df2279ea7d5dca43d15fa5044a75b7865b9c18c6b7da6816  ./app/Core/Helpers.php
