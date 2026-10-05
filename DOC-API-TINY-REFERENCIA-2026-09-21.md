@@ -199,6 +199,40 @@ header **`x-limit-api`** a quantidade de chamadas permitidas por minuto para aqu
 - 4 etapas: identidade visual · agendar reunião · **testes de autenticação (OAuth2, incluindo renovação de token)** · testes de rotas (endpoints, tratamento de erro).
 - Contato técnico: `erp.partners@olist.com` (seg–sex, 09h–18h Brasília).
 
+## B.7 — Tabelas Auxiliares do Pedido: Situações ✅ PREENCHIDO
+**Fonte:** `https://ajuda.olist.com` → *Ajuda da Olist para API 2.0 — Tabelas Auxiliares do Pedido*
+(PDF fornecido pelo responsável, capturado 2026-10-05).
+
+**Situações oficiais do pedido (código que a API/Tiny usa):**
+| Descrição | Código |
+|---|---|
+| Em aberto | `aberto` |
+| Aprovado | `aprovado` |
+| Preparando envio | `preparando_envio` |
+| Faturado (atendido) | `faturado` |
+| Pronto para envio | `pronto_envio` |
+| Enviado | `enviado` |
+| Entregue | `entregue` |
+| Não Entregue | `nao_entregue` |
+| Cancelado | `cancelado` |
+
+**Por que importa para o Hub (status do pedido):** é o vocabulário canônico que o webhook
+`api/tiny/webhook/situacao-pedido` carrega e que o `ApiController::webhookTinySituacaoPedido`
+hoje apenas **registra/audita** (não atualiza `pedidos_hub`). Quando a máquina de estados do pedido
+for ligada (pendência aberta "Fiscal etapa 5" no `CLAUDE.md`), estes nove códigos são o **alvo do
+mapeamento** `situacao Tiny → pedidos_hub.status_hub` (coluna `VARCHAR`, sem migration de ENUM):
+`entregue → finalizado` (terminal de sucesso) e **`cancelado` → `cancelado`** (terminal de
+cancelamento, inclusive **pós-conclusão** — responde ao caso "cliente cancela depois de
+concluído"). **A confirmar com payload real:** se o webhook manda o **código** (`faturado`) ou a
+**descrição** ("Faturado (atendido)") no corpo — o handler tolera ambos (`situacao` /
+`descricaoSituacao`), mas o mapa precisa casar com o valor que chega. E **qual situação dispara
+efeito colateral** (baixa/estorno de estoque, cancelar NF-e) é decisão de produto — registrar e
+avisar, nunca disparar automático sem flag.
+
+> **Nota:** o 2º PDF enviado na mesma data ("…-00.pdf", 6 páginas) veio **sem texto nem imagens
+> extraíveis** — nada aproveitado dele. Se tiver outras tabelas auxiliares (formas de envio,
+> marcadores etc.), reenviar.
+
 ---
 
 # PARTE C — Cruzamento com o Hub (achados da Fase 5)
