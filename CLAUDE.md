@@ -181,7 +181,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**81 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**82 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -945,6 +945,22 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `catch(Throwable)` num worker, confira se o que ele captura pode ser erro de schema (coluna/tabela
   ausente) — que o retry nunca resolve.**
 
+- **`tipo` de `NotificationService::criar()` é um ENUM FECHADO — valor fora dele some em silêncio.**
+  O achado D-03: `TinyWebhookService` passava `criar('webhook_repetido', …)`, mas `'webhook_repetido'`
+  não está no ENUM `notificacoes.tipo` (`pedido_novo`, `pedido_integrado`, `erro_integracao`, `fila`,
+  `estoque`, `baixa_estoque`, `produto_novo`, `integracao_sucesso`, `nota_fiscal`, `sistema`). Em
+  MySQL/MariaDB **strict** o INSERT falha e o `catch(Throwable)` de `criar()` engole (retorna 0) — o
+  alerta de webhook Tiny reenviado nunca chegava ao operador. Em modo não-estrito viraria string
+  vazia, por isso só aparece no servidor strict. Corrigido pela **Opção B** (menor risco, sem
+  quebrar): trocar o caller para `'erro_integracao'` (valor do ENUM), sem mexer em schema/migration —
+  ninguém filtra por `webhook_repetido` e nenhum teste trava a lista. `tipo` é só rótulo; urgência vai
+  em `severidade`, significado no título/mensagem/link. Travado por
+  `tests/enterprise/v104_49_3_notificacao_tipo_enum_test.php`, que lê o ENUM do consolidado e exige
+  que TODO 1º argumento literal de `criar()` em `app/`+`workers/` pertença a ele (33 callers). **Ao
+  chamar `criar()`, use só valores do ENUM** — e o mesmo vale para o `seed-demo-hub.php`, cujo seção 10
+  passava `pedido`/`divergencia`/`integracao` (fora do ENUM) e gerava as "Falha ao criar notificação"
+  que revelaram o D-03. Relatório: `docs/relatorios/RELATORIO-CORRECAO-D03-NOTIFICACAO-TIPO-ENUM-2026-10-05.md`.
+
 **Implantação real (memória) — hub01**
 - **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo
   aaPanel/宝塔). A raiz do Hub — a pasta que contém `public/`, `app/`, `config/`, `storage/` — é esse
@@ -994,6 +1010,16 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
+- **MyOuro GraphQL — Consultas: MANTIDO como está (decisão do produto, 2026-10-05).** Registrado caso
+  um dia se peça para "remover visualmente": o **único** ponto de entrada visível é o aviso azul em
+  `views/configuracoes.php` (`<div class="alert alert-info">…MyOuro GraphQL — Consultas…</div>`,
+  com o link `?page=myouro-configuracoes`). **Não há item no menu lateral** — a outra referência é só
+  a rota em `FastRouteDispatcherService::$dispatchGroups` (`MyOuroController`). Esconder visualmente =
+  remover esse `<div>` (1 linha); a tela segue acessível por URL direta e o backend fica intacto
+  (`MyOuroController`, `MyOuroConfigService`, `MyOuroGraphqlService`, tabela `myouro_conexoes`).
+  Nenhum teste assere o aviso, então a CI segue verde; só regenerar a linha de `views/configuracoes.php`
+  no manifesto FIM. Reversível por `git checkout --`. Bloquear a rota (404/redirect) é "remover
+  funcionalidade" — exige autorização e teste próprio; não é o mesmo que esconder o link.
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
 - `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.

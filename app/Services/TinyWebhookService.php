@@ -112,7 +112,12 @@ class TinyWebhookService {
         $stDup->execute([$tipo,$ref,$hash]);
         $repeticoes = (int)($stDup->fetch()['recebido_repetido'] ?? 1);
         if ($repeticoes >= 3) {
-          NotificationService::criar('webhook_repetido','Webhook Tiny reenviado várias vezes','O mesmo webhook '.$tipo.' / '.$ref.' já foi recebido '.$repeticoes.' vez(es). Verifique se o Tiny recebeu HTTP 200 ou se há falha no endpoint.','alerta',['trace_id'=>RequestContext::id(),'link'=>'index.php?page=tiny-webhooks&status=duplicado']);
+          // Achado D-03 (2026-10-05): 'webhook_repetido' NÃO existe no ENUM notificacoes.tipo, então
+          // este INSERT falhava em MySQL/MariaDB strict e o catch de NotificationService::criar()
+          // engolia — o alerta de webhook reenviado nunca chegava ao operador. Usamos 'erro_integracao'
+          // (valor do ENUM); a categoria é só rótulo, a urgência vai em severidade='alerta' e o
+          // significado no título/mensagem/link. Ninguém filtra por 'webhook_repetido'.
+          NotificationService::criar('erro_integracao','Webhook Tiny reenviado várias vezes','O mesmo webhook '.$tipo.' / '.$ref.' já foi recebido '.$repeticoes.' vez(es). Verifique se o Tiny recebeu HTTP 200 ou se há falha no endpoint.','alerta',['trace_id'=>RequestContext::id(),'link'=>'index.php?page=tiny-webhooks&status=duplicado']);
         }
         Audit::event('tiny.webhook.duplicado','alerta',[
           'codigo_erro'=>'TINY_WEBHOOK_DUPLICATE',
