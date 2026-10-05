@@ -181,7 +181,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**82 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**83 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -960,6 +960,18 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   chamar `criar()`, use só valores do ENUM** — e o mesmo vale para o `seed-demo-hub.php`, cujo seção 10
   passava `pedido`/`divergencia`/`integracao` (fora do ENUM) e gerava as "Falha ao criar notificação"
   que revelaram o D-03. Relatório: `docs/relatorios/RELATORIO-CORRECAO-D03-NOTIFICACAO-TIPO-ENUM-2026-10-05.md`.
+
+- **Código de erro emitido mas fora do `ErrorCatalog` vira "Erro não catalogado." na tela forense.**
+  A tela de Detalhe da Auditoria (busca por Trace ID) mostra causa/ação via `ErrorCatalog::explain()`,
+  que tem mapa estático. `PedidoCicloVidaService` emitia `PEDIDO_STATUS_ERRO` (falha de etapa do
+  ciclo de vida do pedido) sem entrada no catálogo — um dos erros mais úteis de rastrear caía no
+  fallback genérico. Adicionada a entrada (só o mapa; sem schema/migration). Travado por
+  `tests/enterprise/v104_49_3_errorcatalog_pedido_status_test.php` (carrega a classe folha, mede o
+  fallback como régua, exige causa/ação específicas E que o serviço ainda emita o código).
+  **Medido:** o produto emite **58 códigos literais** de `codigo_erro` ainda fora do catálogo
+  (alguns são fragmentos de interpolação); catalogá-los em bloco é oportunidade futura registrada,
+  não aplicada — alguns são estado normal (`QUEUE_EMPTY`, `DUPLICATE_EVENT_IGNORED`), não defeito.
+  Relatório: `docs/relatorios/RELATORIO-MELHORIA-ERRORCATALOG-PEDIDO-STATUS-ERRO-2026-10-05.md`.
 
 **Implantação real (memória) — hub01**
 - **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo

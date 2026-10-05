@@ -298,6 +298,7 @@
 67890d4173773b884c0765f84d71fa1d03bb16886eb145856cf5c1fe9e3ef812  ./app/Services/TrustedProxyService.php
 678c53627e66fff4ab8204021be688841ef1e5728ecb0d8a4539c0be2c13710e  ./database/schema_inventory_v104_19.json
 679666b180adbe4ad7323872503e4260da0a67c5cbe012695748ef11d25e685f  ./scripts/ci/mysql-schema-static-check.php
+67b165d548905cd67c511d2ac74201f3ea05fc5d91f12bcae75afc074ddc5a3b  ./CLAUDE.md
 67c872fd1f5218c7a3615afed2a208f92d0805721056ee56104aabb3459217d2  ./views/validar_banco.php
 67de65167efbf7b719c40a1f5c3ea1a22cc98eeaf55934e159ad99e6a5b9adaa  ./database/legacy/docs_sql_antigos/README-SQL-V104.8.md
 67ede58754f7e18f942c5bf247e9ad94fed106fd2e95879a3251d1ea46497d6b  ./views/commercial_support_sla.php
@@ -325,6 +326,7 @@
 6e78d0efa31984a60cc32bda6105fa99da4cae1477ff38f52aa356aa5882a968  ./workers/worker_consulta_estoque_vsm.php
 6e933fe598cb9d821ce189f602f149f89ecb1f22d0162acdb73e1f0a3560864e  ./tests/e2e/specs/authenticated-smoke.spec.js
 6e966975d88b47dfbd136fa3a1a8a3aeeff39596881454ac29c4ab999c78a34b  ./app/Services/DashboardMetricsService.php
+6eb32bb3e863bc70b7a5778a6829815e7ea8436aa336adbddda65dfa1d8bf343  ./app/Services/ErrorCatalog.php
 6f935b767bd01deac0c16853d0820de2a8f5f9b56fd70e186b282a77bdf27b72  ./RELATORIO-V71-DASHBOARD-EXECUTIVO-ALERTAS.txt
 6f98ada28f280bbb0fe3d6977f422c56b4fce02dbd53a78b0c7ed25b96291142  ./database/legacy/incrementais_v104_8/update_v104_7_schema_guard.sql
 70325b3508dacaef28542cbe1225cfb6d502cbb3cf5679ca5b83998e598333b6  ./app/Controllers/ConfiguracaoController.php
@@ -341,7 +343,6 @@
 73bb363036d715d1212e842b4d99669ca607afcb95c24e7d745dbd2453e33ec5  ./views/atualizacao.php
 743dab8dae4e62ec4503e50e04efa77ee9bc7d0c09d00e17a4a73976d70c86c9  ./public/assets/img/icon-96.png
 749d4a8059183334ce3ee8bd50af4787b2799c0f94a58462e03669580402d3dd  ./app/Services/SecurityAuditService.php
-74ed475e0944066e70875efdcf09c78bed493a7697473930411a48511dd5eb88  ./app/Services/ErrorCatalog.php
 7545de7c019fe2ffc84b8e20bf4450f823f35629e0f90f3a173405daee791991  ./views/tiny_v3_homologacao.php
 755a1c6a3aa202324598bee32cf1f8c66b5d938399c2e52efc1e2da279b216a9  ./views/produto_pendente_comparar.php
 75960d30e345a47bdd3c298d11ebec889b34e56f15c7aec3a189527d4e5bd137  ./public/assets/screenshots/dashboard-desktop.png
@@ -674,6 +675,7 @@ da2144e3ef76673f6a5a0b75822f411bd0afb9633e453bf0f65c38b589db55ca  ./tests/enterp
 da49a8b863345f37aea5fa0b87dc67098d13d2fb2afdd220440da539c88ce869  ./database/legacy/install_final_v99.sql
 da4e51e8c005921dc3d9b53e2c31a6354d337c7bdd24aa32dea5aa6b9994972a  ./public/index.php
 da9f9c847e2428bc7dfd35be5b1681dd9ceaa6502e708c5656245fd463af7f96  ./docs/RELATORIO-V104.32-ENTERPRISE-CORE-GRANDE-PORTE.md
+dab030ad45c52b11afd45377f72612c8b05f0b2523c3ffeec42f3117d9e001c4  ./tests/enterprise/v104_49_3_errorcatalog_pedido_status_test.php
 dab1b77cc1b7f384fd4cd79bc14302fe6112d99e75b6843467f783e560b71816  ./app/Services/TinyV2ErrorCatalogService.php
 dab280b10fec1c862f0bb9537563a532acd0ac8da4953341bdb6d038ed717e86  ./app/Services/RealtimeHealthService.php
 db3b78d5d8d22ee55900df8760cf0a414a84e79433ae4de237b76b42c78fbd43  ./views/security_score.php
@@ -684,7 +686,6 @@ dbb421d6c81a0127bc63a9c81150c8785dc9629f17694635059d87473fea9265  ./app/Services
 dbec10535e40499d4bc2768b04c91f158f7be7b295df6b11aa5703a0f1c2354b  ./public/assets/img/shortcut-divergencias-192.png
 dbeea64d3949544ec1dc0411f40ec86af6f86dab22702b3e80c326a77aecdacb  ./docs/comercial/09-servidor-licenciamento.md
 dc11f5fb7eeaa00c35e1facaa1d68984e68b5be35aff3d3555f722409aa8e8de  ./app/Controllers/HomologacaoController.php
-dc4e180538ef75b0fb40dc71bec34b07277d8c7dde45ff2d7b0a38b321c5febc  ./CLAUDE.md
 dd9dfb7082b9e87782b0698d6f39c855f7e1b73462548f52600bac9d704cf3f3  ./views/security_center.php
 de305f71b84bbc4910f85926a89cc308ebca8ddc5386ccd3344f4b0d5f58a7e9  ./public/assets/img/icon-128.png
 de7d52653dac4b653d8827d6d682b8e4e7ff42a26193d87a438f793b9951dd16  ./app/Services/IntegrationSecurityService.php
