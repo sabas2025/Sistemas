@@ -181,7 +181,7 @@ classmap em `storage/cache/classmap.php`, gerado por `scripts/build-classmap.php
 | `RetryPolicyService` | Toda a matemática de backoff: `attempts()`, `baseDelayMs()`, `sleep()` (retry na requisição) e **`proximaTentativaEm()` / `jitterSegundos()`** (reagendamento de fila, G-03). Classe folha — as três filas dependem dela |
 
 **Portões de CI (14) — todos precisam ficar verdes**
-`php-lint.sh` · `enterprise-tests.sh` (**81 testes**) · `schema-runtime-ddl-check.php` ·
+`php-lint.sh` · `enterprise-tests.sh` (**82 testes**) · `schema-runtime-ddl-check.php` ·
 `controller-route-check.php` · `vsm-openapi-check.php` · `build-classmap.php --check` ·
 `tenant-scope-check.php` · `secret-hygiene-check.php` · `build-consolidated-schema.mjs --check` ·
 `sql-inventory-check.php` · `mysql-schema-static-check.php` · `mysql-module-parity-check.php` ·
@@ -944,6 +944,22 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `docs/relatorios/RELATORIO-CORRECAO-D02-ESTOQUE-RETORNO-TINY-2026-10-05.md`. **Ao ler
   `catch(Throwable)` num worker, confira se o que ele captura pode ser erro de schema (coluna/tabela
   ausente) — que o retry nunca resolve.**
+
+- **`tipo` de `NotificationService::criar()` é um ENUM FECHADO — valor fora dele some em silêncio.**
+  O achado D-03: `TinyWebhookService` passava `criar('webhook_repetido', …)`, mas `'webhook_repetido'`
+  não está no ENUM `notificacoes.tipo` (`pedido_novo`, `pedido_integrado`, `erro_integracao`, `fila`,
+  `estoque`, `baixa_estoque`, `produto_novo`, `integracao_sucesso`, `nota_fiscal`, `sistema`). Em
+  MySQL/MariaDB **strict** o INSERT falha e o `catch(Throwable)` de `criar()` engole (retorna 0) — o
+  alerta de webhook Tiny reenviado nunca chegava ao operador. Em modo não-estrito viraria string
+  vazia, por isso só aparece no servidor strict. Corrigido pela **Opção B** (menor risco, sem
+  quebrar): trocar o caller para `'erro_integracao'` (valor do ENUM), sem mexer em schema/migration —
+  ninguém filtra por `webhook_repetido` e nenhum teste trava a lista. `tipo` é só rótulo; urgência vai
+  em `severidade`, significado no título/mensagem/link. Travado por
+  `tests/enterprise/v104_49_3_notificacao_tipo_enum_test.php`, que lê o ENUM do consolidado e exige
+  que TODO 1º argumento literal de `criar()` em `app/`+`workers/` pertença a ele (33 callers). **Ao
+  chamar `criar()`, use só valores do ENUM** — e o mesmo vale para o `seed-demo-hub.php`, cujo seção 10
+  passava `pedido`/`divergencia`/`integracao` (fora do ENUM) e gerava as "Falha ao criar notificação"
+  que revelaram o D-03. Relatório: `docs/relatorios/RELATORIO-CORRECAO-D03-NOTIFICACAO-TIPO-ENUM-2026-10-05.md`.
 
 **Implantação real (memória) — hub01**
 - **Caminho da instalação do cliente hub01:** `/www/wwwroot/hub01.ctba.top` (layout de painel tipo
