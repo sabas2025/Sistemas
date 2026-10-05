@@ -8,6 +8,7 @@ class ErrorCatalog {
       'VSM_PAYLOAD_INVALID' => ['causa'=>'Payload recebido da VSM está vazio ou fora do formato esperado.', 'acao'=>'Compare o JSON recebido com o contrato da VSM e ajuste o mapeamento.', 'gravidade'=>'alta'],
       'DB_ERROR' => ['causa'=>'Erro ao gravar ou consultar o banco MySQL.', 'acao'=>'Confira se o banco foi instalado, tabelas existem e usuário do MySQL tem permissão.', 'gravidade'=>'alta'],
       'QUEUE_PROCESS_ERROR' => ['causa'=>'Erro durante processamento da fila.', 'acao'=>'Abra o item da fila, veja payload, retorno e stack trace da auditoria.', 'gravidade'=>'alta'],
+      'PEDIDO_STATUS_ERRO' => ['causa'=>'Uma etapa do ciclo de vida do pedido (validação de NF-e/XML ou envio ao Tiny) terminou em erro.', 'acao'=>'Abra o Ciclo de Vida do Pedido pelo Trace ID, identifique a etapa que falhou e o detalhe da auditoria; corrija a causa (ex.: chave NF-e inválida) e reprocesse.', 'gravidade'=>'alta'],
       'AUTH_FAILED' => ['causa'=>'Tentativa de login com usuário ou senha inválidos.', 'acao'=>'Confira credenciais ou redefina usuário administrador.', 'gravidade'=>'baixa'],
       'UNHANDLED_EXCEPTION' => ['causa'=>'Erro não tratado no sistema.', 'acao'=>'Use o Trace ID para localizar o detalhe em Auditoria e verificar arquivo/linha.', 'gravidade'=>'alta'],
     ];
