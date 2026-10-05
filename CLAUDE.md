@@ -994,6 +994,16 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
 - Marcar `Hub CI / gate` como *required* na proteção de branch. **Ele existe e fica verde** desde
   2026-09-15; falta só ligá-lo em Settings > Branches, que é ação de quem administra o repositório.
 - Ligar `security.webhook_signature_require_v2` quando a VSM migrar.
+- **MyOuro GraphQL — Consultas: MANTIDO como está (decisão do produto, 2026-10-05).** Registrado caso
+  um dia se peça para "remover visualmente": o **único** ponto de entrada visível é o aviso azul em
+  `views/configuracoes.php` (`<div class="alert alert-info">…MyOuro GraphQL — Consultas…</div>`,
+  com o link `?page=myouro-configuracoes`). **Não há item no menu lateral** — a outra referência é só
+  a rota em `FastRouteDispatcherService::$dispatchGroups` (`MyOuroController`). Esconder visualmente =
+  remover esse `<div>` (1 linha); a tela segue acessível por URL direta e o backend fica intacto
+  (`MyOuroController`, `MyOuroConfigService`, `MyOuroGraphqlService`, tabela `myouro_conexoes`).
+  Nenhum teste assere o aviso, então a CI segue verde; só regenerar a linha de `views/configuracoes.php`
+  no manifesto FIM. Reversível por `git checkout --`. Bloquear a rota (404/redirect) é "remover
+  funcionalidade" — exige autorização e teste próprio; não é o mesmo que esconder o link.
 - Rotacionar segredos: `php scripts/rotate-secrets.php --audit`.
 - Ciclo OAuth completo depende de credenciais Tiny reais.
 - `session_driver='database'` só ao passar de um servidor; em nó único o padrão `file` está certo.

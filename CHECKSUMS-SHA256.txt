@@ -238,6 +238,7 @@
 555e1cc6310fab768a7963109ce380d816b23a32b2c5a206c6aa46d241d0379c  ./docs/comercial/03-manual-cliente.md
 55ebfb1be7f23f63f8298f6164da0acf80fd64ce4b9c2726bbb0552a13a85455  ./public/assets/screenshots/dashboard-mobile.png
 5615d3410fbd30c1ab776017a5ca13015929aeb8ec4adb9e1754f80af177aa2f  ./views/enterprise_regression_tests.php
+5664dc7d13e62203360a170763d38e06a317ebb32096e24093ef1802ff46c105  ./CLAUDE.md
 56669dd07a75a7d51d7701b983e2f9948152de493b59d937eae44752c36ff855  ./database/modules/pedidos.sql
 56893f0fac51c3f927dd8eb1b783c3a3a16b1edee8f5990d4a8d9e813114c431  ./database/legacy/sql_ate_v104_15/update_v104_12_schema_rescue.sql
 569ed183d82e589525cb0d608b2dddef5f64973e8a67bc758eb7d0d02f5a9e30  ./app/Services/RetentionService.php
@@ -447,7 +448,6 @@
 938736056ba9e6c1366400d0efd0002255b0baf02778a5051aa9d6e4ce5ffa1e  ./app/Services/SecurityHardeningService.php
 93bdd4eea5cc1c675335fa225837a3cfd487ed985e21f6965ca1170966dbd457  ./views/estoque_alertas.php
 94239d686bf32e7e82f5fb15a371150d03b61e0bc99bd15ecae5553914040c8d  ./nginx.conf.example
-94c11c370a3ddd0cc8d22881cd770d902c3ac4d8f8692956175ebc3ff66ede0d  ./CLAUDE.md
 94e1ce3b8d3e5acf4a8fa2af6373aa131127391579b61cfc7c88facad154bb36  ./app/Controllers/ProdutoController.php
 94fcfdb01c9b3cea19b351249f97811e5c8fb94a3fad2eb648ba06afb33d84d1  ./views/usuarios.php
 957ec2c587a8fbde34fca6807c10a86757b92659a21fd2defbbd24536c74653d  ./docs/CONTROLLER_REFACTOR_PLAN_V104.16.md
