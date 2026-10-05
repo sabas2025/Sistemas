@@ -70,7 +70,12 @@ class DashboardMetricsService {
       ],
       'fiscalResumo' => [
         'recebidas' => self::count('pedidos_nfe_xml'),
-        'xml_processados' => self::count('pedidos_nfe_xml', "status_xml IN ('validado','enviado_tiny','concluido')"),
+        // Achado D-01 (2026-10-05): PedidoCicloVidaService grava status_xml='xml_validado' no sucesso
+        // (receberRetornoVsm) e 'enviado_tiny' no envio ao Tiny. O token 'validado' (sem prefixo) NUNCA
+        // é gravado, então a NF-e validada e ainda não enviada ao Tiny sumia deste cartão — indicador
+        // que mente. Contamos o vocabulário REAL de status_xml de sucesso. ('concluido' segue como
+        // defensivo e inócuo: também não é escrito hoje.)
+        'xml_processados' => self::count('pedidos_nfe_xml', "status_xml IN ('xml_validado','enviado_tiny','concluido')"),
         'xml_erros' => self::count('pedidos_nfe_xml', "status_xml LIKE '%erro%' OR validado=0"),
         'reenvios' => self::count('fila_fiscal', "status IN ('pendente','processando')"),
       ],

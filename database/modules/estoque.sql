@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS estoque_movimentos (
   status VARCHAR(50) DEFAULT 'pendente',
   payload_origem LONGTEXT NULL,
   retorno_vsm LONGTEXT NULL,
+  retorno_tiny LONGTEXT NULL,
   trace_id VARCHAR(80) NULL,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   atualizado_em TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
