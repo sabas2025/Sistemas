@@ -217,7 +217,6 @@
 4a87b6981fdb4321b1d86bf66c3fddf031a7d114ac2f380162491b93dcb770bf  ./app/Services/EventCorrelationService.php
 4abc3491918afef10e047fbb7a2d46618c4b752a8f62e99bcf6f158cd4f95dd7  ./views/metricas.php
 4ad16a96e012aa35237cfbbf6ba2e78008040b53c8728976dc56d8139dfb058d  ./app/Services/EstoqueVsmSchedulerService.php
-4b1713d87f499a60811d62cd9efe93c217b7a7ceec664f3ec473312acda972c0  ./CLAUDE.md
 4bdc5948b5771114cbfb7c9dc4e74dba45d3d27db0ba59b56b681e0c81fa05e1  ./app/Controllers/ApiVsmWebhookController.php
 4d04ca903414eea89ea5ef2a936a28104770b76c6e4f82cbbb173acc827cd2a4  ./views/integracoes.php
 4d8ae8ac7cd3f139be6911e68a00c21914693c341dc1ffe39655b521fd16cb1f  ./public/assets/vendor/bootstrap-icons/bootstrap-icons.css
@@ -727,6 +726,7 @@ e9ec4f321347ba47f650b0d3a657996014f4459612ae586749f3d45457c00206  ./app/Services
 ea33f7250693288eb38ece871cddcd62bf2e0b84e5f1ef4396999ec3e5a95400  ./views/manutencao.php
 eac28b4173a9a808e1fb6ed31a2d5e03c1b41c83a22bd3fe375f92e708c497c1  ./public/assets/bootstrap-login-lite.css
 eaeff7c230ac6d95a427d73d2a321b7d3d422cbcbf56eadaee553587a42dab76  ./views/myouro_configuracoes.php
+eaf2a25cdcb775bcf0b4d925d49ba79fc86afe1256a7e0f26c8e384a089d8f90  ./CLAUDE.md
 eb03a6ed71dd2de9df2279ea7d5dca43d15fa5044a75b7865b9c18c6b7da6816  ./app/Core/Helpers.php
 eb238eaf20ca29246fce20386b5002802eb5fac35fe7dd8703ee4df07361796d  ./app/Services/UniversalUpgradeService.php
 ebbe4da4d0bc680f2b27dcc1fdaf922b2cc6f86bb124cbce9a310474d8c876b2  ./app/Services/CommercialHardeningService.php

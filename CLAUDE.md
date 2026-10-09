@@ -242,6 +242,9 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   A pegadinha do symlink: `.claude/skills/security-audit` aponta para `.agents/skills/security-audit/SKILL.md`,
   arquivo versionado à parte, então excluir só `.claude/` deixava o alvo do symlink vazar — por isso
   `.agents/` também entra.
+  **Deploy a partir deste zip:** o pacote vai para a VPS **só** pelo `scripts/ops/deploy.sh` (nunca
+  `git pull` no servidor) e, se um dia houver GitHub Actions, ele reusa o `deploy.sh` e **não** roda
+  migration — ver a memória **"Deploy para VPS pública"** na seção de implantação do hub01.
 - **Os relatórios históricos vivem em `docs/relatorios/`, fora do zip.** A raiz acumulou 134 `.md` e
   ficou poluída (2026-09-28). Os **122** relatórios de auditoria/versão (`RELATORIO-*`, `AUDITORIA-*`,
   `VALIDACAO-*`) foram para `docs/relatorios/`, que é `export-ignore` — preservados no repositório
@@ -995,6 +998,23 @@ Mais a matriz de runtime **MySQL 8 + MariaDB 11.4**, agregada pelo job `gate` do
   `scripts/ops/deploy.sh` (ex.: `./scripts/ops/deploy.sh <pacote>.zip /www/wwwroot/hub01.ctba.top`).
   Ao dar instruções de deploy/atualização deste cliente, use esse caminho, não o placeholder
   `/var/www/hubNN`. Novos clientes por subdomínio seguem o mesmo molde: `/www/wwwroot/<sub>.ctba.top`.
+- **Deploy para VPS pública — regras ao gerar o pacote/zip e ao automatizar (decidido 2026-10-09; parte NÃO implementada).**
+  O pacote de deploy **sempre** sai por `git archive` da árvore versionada (nunca zipando o working
+  tree, nunca `git pull` numa VPS pública — exporia `.git`, arrastaria o ferramental `export-ignore`
+  e brigaria com o FIM). Na VPS, atualiza-se **só** pelo `scripts/ops/deploy.sh`, que preserva
+  `config/config.php` e `storage/`, faz backup antes, atualiza o `classmap.php` e confere o
+  `CHECKSUMS-SHA256.txt`. **Pilha do Hub = PHP vanilla servido pelo web server** (aaPanel/宝塔:
+  nginx + php-fpm) — **não há Docker/PM2/systemd** para reiniciar: a próxima requisição já usa o
+  código novo; o único "reload" é **limpar o OPcache** (reload do php-fpm), e os **workers são cron**
+  (pegam o código novo no próximo tick). **Migrations NUNCA entram no deploy** — são manuais
+  (a `012` exige janela; ver RUNBOOK). **Desenho de GitHub Actions → SSH → VPS (decidido, ainda NÃO
+  implementado):** disparo em `main` **só com o job `gate` verde** → `git archive` do HEAD → `scp`
+  do zip → `ssh` rodando `deploy.sh` + reload do php-fpm; **sem migration**. Segredos SSH ficam em
+  *Settings → Secrets* do repo (nunca no código); chave de deploy dedicada, idealmente com `command=`
+  forçado. **Produção exige homologação** (regra do projeto): `main` → deploy automático em
+  **homologação**; **produção** atrás de **GitHub Environment com aprovação** ou por **tag**. O
+  `deploy.yml` é `.github/` (`export-ignore`), então **não recebe linha no manifesto FIM**. Rollback
+  = restaurar o `.tar.gz` que o `deploy.sh` cria antes de copiar.
 
 **Pendências abertas**
 - **`20260914_012_pk_bigint_capacidade.sql` exige JANELA DE MANUTENÇÃO** (workers parados, webhooks
